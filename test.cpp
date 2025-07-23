@@ -389,3 +389,145 @@ TEST_CASE("Backends", "[backend]") {
         REQUIRE(result2.asNumber() == 400.0);
     }
 }
+
+TEST_CASE("Standard Mathematical Functions", "[standard_functions]") {
+    // 创建一个使用标准函数的Backend
+    class StandardMathBackend : public IBackend {
+    public:
+        Value Get(const std::string& name) override {
+            throw ExprException("变量未定义：" + name);
+        }
+
+        Value Call(const std::string& name, const std::vector<Value>& args) override {
+            Value result;
+
+            // 先尝试标准数学函数
+            if (ExprTK::CallStandardFunctions(name, args, result)) {
+                return result;
+            }
+
+            throw ExprException("未定义的函数：" + name);
+        }
+    };
+
+    StandardMathBackend backend;
+
+    SECTION("Two-argument functions") {
+        // min函数
+        REQUIRE(ExprTK::Eval("min(10, 5)", &backend).asNumber() == 5.0);
+        REQUIRE(ExprTK::Eval("min(-3, 7)", &backend).asNumber() == -3.0);
+        REQUIRE(ExprTK::Eval("min(3.14, 2.71)", &backend).asNumber() == Approx(2.71));
+
+        // max函数
+        REQUIRE(ExprTK::Eval("max(10, 5)", &backend).asNumber() == 10.0);
+        REQUIRE(ExprTK::Eval("max(-3, 7)", &backend).asNumber() == 7.0);
+        REQUIRE(ExprTK::Eval("max(3.14, 2.71)", &backend).asNumber() == Approx(3.14));
+
+        // pow函数
+        REQUIRE(ExprTK::Eval("pow(2, 3)", &backend).asNumber() == 8.0);
+        REQUIRE(ExprTK::Eval("pow(5, 2)", &backend).asNumber() == 25.0);
+        REQUIRE(ExprTK::Eval("pow(2, 0)", &backend).asNumber() == 1.0);
+        REQUIRE(ExprTK::Eval("pow(4, 0.5)", &backend).asNumber() == Approx(2.0));
+    }
+
+    SECTION("Single-argument functions") {
+        // sqrt函数
+        REQUIRE(ExprTK::Eval("sqrt(16)", &backend).asNumber() == 4.0);
+        REQUIRE(ExprTK::Eval("sqrt(25)", &backend).asNumber() == 5.0);
+        REQUIRE(ExprTK::Eval("sqrt(2)", &backend).asNumber() == Approx(1.414213).epsilon(0.000001));
+
+        // abs函数
+        REQUIRE(ExprTK::Eval("abs(5)", &backend).asNumber() == 5.0);
+        REQUIRE(ExprTK::Eval("abs(-5)", &backend).asNumber() == 5.0);
+        REQUIRE(ExprTK::Eval("abs(-3.14)", &backend).asNumber() == Approx(3.14));
+
+        // floor函数
+        REQUIRE(ExprTK::Eval("floor(3.7)", &backend).asNumber() == 3.0);
+        REQUIRE(ExprTK::Eval("floor(-2.3)", &backend).asNumber() == -3.0);
+        REQUIRE(ExprTK::Eval("floor(5.0)", &backend).asNumber() == 5.0);
+
+        // ceil函数
+        REQUIRE(ExprTK::Eval("ceil(3.2)", &backend).asNumber() == 4.0);
+        REQUIRE(ExprTK::Eval("ceil(-2.8)", &backend).asNumber() == -2.0);
+        REQUIRE(ExprTK::Eval("ceil(5.0)", &backend).asNumber() == 5.0);
+
+        // round函数
+        REQUIRE(ExprTK::Eval("round(3.6)", &backend).asNumber() == 4.0);
+        REQUIRE(ExprTK::Eval("round(3.4)", &backend).asNumber() == 3.0);
+        REQUIRE(ExprTK::Eval("round(-2.7)", &backend).asNumber() == -3.0);
+    }
+
+    SECTION("Trigonometric functions") {
+        const double pi = 3.14159265358979323846;
+
+        // sin函数
+        REQUIRE(ExprTK::Eval("sin(0)", &backend).asNumber() == Approx(0.0).epsilon(0.000001));
+        REQUIRE(ExprTK::Eval("sin(1.5707963)", &backend).asNumber() == Approx(1.0).epsilon(0.000001)); // sin(π/2)
+
+        // cos函数
+        REQUIRE(ExprTK::Eval("cos(0)", &backend).asNumber() == Approx(1.0).epsilon(0.000001));
+        REQUIRE(ExprTK::Eval("cos(3.14159265)", &backend).asNumber() == Approx(-1.0).epsilon(0.000001)); // cos(π)
+
+        // tan函数
+        REQUIRE(ExprTK::Eval("tan(0)", &backend).asNumber() == Approx(0.0).epsilon(0.000001));
+        REQUIRE(ExprTK::Eval("tan(0.78539816)", &backend).asNumber() == Approx(1.0).epsilon(0.000001)); // tan(π/4)
+    }
+
+    SECTION("Logarithmic and exponential functions") {
+        // exp函数
+        REQUIRE(ExprTK::Eval("exp(0)", &backend).asNumber() == Approx(1.0).epsilon(0.000001));
+        REQUIRE(ExprTK::Eval("exp(1)", &backend).asNumber() == Approx(2.718281).epsilon(0.000001)); // e
+
+        // log函数 (自然对数)
+        REQUIRE(ExprTK::Eval("log(1)", &backend).asNumber() == Approx(0.0).epsilon(0.000001));
+        REQUIRE(ExprTK::Eval("log(2.718281)", &backend).asNumber() == Approx(1.0).epsilon(0.001)); // ln(e)
+    }
+
+    SECTION("Complex expressions with standard functions") {
+        // 复合函数调用
+        REQUIRE(ExprTK::Eval("max(abs(-5), sqrt(16))", &backend).asNumber() == 5.0);
+        REQUIRE(ExprTK::Eval("min(ceil(3.2), floor(5.8))", &backend).asNumber() == 4.0);
+        REQUIRE(ExprTK::Eval("pow(sqrt(4), 3)", &backend).asNumber() == 8.0);
+
+        // 与算术运算结合
+        REQUIRE(ExprTK::Eval("sqrt(25) + abs(-3)", &backend).asNumber() == 8.0);
+        REQUIRE(ExprTK::Eval("max(10, 5) * min(2, 3)", &backend).asNumber() == 20.0);
+        REQUIRE(ExprTK::Eval("pow(2, 3) - sqrt(9)", &backend).asNumber() == 5.0);
+    }
+
+    SECTION("Error handling for standard functions") {
+        // sqrt负数应该返回false (通过backend的调用会抛出异常)
+        REQUIRE_THROWS_AS(ExprTK::Eval("sqrt(-1)", &backend), ExprException);
+
+        // log非正数应该返回false
+        REQUIRE_THROWS_AS(ExprTK::Eval("log(0)", &backend), ExprException);
+        REQUIRE_THROWS_AS(ExprTK::Eval("log(-1)", &backend), ExprException);
+    }
+
+    SECTION("Direct CallStandardFunctions testing") {
+        std::vector<Value> args;
+        Value result;
+
+        // 测试min函数
+        args = {Value(10.0), Value(5.0)};
+        REQUIRE(ExprTK::CallStandardFunctions("min", args, result) == true);
+        REQUIRE(result.asNumber() == 5.0);
+
+        // 测试sqrt函数
+        args = {Value(16.0)};
+        REQUIRE(ExprTK::CallStandardFunctions("sqrt", args, result) == true);
+        REQUIRE(result.asNumber() == 4.0);
+
+        // 测试不存在的函数
+        args = {Value(1.0)};
+        REQUIRE(ExprTK::CallStandardFunctions("nonexistent", args, result) == false);
+
+        // 测试参数数量错误
+        args = {Value(1.0), Value(2.0), Value(3.0)};
+        REQUIRE(ExprTK::CallStandardFunctions("sqrt", args, result) == false);
+
+        // 测试参数类型错误
+        args = {Value(true)};
+        REQUIRE(ExprTK::CallStandardFunctions("sqrt", args, result) == false);
+    }
+}

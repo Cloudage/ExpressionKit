@@ -185,6 +185,46 @@ public:
 - **Variables**: `x`, `health`, `pos.x`, `player_name`
 - **Function calls**: `max(a, b)`, `sqrt(x)`, `distance(x1, y1, x2, y2)`
 
+### Built-in Mathematical Functions
+ExpressionKit provides a comprehensive set of standard mathematical functions through the `CallStandardFunctions` method:
+
+| Function | Description | Example |
+|----------|-------------|---------|
+| `min(a, b)` | Returns the smaller of two numbers | `min(10, 5)` → `5` |
+| `max(a, b)` | Returns the larger of two numbers | `max(10, 5)` → `10` |
+| `sqrt(x)` | Returns the square root of x | `sqrt(16)` → `4` |
+| `sin(x)` | Returns the sine of x (radians) | `sin(3.14159/2)` → `1` |
+| `cos(x)` | Returns the cosine of x (radians) | `cos(0)` → `1` |
+| `tan(x)` | Returns the tangent of x (radians) | `tan(0)` → `0` |
+| `abs(x)` | Returns the absolute value of x | `abs(-5)` → `5` |
+| `pow(x, y)` | Returns x raised to the power of y | `pow(2, 3)` → `8` |
+| `log(x)` | Returns the natural logarithm of x | `log(2.718)` → `≈1` |
+| `exp(x)` | Returns e raised to the power of x | `exp(1)` → `≈2.718` |
+| `floor(x)` | Returns the largest integer ≤ x | `floor(3.7)` → `3` |
+| `ceil(x)` | Returns the smallest integer ≥ x | `ceil(3.2)` → `4` |
+| `round(x)` | Returns x rounded to nearest integer | `round(3.6)` → `4` |
+
+These functions can be used in IBackend implementations to provide mathematical capabilities:
+
+```cpp
+class MathBackend : public ExpressionKit::IBackend {
+public:
+    ExpressionKit::Value Call(const std::string& name, 
+                             const std::vector<ExpressionKit::Value>& args) override {
+        ExpressionKit::Value result;
+        
+        // Try standard mathematical functions first
+        if (ExpressionKit::ExprTK::CallStandardFunctions(name, args, result)) {
+            return result;
+        }
+        
+        // Custom functions...
+        throw ExpressionKit::ExprException("Unknown function: " + name);
+    }
+    
+    // ... other methods
+};
+```
 ## 🏗️ Architecture Design
 
 ### Core Components
@@ -475,6 +515,46 @@ public:
 - **变量**: `x`, `health`, `pos.x`, `player_name`
 - **函数调用**: `max(a, b)`, `sqrt(x)`, `distance(x1, y1, x2, y2)`
 
+### 内置数学函数
+ExpressionKit通过`CallStandardFunctions`方法提供了一套完整的标准数学函数：
+
+| 函数 | 说明 | 示例 |
+|------|------|------|
+| `min(a, b)` | 返回两个数中的较小值 | `min(10, 5)` → `5` |
+| `max(a, b)` | 返回两个数中的较大值 | `max(10, 5)` → `10` |
+| `sqrt(x)` | 返回x的平方根 | `sqrt(16)` → `4` |
+| `sin(x)` | 返回x的正弦值（弧度） | `sin(3.14159/2)` → `1` |
+| `cos(x)` | 返回x的余弦值（弧度） | `cos(0)` → `1` |
+| `tan(x)` | 返回x的正切值（弧度） | `tan(0)` → `0` |
+| `abs(x)` | 返回x的绝对值 | `abs(-5)` → `5` |
+| `pow(x, y)` | 返回x的y次幂 | `pow(2, 3)` → `8` |
+| `log(x)` | 返回x的自然对数 | `log(2.718)` → `≈1` |
+| `exp(x)` | 返回e的x次幂 | `exp(1)` → `≈2.718` |
+| `floor(x)` | 返回不大于x的最大整数 | `floor(3.7)` → `3` |
+| `ceil(x)` | 返回不小于x的最小整数 | `ceil(3.2)` → `4` |
+| `round(x)` | 返回四舍五入后的整数 | `round(3.6)` → `4` |
+
+这些函数可以在IBackend实现中使用，以提供数学计算能力：
+
+```cpp
+class MathBackend : public ExpressionKit::IBackend {
+public:
+    ExpressionKit::Value Call(const std::string& name, 
+                             const std::vector<ExpressionKit::Value>& args) override {
+        ExpressionKit::Value result;
+        
+        // 先尝试标准数学函数
+        if (ExpressionKit::ExprTK::CallStandardFunctions(name, args, result)) {
+            return result;
+        }
+        
+        // 自定义函数...
+        throw ExpressionKit::ExprException("未知函数: " + name);
+    }
+    
+    // ... 其他方法
+};
+```
 ## 🏗️ 架构设计
 
 ### 核心组件

@@ -54,6 +54,8 @@
 #include <stdexcept>
 #include <vector>
 #include <iostream>
+#include <cmath>
+#include <algorithm>
 
 namespace ExpressionKit {
 
@@ -697,8 +699,105 @@ namespace ExpressionKit {
             Parser parser(expression);
             return parser.parse();
         }
+
+        /**
+         * @brief Call standard mathematical functions
+         * @param functionName The name of the function to call
+         * @param args The arguments to pass to the function
+         * @param outResult Reference to store the result
+         * @return true if the function was found and executed successfully, false otherwise
+         *
+         * Supported functions:
+         * - min(a, b): Returns the smaller of two numbers
+         * - max(a, b): Returns the larger of two numbers
+         * - sqrt(x): Returns the square root of x
+         * - sin(x): Returns the sine of x (in radians)
+         * - cos(x): Returns the cosine of x (in radians)
+         * - tan(x): Returns the tangent of x (in radians)
+         * - abs(x): Returns the absolute value of x
+         * - pow(x, y): Returns x raised to the power of y
+         * - log(x): Returns the natural logarithm of x
+         * - exp(x): Returns e raised to the power of x
+         * - floor(x): Returns the largest integer less than or equal to x
+         * - ceil(x): Returns the smallest integer greater than or equal to x
+         * - round(x): Returns x rounded to the nearest integer
+         */
+        static bool CallStandardFunctions(const std::string& functionName,
+                                        const std::vector<Value>& args,
+                                        Value& outResult) {
+            try {
+                // Two-argument functions
+                if (functionName == "min" && args.size() == 2) {
+                    if (!args[0].isNumber() || !args[1].isNumber()) return false;
+                    outResult = Value(std::min(args[0].asNumber(), args[1].asNumber()));
+                    return true;
+                }
+                if (functionName == "max" && args.size() == 2) {
+                    if (!args[0].isNumber() || !args[1].isNumber()) return false;
+                    outResult = Value(std::max(args[0].asNumber(), args[1].asNumber()));
+                    return true;
+                }
+                if (functionName == "pow" && args.size() == 2) {
+                    if (!args[0].isNumber() || !args[1].isNumber()) return false;
+                    outResult = Value(std::pow(args[0].asNumber(), args[1].asNumber()));
+                    return true;
+                }
+
+                // Single-argument functions
+                if (args.size() == 1 && args[0].isNumber()) {
+                    double x = args[0].asNumber();
+
+                    if (functionName == "sqrt") {
+                        if (x < 0) return false; // Domain error
+                        outResult = Value(std::sqrt(x));
+                        return true;
+                    }
+                    if (functionName == "sin") {
+                        outResult = Value(std::sin(x));
+                        return true;
+                    }
+                    if (functionName == "cos") {
+                        outResult = Value(std::cos(x));
+                        return true;
+                    }
+                    if (functionName == "tan") {
+                        outResult = Value(std::tan(x));
+                        return true;
+                    }
+                    if (functionName == "abs") {
+                        outResult = Value(std::abs(x));
+                        return true;
+                    }
+                    if (functionName == "log") {
+                        if (x <= 0) return false; // Domain error
+                        outResult = Value(std::log(x));
+                        return true;
+                    }
+                    if (functionName == "exp") {
+                        outResult = Value(std::exp(x));
+                        return true;
+                    }
+                    if (functionName == "floor") {
+                        outResult = Value(std::floor(x));
+                        return true;
+                    }
+                    if (functionName == "ceil") {
+                        outResult = Value(std::ceil(x));
+                        return true;
+                    }
+                    if (functionName == "round") {
+                        outResult = Value(std::round(x));
+                        return true;
+                    }
+                }
+
+                return false; // Function not found or invalid arguments
+            } catch (...) {
+                return false; // Error occurred
+            }
+        }
     };
 
-} // namespace exprtk
+} // namespace ExpressionKit
 
 #endif // EXPRESSION_KIT_HPP
