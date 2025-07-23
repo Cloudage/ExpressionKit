@@ -179,7 +179,7 @@ namespace ExpressionKit {
          * @return The variable value
          * @throws ExprException if the variable is not found
          */
-        virtual Value get(const std::string& name) = 0;
+        virtual Value Get(const std::string& name) = 0;
 
         /**
          * @brief Call a function with given arguments
@@ -188,7 +188,7 @@ namespace ExpressionKit {
          * @return Function result
          * @throws ExprException if the function is not found or arguments are invalid
          */
-        virtual Value call(const std::string& name, const std::vector<Value>& args) = 0;
+        virtual Value Call(const std::string& name, const std::vector<Value>& args) = 0;
     };
 
     /**
@@ -257,7 +257,7 @@ namespace ExpressionKit {
         explicit VariableNode(const std::string& n) : name(n) {}
         Value evaluate(IBackend* backend) const override {
             if (!backend) throw ExprException("变量访问需要 IBackend");
-            return backend->get(name);
+            return backend->Get(name);
         }
     };
 
@@ -373,7 +373,7 @@ namespace ExpressionKit {
      *
      * This node stores a function name and a list of argument expressions.
      * During evaluation, it evaluates all arguments and delegates to the
-     * IBackend to perform the actual function call.
+     * IBackend to perform the actual function Call.
      *
      * Examples: max(a, b), sqrt(x), distance(x1, y1, x2, y2)
      */
@@ -390,7 +390,7 @@ namespace ExpressionKit {
             for (const auto& arg : args) {
                 evaluatedArgs.push_back(arg->evaluate(backend));
             }
-            return backend->call(name, evaluatedArgs);
+            return backend->Call(name, evaluatedArgs);
         }
     };
 
@@ -666,7 +666,7 @@ namespace ExpressionKit {
          * @return The evaluation result
          * @throws ExprException If parsing fails or evaluation encounters an error
          *
-         * This method parses and evaluates the expression in one call. For
+         * This method parses and evaluates the expression in one Call. For
          * expressions that will be evaluated multiple times, consider using
          * Compile() and Execute() for better performance.
          *

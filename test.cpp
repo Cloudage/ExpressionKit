@@ -11,7 +11,7 @@ class TestBackend final : public IBackend {
     std::map<std::string, Value> variables;
 
 public:
-    Value get(const std::string& name) override {
+    Value Get(const std::string& name) override {
         if (const auto it = variables.find(name); it != variables.end()) return it->second;
         throw ExprException("变量未定义：" + name);
     }
@@ -20,7 +20,7 @@ public:
         variables[name] = value;
     }
 
-    Value call(const std::string& name, const std::vector<Value>& args) override {
+    Value Call(const std::string& name, const std::vector<Value>& args) override {
         if (name == "add") {
             if (args.size() != 2 || !args[0].isNumber() || !args[1].isNumber())
                 throw ExprException("add函数需要两个数值参数");
@@ -334,14 +334,14 @@ TEST_CASE("Backends", "[backend]") {
             {"y", Value(5.0)}
         };
     public:
-        Value get(const std::string& name) override {
+        Value Get(const std::string& name) override {
             if (const auto it = vars.find(name); it != vars.end()) return it->second;
             throw ExprException("变量未定义：" + name);
         }
 
         // 不重写set方法，使用默认实现
 
-        Value call(const std::string& name, const std::vector<Value>& args) override {
+        Value Call(const std::string& name, const std::vector<Value>& args) override {
             throw ExprException("未定义的函数：" + name);
         }
     };
@@ -357,11 +357,11 @@ TEST_CASE("Backends", "[backend]") {
         // 第一个Backend
         class Backend1 : public IBackend {
         public:
-            Value get(const std::string& name) override {
+            Value Get(const std::string& name) override {
                 if (name == "value") return 100;
                 throw ExprException("变量未定义：" + name);
             }
-            Value call(const std::string& name, const std::vector<Value>& args) override {
+            Value Call(const std::string& name, const std::vector<Value>& args) override {
                 throw ExprException("未定义的函数：" + name);
             }
         };
@@ -369,11 +369,11 @@ TEST_CASE("Backends", "[backend]") {
         // 第二个Backend
         class Backend2 : public IBackend {
         public:
-            Value get(const std::string& name) override {
+            Value Get(const std::string& name) override {
                 if (name == "value") return 200;
                 throw ExprException("变量未定义：" + name);
             }
-            Value call(const std::string& name, const std::vector<Value>& args) override {
+            Value Call(const std::string& name, const std::vector<Value>& args) override {
                 throw ExprException("未定义的函数：" + name);
             }
         };
@@ -382,8 +382,8 @@ TEST_CASE("Backends", "[backend]") {
         Backend2 backend2;
 
         // 同一个表达式，不同的Backend，得到不同的结果
-        auto result1 = ExprTK::Eval("value * 2", &backend1);
-        auto result2 = ExprTK::Eval("value * 2", &backend2);
+        const auto result1 = ExprTK::Eval("value * 2", &backend1);
+        const auto result2 = ExprTK::Eval("value * 2", &backend2);
 
         REQUIRE(result1.asNumber() == 200.0);
         REQUIRE(result2.asNumber() == 400.0);
