@@ -207,9 +207,6 @@ public:
     // Required: Get variable value
     virtual Value get(const std::string& name) = 0;
     
-    // Optional: Set variable value
-    virtual void set(const std::string& name, const Value& value);
-    
     // Required: Call function
     virtual Value call(const std::string& name, 
                       const std::vector<Value>& args) = 0;
@@ -500,9 +497,6 @@ public:
     
     // 必须实现：获取变量值
     virtual Value get(const std::string& name) = 0;
-    
-    // 可选实现：设置变量值
-    virtual void set(const std::string& name, const Value& value);
     
     // 必须实现：调用函数
     virtual Value call(const std::string& name, 
