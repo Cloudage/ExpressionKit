@@ -68,23 +68,16 @@ public:
         return it->second;
     }
     
-    // Implement variable writing (optional)
-    void Set(const std::string& name, const ExpressionKit::Value& value) override {
-        variables[name] = value;
-    }
-    
     // Implement function calls
     ExpressionKit::Value Call(const std::string& name, 
                              const std::vector<ExpressionKit::Value>& args) override {
-        if (name == "max" && args.size() == 2) {
-            double a = args[0].asNumber();
-            double b = args[1].asNumber();
-            return ExpressionKit::Value(std::max(a, b));
+        // Try standard mathematical functions first
+        ExpressionKit::Value result;
+        if (ExpressionKit::ExprTK::CallStandardFunctions(name, args, result)) {
+            return result;
         }
-        if (name == "sqrt" && args.size() == 1) {
-            double val = args[0].asNumber();
-            return ExpressionKit::Value(std::sqrt(val));
-        }
+        
+        // Custom functions
         if (name == "distance" && args.size() == 4) {
             double x1 = args[0].asNumber(), y1 = args[1].asNumber();
             double x2 = args[2].asNumber(), y2 = args[3].asNumber();
@@ -398,23 +391,16 @@ public:
         return it->second;
     }
     
-    // 实现变量写入（可选）
-    void Set(const std::string& name, const ExpressionKit::Value& value) override {
-        variables[name] = value;
-    }
-    
     // 实现函数调用
     ExpressionKit::Value Call(const std::string& name, 
                              const std::vector<ExpressionKit::Value>& args) override {
-        if (name == "max" && args.size() == 2) {
-            double a = args[0].asNumber();
-            double b = args[1].asNumber();
-            return ExpressionKit::Value(std::max(a, b));
+        // 先尝试标准数学函数
+        ExpressionKit::Value result;
+        if (ExpressionKit::ExprTK::CallStandardFunctions(name, args, result)) {
+            return result;
         }
-        if (name == "sqrt" && args.size() == 1) {
-            double val = args[0].asNumber();
-            return ExpressionKit::Value(std::sqrt(val));
-        }
+        
+        // 自定义函数
         if (name == "distance" && args.size() == 4) {
             double x1 = args[0].asNumber(), y1 = args[1].asNumber();
             double x2 = args[2].asNumber(), y2 = args[3].asNumber();
