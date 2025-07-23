@@ -4,7 +4,7 @@ A lightweight, interface-driven C++ expression parsing and evaluation library
 
 ## 🚀 Key Features
 
-- **Interface-based variable read/write**: Flexible access to variables and functions via the Backend interface  
+- **Interface-based variable read/write**: Flexible access to variables and functions via the IBackend interface  
 - **Pre-parsed AST execution**: Supports expression pre-compilation for efficient repeated execution
 - **Type safety**: Strongly-typed Value system supporting numeric and boolean types
 - **Complete operator support**: Full coverage of arithmetic, comparison, and logical operators
@@ -38,13 +38,13 @@ auto boolResult = ExprTK::Eval("true && false");  // Returns false
 std::cout << "Boolean result: " << boolResult.asBoolean() << std::endl;
 ```
 
-### Using Backend for Variable Access
+### Using IBackend for Variable Access
 
 ```cpp
 #include "ExpressionKit.hpp"
 #include <unordered_map>
 
-class GameBackend : public ExpressionKit::Backend {
+class GameBackend : public ExpressionKit::IBackend {
 private:
     std::unordered_map<std::string, ExpressionKit::Value> variables;
     
@@ -190,19 +190,19 @@ public:
 ### Core Components
 
 1. **Value** - Unified value type supporting numbers and booleans
-2. **Backend** - Interface for variable and function access
+2. **IBackend** - Interface for variable and function access
 3. **ASTNode** - Base class for abstract syntax tree nodes
 4. **Parser** - Recursive descent parser
 5. **ExprTK** - Main expression utility class
 
-### Backend Interface
+### IBackend Interface
 
-The Backend is a core design pattern in ExpressionKit, providing:
+The IBackend is a core design pattern in ExpressionKit, providing:
 
 ```cpp
-class Backend {
+class IBackend {
 public:
-    virtual ~Backend() = default;
+    virtual ~IBackend() = default;
     
     // Required: Get variable value
     virtual Value get(const std::string& name) = 0;
@@ -216,7 +216,7 @@ public:
 Advantages of this design:
 - **Decoupling**: Separates expression parsing from concrete data sources
 - **Flexibility**: Can integrate with any data source (database, config files, game state, etc.)
-- **Testability**: Easy to create mock Backends for different scenarios
+- **Testability**: Easy to create mock IBackends for different scenarios
 - **Performance**: Avoids string lookups, supports direct memory access
 
 ## 📊 Performance Characteristics
@@ -294,7 +294,7 @@ For questions or suggestions, please open an Issue or review the code comments f
 
 ## 🚀 主要特性
 
-- **接口化变量读写**：通过Backend接口实现变量和函数的灵活访问
+- **接口化变量读写**：通过IBackend接口实现变量和函数的灵活访问
 - **预解析AST执行**：支持表达式预编译，可重复高效执行
 - **类型安全**：强类型Value系统，支持数值和布尔类型
 - **完整运算符支持**：算术、比较、逻辑运算符全覆盖
@@ -328,13 +328,13 @@ auto boolResult = ExprTK::Eval("true && false");  // 返回 false
 std::cout << "布尔结果: " << boolResult.asBoolean() << std::endl;
 ```
 
-### 使用Backend实现变量访问
+### 使用IBackend实现变量访问
 
 ```cpp
 #include "ExpressionKit.hpp"
 #include <unordered_map>
 
-class GameBackend : public ExpressionKit::Backend {
+class GameBackend : public ExpressionKit::IBackend {
 private:
     std::unordered_map<std::string, ExpressionKit::Value> variables;
     
@@ -480,19 +480,19 @@ public:
 ### 核心组件
 
 1. **Value** - 统一的值类型，支持数值和布尔
-2. **Backend** - 变量和函数访问接口
+2. **IBackend** - 变量和函数访问接口
 3. **ASTNode** - 抽象语法树节点基类
 4. **Parser** - 递归下降解析器
 5. **ExprTK** - 主要的表达式工具类
 
-### Backend接口
+### IBackend接口
 
-Backend是ExpressionKit的核心设计模式，它提供了：
+IBackend是ExpressionKit的核心设计模式，它提供了：
 
 ```cpp
-class Backend {
+class IBackend {
 public:
-    virtual ~Backend() = default;
+    virtual ~IBackend() = default;
     
     // 必须实现：获取变量值
     virtual Value get(const std::string& name) = 0;
@@ -506,7 +506,7 @@ public:
 这种设计的优势：
 - **解耦**：表达式解析与具体数据源分离
 - **灵活**：可以接入任何数据源（数据库、配置文件、游戏状态等）
-- **可测试**：易于为不同场景创建Mock Backend
+- **可测试**：易于为不同场景创建Mock IBackend
 - **高性能**：避免字符串查找，支持直接内存访问
 
 ## 📊 性能特性

@@ -167,11 +167,11 @@ namespace ExpressionKit {
      * @note The integrating application is responsible for managing the backend's
      *       lifetime. ExprTK stores only a raw pointer and does not take ownership.
      */
-    class Backend {
-        protected: Backend() = default;
+    class IBackend {
+        protected: IBackend() = default;
 
     public:
-        virtual ~Backend() = default;
+        virtual ~IBackend() = default;
 
         /**
          * @brief Get a variable value by name
@@ -180,19 +180,6 @@ namespace ExpressionKit {
          * @throws ExprException if the variable is not found
          */
         virtual Value get(const std::string& name) = 0;
-
-        /**
-         * @brief Set a variable value (optional implementation)
-         * @param name Variable name
-         * @param value Value to set
-         * @throws ExprException by default implementation if setting is not supported
-         *
-         * @note This method has a default implementation that throws an exception.
-         *       Override only if your backend supports variable modification.
-         */
-        virtual void set(const std::string& name, const Value& value) {
-            throw ExprException("此Backend不支持设置变量：" + name);
-        }
 
         /**
          * @brief Call a function with given arguments
@@ -224,7 +211,7 @@ namespace ExpressionKit {
          * @return The computed value of this node
          * @throws ExprException If evaluation fails
          */
-        virtual Value evaluate(Backend* backend) const = 0;
+        virtual Value evaluate(IBackend* backend) const = 0;
     };
 
     /**
@@ -237,7 +224,7 @@ namespace ExpressionKit {
         double value;
     public:
         explicit NumberNode(const double v) : value(v) {}
-        Value evaluate(Backend*) const override {
+        Value evaluate(IBackend*) const override {
             return Value(value);
         }
     };
@@ -252,7 +239,7 @@ namespace ExpressionKit {
         bool value;
     public:
         explicit BooleanNode(const bool v) : value(v) {}
-        Value evaluate(Backend*) const override {
+        Value evaluate(IBackend*) const override {
             return Value(value);
         }
     };
@@ -260,7 +247,7 @@ namespace ExpressionKit {
     /**
      * @brief AST node representing a variable reference
      *
-     * This node stores a variable name and delegates to the Backend during
+     * This node stores a variable name and delegates to the IBackend during
      * evaluation to resolve the variable's current value.
      * Examples: x, pos.x, player_health
      */
@@ -268,8 +255,8 @@ namespace ExpressionKit {
         std::string name;
     public:
         explicit VariableNode(const std::string& n) : name(n) {}
-        Value evaluate(Backend* backend) const override {
-            if (!backend) throw ExprException("变量访问需要 Backend");
+        Value evaluate(IBackend* backend) const override {
+            if (!backend) throw ExprException("变量访问需要 IBackend");
             return backend->get(name);
         }
     };
@@ -306,7 +293,7 @@ namespace ExpressionKit {
         BinaryOpNode(ASTNodePtr l, const OperatorType o, ASTNodePtr r)
             : left(std::move(l)), right(std::move(r)), op(o) {}
 
-        Value evaluate(Backend* backend) const override {
+        Value evaluate(IBackend* backend) const override {
             const Value lhs = left->evaluate(backend);
 
             // 数值运算
@@ -365,7 +352,7 @@ namespace ExpressionKit {
         UnaryOpNode(const OperatorType o, ASTNodePtr operand)
             : operand(std::move(operand)), op(o) {}
 
-        Value evaluate(Backend* backend) const override {
+        Value evaluate(IBackend* backend) const override {
             const Value val = operand->evaluate(backend);
 
             switch (op) {
@@ -386,7 +373,7 @@ namespace ExpressionKit {
      *
      * This node stores a function name and a list of argument expressions.
      * During evaluation, it evaluates all arguments and delegates to the
-     * Backend to perform the actual function call.
+     * IBackend to perform the actual function call.
      *
      * Examples: max(a, b), sqrt(x), distance(x1, y1, x2, y2)
      */
@@ -397,8 +384,8 @@ namespace ExpressionKit {
         FunctionCallNode(const std::string& n, std::vector<ASTNodePtr> a)
             : name(n), args(std::move(a)) {}
 
-        Value evaluate(Backend* backend) const override {
-            if (!backend) throw ExprException("函数调用需要 Backend");
+        Value evaluate(IBackend* backend) const override {
+            if (!backend) throw ExprException("函数调用需要 IBackend");
             std::vector<Value> evaluatedArgs;
             for (const auto& arg : args) {
                 evaluatedArgs.push_back(arg->evaluate(backend));
@@ -693,7 +680,7 @@ namespace ExpressionKit {
          * - Variables: x, pos.x, player_health
          * - Functions: max(a, b), sqrt(x)
          */
-        static Value Eval(const std::string& expression, Backend* backend = nullptr) {
+        static Value Eval(const std::string& expression, IBackend* backend = nullptr) {
             return Parse(expression)->evaluate(backend);
         }
 

@@ -6,8 +6,8 @@
 using namespace ExpressionKit;
 using Catch::Approx;
 
-// 简单的测试用 Backend
-class TestBackend final : public Backend {
+// 简单的测试用 IBackend
+class TestBackend final : public IBackend {
     std::map<std::string, Value> variables;
 
 public:
@@ -16,7 +16,7 @@ public:
         throw ExprException("变量未定义：" + name);
     }
 
-    void set(const std::string& name, const Value& value) override {
+    void set(const std::string& name, const Value& value) {
         variables[name] = value;
     }
 
@@ -328,7 +328,7 @@ TEST_CASE("Edge Cases and Error Handling", "[edge_cases]") {
 
 TEST_CASE("Backends", "[backend]") {
     // 创建一个只读Backend（不重写set方法）
-    class ReadOnlyBackend : public Backend {
+    class ReadOnlyBackend : public IBackend {
         std::unordered_map<std::string, Value> vars = {
             {"x", Value(10.0)},
             {"y", Value(5.0)}
@@ -353,25 +353,9 @@ TEST_CASE("Backends", "[backend]") {
         REQUIRE(result.asNumber() == 20.0);
     }
 
-    SECTION("只读Backend尝试设置变量会抛出异常") {
-        // 验证Backend的默认set行为
-        class TestBackend : public Backend {
-        public:
-            Value get(const std::string& name) override {
-                return 0;
-            }
-            Value call(const std::string& name, const std::vector<Value>& args) override {
-                return 0;
-            }
-        };
-
-        TestBackend testBackend;
-        REQUIRE_THROWS_AS(testBackend.set("test", Value(1.0)), ExprException);
-    }
-
     SECTION("可以使用不同的Backend执行相同表达式") {
         // 第一个Backend
-        class Backend1 : public Backend {
+        class Backend1 : public IBackend {
         public:
             Value get(const std::string& name) override {
                 if (name == "value") return 100;
@@ -383,7 +367,7 @@ TEST_CASE("Backends", "[backend]") {
         };
 
         // 第二个Backend
-        class Backend2 : public Backend {
+        class Backend2 : public IBackend {
         public:
             Value get(const std::string& name) override {
                 if (name == "value") return 200;
