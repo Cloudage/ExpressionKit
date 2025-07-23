@@ -60,7 +60,7 @@ public:
     }
     
     // Implement variable reading
-    ExpressionKit::Value get(const std::string& name) override {
+    ExpressionKit::Value Get(const std::string& name) override {
         auto it = variables.find(name);
         if (it == variables.end()) {
             throw ExpressionKit::ExprException("Variable not found: " + name);
@@ -69,12 +69,12 @@ public:
     }
     
     // Implement variable writing (optional)
-    void set(const std::string& name, const ExpressionKit::Value& value) override {
+    void Set(const std::string& name, const ExpressionKit::Value& value) override {
         variables[name] = value;
     }
     
     // Implement function calls
-    ExpressionKit::Value call(const std::string& name, 
+    ExpressionKit::Value Call(const std::string& name, 
                              const std::vector<ExpressionKit::Value>& args) override {
         if (name == "max" && args.size() == 2) {
             double a = args[0].asNumber();
@@ -205,10 +205,10 @@ public:
     virtual ~IBackend() = default;
     
     // Required: Get variable value
-    virtual Value get(const std::string& name) = 0;
+    virtual Value Get(const std::string& name) = 0;
     
     // Required: Call function
-    virtual Value call(const std::string& name, 
+    virtual Value Call(const std::string& name, 
                       const std::vector<Value>& args) = 0;
 };
 ```
@@ -350,7 +350,7 @@ public:
     }
     
     // 实现变量读取
-    ExpressionKit::Value get(const std::string& name) override {
+    ExpressionKit::Value Get(const std::string& name) override {
         auto it = variables.find(name);
         if (it == variables.end()) {
             throw ExpressionKit::ExprException("未找到变量: " + name);
@@ -359,12 +359,12 @@ public:
     }
     
     // 实现变量写入（可选）
-    void set(const std::string& name, const ExpressionKit::Value& value) override {
+    void Set(const std::string& name, const ExpressionKit::Value& value) override {
         variables[name] = value;
     }
     
     // 实现函数调用
-    ExpressionKit::Value call(const std::string& name, 
+    ExpressionKit::Value Call(const std::string& name, 
                              const std::vector<ExpressionKit::Value>& args) override {
         if (name == "max" && args.size() == 2) {
             double a = args[0].asNumber();
@@ -495,10 +495,10 @@ public:
     virtual ~IBackend() = default;
     
     // 必须实现：获取变量值
-    virtual Value get(const std::string& name) = 0;
+    virtual Value Get(const std::string& name) = 0;
     
     // 必须实现：调用函数
-    virtual Value call(const std::string& name, 
+    virtual Value Call(const std::string& name, 
                       const std::vector<Value>& args) = 0;
 };
 ```
