@@ -269,7 +269,6 @@ Common error types:
 ## 🚧 Compilation Requirements
 
 - C++11 or later
-- Supported compilers: GCC 4.8+, Clang 3.4+, MSVC 2015+
 - Only depends on the C++ standard library
 
 ## 📚 More Examples
@@ -560,7 +559,6 @@ try {
 ## 🚧 编译要求
 
 - C++11 或更高版本
-- 支持的编译器：GCC 4.8+, Clang 3.4+, MSVC 2015+
 - 仅依赖C++标准库
 
 ## 📚 更多示例
