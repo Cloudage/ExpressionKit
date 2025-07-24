@@ -132,7 +132,7 @@ if let tokens = tokens {
 }
 
 // Later execute the pre-compiled expression (multiple times if needed)
-// Note: Variable execution requires backend support (coming in future versions)
+// Note: Variable execution requires environment support (coming in future versions)
 ```
 
 ### Use Cases for Token Sequences
@@ -250,7 +250,7 @@ Error types:
 - `ExpressionError.parseFailed`: Invalid expression syntax
 - `ExpressionError.evaluationFailed`: Runtime evaluation error (e.g., division by zero)
 - `ExpressionError.typeMismatch`: Type conversion error
-- `ExpressionError.backendError`: Variable or function access error
+- `ExpressionError.environmentError`: Variable or function access error
 
 ## Advanced Examples
 
@@ -308,7 +308,7 @@ The current Swift implementation provides the core "parse once, execute many tim
 - ✅ Error handling
 
 Future versions may add:
-- 🔄 Variable and function support via backends
+- 🔄 Variable and function support via environments
 - 🔄 Built-in mathematical functions (sin, cos, sqrt, etc.)
 - 🔄 Custom function registration
 
@@ -324,6 +324,6 @@ If you're migrating from the C++ version:
 |-----|-------|
 | `ExprTK::Eval("2+3")` | `try ExpressionKit.evaluate("2+3")` |
 | `ExprTK::Parse("2+3")` | `try ExpressionKit.parse("2+3")` |
-| `ast->evaluate(backend)` | `try expression.evaluate()` |
+| `ast->evaluate(environment)` | `try expression.evaluate()` |
 | `Value(42.0)` | `Value.number(42.0)` or `42.0` |
 | `Value(true)` | `Value.boolean(true)` or `true` |

@@ -110,8 +110,8 @@ do {
         printTokens(tokens, for: "(a + b) * c - 1")
     }
     
-    // Note: We can't execute this because we don't have backend support in Swift yet
-    print("Note: Execution with variables requires backend support (coming in future versions)")
+    // Note: We can't execute this because we don't have environment support in Swift yet
+    print("Note: Execution with variables requires environment support (coming in future versions)")
 } catch {
     print("Parse error: \(error)")
 }

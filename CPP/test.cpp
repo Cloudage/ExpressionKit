@@ -392,7 +392,7 @@ TEST_CASE("Environments", "[environment]") {
 }
 
 TEST_CASE("Standard Mathematical Functions", "[standard_functions]") {
-    // 创建一个使用标准函数的Backend
+    // 创建一个使用标准函数的Environment
     class StandardMathEnvironment : public IEnvironment {
     public:
         Value Get(const std::string& name) override {
