@@ -1,0 +1,181 @@
+client:
+  name: basic
+  file-system: device-agnostic
+tools: {}
+targets:
+  "ExpressionKit-x86_64-unknown-linux-gnu-debug.module": ["<ExpressionKit-x86_64-unknown-linux-gnu-debug.module>"]
+  "ExpressionKitCore-x86_64-unknown-linux-gnu-debug.module": ["<ExpressionKitCore-x86_64-unknown-linux-gnu-debug.module>"]
+  "ExpressionKitPackageDiscoveredTests-x86_64-unknown-linux-gnu-debug.module": ["<ExpressionKitPackageDiscoveredTests-x86_64-unknown-linux-gnu-debug.module>"]
+  "ExpressionKitPackageTests-x86_64-unknown-linux-gnu-debug.module": ["<ExpressionKitPackageTests-x86_64-unknown-linux-gnu-debug.module>"]
+  "ExpressionKitPackageTests-x86_64-unknown-linux-gnu-debug.test": ["<ExpressionKitPackageTests-x86_64-unknown-linux-gnu-debug.test>"]
+  "ExpressionKitTests-x86_64-unknown-linux-gnu-debug.module": ["<ExpressionKitTests-x86_64-unknown-linux-gnu-debug.module>"]
+  "PackageStructure": ["<PackageStructure>"]
+  "main": ["<ExpressionKit-x86_64-unknown-linux-gnu-debug.module>","<ExpressionKitCore-x86_64-unknown-linux-gnu-debug.module>"]
+  "test": ["<ExpressionKit-x86_64-unknown-linux-gnu-debug.module>","<ExpressionKitCore-x86_64-unknown-linux-gnu-debug.module>","<ExpressionKitPackageTests-x86_64-unknown-linux-gnu-debug.test>","<ExpressionKitTests-x86_64-unknown-linux-gnu-debug.module>"]
+default: "main"
+nodes:
+  "/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+  "/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKitCore/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+  "/home/runner/work/ExpressionKit/ExpressionKit/Tests/ExpressionKitTests/":
+    is-directory-structure: true
+    content-exclusion-patterns: [".git",".build"]
+commands:
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionKit.swiftmodule.o":
+    tool: shell
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKit.swiftmodule"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionKit.swiftmodule.o"]
+    description: "Wrapping AST for ExpressionKit for debugging"
+    args: ["/usr/share/swift/usr/bin/swiftc","-modulewrap","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKit.swiftmodule","-o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionKit.swiftmodule.o","-target","x86_64-unknown-linux-gnu"]
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/Expression.swift","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/ExpressionError.swift","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/ExpressionKit.swift","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/SimpleBackend.swift","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/Value.swift"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/sources"]
+    description: "Write auxiliary file /home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/sources"
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/ExpressionKitBridge.cpp.o":
+    tool: clang
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKitCore/ExpressionKitBridge.cpp"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/ExpressionKitBridge.cpp.o"]
+    description: "Compiling ExpressionKitCore ExpressionKitBridge.cpp"
+    args: ["/usr/share/swift/usr/bin/clang","-target","x86_64-unknown-linux-gnu","-O0","-DSWIFT_PACKAGE=1","-DDEBUG=1","-fblocks","-index-store-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/index/store","-I","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKitCore/include","-I/home/runner/work/ExpressionKit/ExpressionKit","-std=c++17","-fPIC","-g","-g","-fno-omit-frame-pointer","-MD","-MT","dependencies","-MF","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/ExpressionKitBridge.cpp.d","-c","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKitCore/ExpressionKitBridge.cpp","-o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/ExpressionKitBridge.cpp.o"]
+    deps: "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/ExpressionKitBridge.cpp.d"
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitPackageDiscoveredTests.swiftmodule.o":
+    tool: shell
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageDiscoveredTests.swiftmodule"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitPackageDiscoveredTests.swiftmodule.o"]
+    description: "Wrapping AST for ExpressionKitPackageDiscoveredTests for debugging"
+    args: ["/usr/share/swift/usr/bin/swiftc","-modulewrap","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageDiscoveredTests.swiftmodule","-o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitPackageDiscoveredTests.swiftmodule.o","-target","x86_64-unknown-linux-gnu"]
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.derived/ExpressionKitTests.swift","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.derived/all-discovered-tests.swift"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/sources"]
+    description: "Write auxiliary file /home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/sources"
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.derived/all-discovered-tests.swift":
+    tool: test-discovery-tool
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/ExpressionKitTests.swift.o"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.derived/ExpressionKitTests.swift","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.derived/all-discovered-tests.swift"]
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/ExpressionKitPackageTests.swiftmodule.o":
+    tool: shell
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageTests.swiftmodule"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/ExpressionKitPackageTests.swiftmodule.o"]
+    description: "Wrapping AST for ExpressionKitPackageTests for debugging"
+    args: ["/usr/share/swift/usr/bin/swiftc","-modulewrap","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageTests.swiftmodule","-o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/ExpressionKitPackageTests.swiftmodule.o","-target","x86_64-unknown-linux-gnu"]
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.derived/runner.swift"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/sources"]
+    description: "Write auxiliary file /home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/sources"
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.derived/runner.swift":
+    tool: test-entry-point-tool
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageDiscoveredTests.swiftmodule"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.derived/runner.swift"]
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.product/Objects.LinkFileList":
+    tool: write-auxiliary-file
+    inputs: ["<link-file-list>","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/Expression.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionError.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionKit.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionKit.swiftmodule.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/SimpleBackend.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/Value.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/ExpressionKitBridge.cpp.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitPackageDiscoveredTests.swiftmodule.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitTests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/all-discovered-tests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/ExpressionKitPackageTests.swiftmodule.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/runner.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/ExpressionKitTests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/ExpressionKitTests.swiftmodule.o"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.product/Objects.LinkFileList"]
+    description: "Write auxiliary file /home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.product/Objects.LinkFileList"
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/ExpressionKitTests.swiftmodule.o":
+    tool: shell
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitTests.swiftmodule"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/ExpressionKitTests.swiftmodule.o"]
+    description: "Wrapping AST for ExpressionKitTests for debugging"
+    args: ["/usr/share/swift/usr/bin/swiftc","-modulewrap","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitTests.swiftmodule","-o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/ExpressionKitTests.swiftmodule.o","-target","x86_64-unknown-linux-gnu"]
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/sources":
+    tool: write-auxiliary-file
+    inputs: ["<sources-file-list>","/home/runner/work/ExpressionKit/ExpressionKit/Tests/ExpressionKitTests/ExpressionKitTests.swift"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/sources"]
+    description: "Write auxiliary file /home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/sources"
+
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/swift-version--1BFCD5C06E9F820A.txt":
+    tool: write-auxiliary-file
+    inputs: ["<swift-get-version>","/usr/share/swift/usr/bin/swiftc"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/swift-version--1BFCD5C06E9F820A.txt"]
+    always-out-of-date: "true"
+    description: "Write auxiliary file /home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/swift-version--1BFCD5C06E9F820A.txt"
+
+  "<ExpressionKit-x86_64-unknown-linux-gnu-debug.module>":
+    tool: phony
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/Expression.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionError.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionKit.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/SimpleBackend.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/Value.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKit.swiftmodule"]
+    outputs: ["<ExpressionKit-x86_64-unknown-linux-gnu-debug.module>"]
+
+  "<ExpressionKitCore-x86_64-unknown-linux-gnu-debug.module>":
+    tool: phony
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/ExpressionKitBridge.cpp.o"]
+    outputs: ["<ExpressionKitCore-x86_64-unknown-linux-gnu-debug.module>"]
+
+  "<ExpressionKitPackageDiscoveredTests-x86_64-unknown-linux-gnu-debug.module>":
+    tool: phony
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitTests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/all-discovered-tests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageDiscoveredTests.swiftmodule"]
+    outputs: ["<ExpressionKitPackageDiscoveredTests-x86_64-unknown-linux-gnu-debug.module>"]
+
+  "<ExpressionKitPackageTests-x86_64-unknown-linux-gnu-debug.module>":
+    tool: phony
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/runner.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageTests.swiftmodule"]
+    outputs: ["<ExpressionKitPackageTests-x86_64-unknown-linux-gnu-debug.module>"]
+
+  "<ExpressionKitPackageTests-x86_64-unknown-linux-gnu-debug.test>":
+    tool: phony
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.xctest"]
+    outputs: ["<ExpressionKitPackageTests-x86_64-unknown-linux-gnu-debug.test>"]
+
+  "<ExpressionKitTests-x86_64-unknown-linux-gnu-debug.module>":
+    tool: phony
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/ExpressionKitTests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitTests.swiftmodule"]
+    outputs: ["<ExpressionKitTests-x86_64-unknown-linux-gnu-debug.module>"]
+
+  "C.ExpressionKit-x86_64-unknown-linux-gnu-debug.module":
+    tool: shell
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/Expression.swift","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/ExpressionError.swift","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/ExpressionKit.swift","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/SimpleBackend.swift","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/Value.swift","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/swift-version--1BFCD5C06E9F820A.txt","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/ExpressionKitBridge.cpp.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/sources"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/Expression.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionError.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionKit.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/SimpleBackend.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/Value.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKit.swiftmodule"]
+    description: "Compiling Swift Module 'ExpressionKit' (5 sources)"
+    args: ["/usr/share/swift/usr/bin/swiftc","-module-name","ExpressionKit","-emit-dependencies","-emit-module","-emit-module-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKit.swiftmodule","-output-file-map","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/output-file-map.json","-parse-as-library","-incremental","-c","@/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/sources","-I","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules","-target","x86_64-unknown-linux-gnu","-enable-batch-mode","-index-store-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/index/store","-Onone","-enable-testing","-j4","-DSWIFT_PACKAGE","-DDEBUG","-Xcc","-fmodule-map-file=/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/module.modulemap","-Xcc","-I","-Xcc","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKitCore/include","-module-cache-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ModuleCache","-parseable-output","-parse-as-library","-color-diagnostics","-swift-version","5","-g","-Xcc","-fPIC","-Xcc","-g","-Xcc","-fno-omit-frame-pointer"]
+
+  "C.ExpressionKitPackageDiscoveredTests-x86_64-unknown-linux-gnu-debug.module":
+    tool: shell
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.derived/ExpressionKitTests.swift","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.derived/all-discovered-tests.swift","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/swift-version--1BFCD5C06E9F820A.txt","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitTests.swiftmodule","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/sources"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitTests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/all-discovered-tests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageDiscoveredTests.swiftmodule"]
+    description: "Compiling Swift Module 'ExpressionKitPackageDiscoveredTests' (2 sources)"
+    args: ["/usr/share/swift/usr/bin/swiftc","-module-name","ExpressionKitPackageDiscoveredTests","-emit-dependencies","-emit-module","-emit-module-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageDiscoveredTests.swiftmodule","-output-file-map","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/output-file-map.json","-parse-as-library","-incremental","-c","@/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/sources","-I","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules","-target","x86_64-unknown-linux-gnu","-enable-batch-mode","-index-store-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/index/store","-Onone","-enable-testing","-Xfrontend","-enable-cross-import-overlays","-j4","-DSWIFT_PACKAGE","-DDEBUG","-Xcc","-fmodule-map-file=/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/module.modulemap","-Xcc","-I","-Xcc","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKitCore/include","-module-cache-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ModuleCache","-parseable-output","-parse-as-library","-color-diagnostics","-g","-Xcc","-fPIC","-Xcc","-g","-Xcc","-fno-omit-frame-pointer"]
+
+  "C.ExpressionKitPackageTests-x86_64-unknown-linux-gnu-debug.module":
+    tool: shell
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.derived/runner.swift","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/swift-version--1BFCD5C06E9F820A.txt","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitTests.swiftmodule","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageDiscoveredTests.swiftmodule","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/sources"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/runner.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageTests.swiftmodule"]
+    description: "Compiling Swift Module 'ExpressionKitPackageTests' (1 sources)"
+    args: ["/usr/share/swift/usr/bin/swiftc","-module-name","ExpressionKitPackageTests","-emit-dependencies","-emit-module","-emit-module-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitPackageTests.swiftmodule","-output-file-map","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/output-file-map.json","-parse-as-library","-incremental","-c","@/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/sources","-I","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules","-target","x86_64-unknown-linux-gnu","-enable-batch-mode","-index-store-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/index/store","-Onone","-enable-testing","-Xfrontend","-enable-cross-import-overlays","-j4","-DSWIFT_PACKAGE","-DDEBUG","-Xcc","-fmodule-map-file=/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/module.modulemap","-Xcc","-I","-Xcc","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKitCore/include","-module-cache-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ModuleCache","-parseable-output","-parse-as-library","-color-diagnostics","-g","-Xcc","-fPIC","-Xcc","-g","-Xcc","-fno-omit-frame-pointer"]
+
+  "C.ExpressionKitPackageTests-x86_64-unknown-linux-gnu-debug.test":
+    tool: shell
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/Expression.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionError.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionKit.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/ExpressionKit.swiftmodule.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/SimpleBackend.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKit.build/Value.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/ExpressionKitBridge.cpp.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitPackageDiscoveredTests.swiftmodule.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitTests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/all-discovered-tests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/ExpressionKitPackageTests.swiftmodule.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.build/runner.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/ExpressionKitTests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/ExpressionKitTests.swiftmodule.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.product/Objects.LinkFileList"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.xctest"]
+    description: "Linking ./.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.xctest"
+    args: ["/usr/share/swift/usr/bin/swiftc","-lstdc++","-L","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug","-o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.xctest","-module-name","ExpressionKitPackageTests","-emit-executable","-Xlinker","-rpath=$ORIGIN","@/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageTests.product/Objects.LinkFileList","-target","x86_64-unknown-linux-gnu","-g"]
+
+  "C.ExpressionKitTests-x86_64-unknown-linux-gnu-debug.module":
+    tool: shell
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/Tests/ExpressionKitTests/ExpressionKitTests.swift","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/swift-version--1BFCD5C06E9F820A.txt","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKit.swiftmodule","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/sources"]
+    outputs: ["/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/ExpressionKitTests.swift.o","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitTests.swiftmodule"]
+    description: "Compiling Swift Module 'ExpressionKitTests' (1 sources)"
+    args: ["/usr/share/swift/usr/bin/swiftc","-module-name","ExpressionKitTests","-emit-dependencies","-emit-module","-emit-module-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules/ExpressionKitTests.swiftmodule","-output-file-map","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/output-file-map.json","-parse-as-library","-incremental","-c","@/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitTests.build/sources","-I","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/Modules","-target","x86_64-unknown-linux-gnu","-enable-batch-mode","-index-store-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/index/store","-Onone","-enable-testing","-Xfrontend","-enable-cross-import-overlays","-j4","-DSWIFT_PACKAGE","-DDEBUG","-Xcc","-fmodule-map-file=/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitCore.build/module.modulemap","-Xcc","-I","-Xcc","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKitCore/include","-module-cache-path","/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ModuleCache","-parseable-output","-parse-as-library","-color-diagnostics","-swift-version","5","-g","-Xcc","-fPIC","-Xcc","-g","-Xcc","-fno-omit-frame-pointer"]
+
+  "PackageStructure":
+    tool: package-structure-tool
+    inputs: ["/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKit/","/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKitCore/","/home/runner/work/ExpressionKit/ExpressionKit/Tests/ExpressionKitTests/","/home/runner/work/ExpressionKit/ExpressionKit/Package.swift","/home/runner/work/ExpressionKit/ExpressionKit/Package.resolved"]
+    outputs: ["<PackageStructure>"]
+    description: "Planning build"
+    allow-missing-inputs: true
+

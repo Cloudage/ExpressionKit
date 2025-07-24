@@ -1,0 +1,17 @@
+{
+  "": {
+    "swift-dependencies": "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/master.swiftdeps"
+  },
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.derived/ExpressionKitTests.swift": {
+    "dependencies": "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitTests.d",
+    "object": "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitTests.swift.o",
+    "swiftmodule": "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitTests~partial.swiftmodule",
+    "swift-dependencies": "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/ExpressionKitTests.swiftdeps"
+  },
+  "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.derived/all-discovered-tests.swift": {
+    "dependencies": "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/all-discovered-tests.d",
+    "object": "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/all-discovered-tests.swift.o",
+    "swiftmodule": "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/all-discovered-tests~partial.swiftmodule",
+    "swift-dependencies": "/home/runner/work/ExpressionKit/ExpressionKit/.build/x86_64-unknown-linux-gnu/debug/ExpressionKitPackageDiscoveredTests.build/all-discovered-tests.swiftdeps"
+  }
+}
