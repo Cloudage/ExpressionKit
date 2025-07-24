@@ -1,5 +1,5 @@
 import Foundation
-import ExpressionKitCore
+import ExpressionKitBridge
 
 /// Swift typealias for the C ExprValue - eliminates duplication
 public typealias Value = ExprValue

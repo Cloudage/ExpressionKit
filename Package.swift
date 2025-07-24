@@ -24,20 +24,20 @@ let package = Package(
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
-            name: "ExpressionKitCore",
+            name: "ExpressionKitBridge",
             dependencies: [],
-            path: "CPP/Sources/ExpressionKitCore",
+            path: "Sources/ExpressionKitBridge",
             sources: ["ExpressionKitBridge.cpp"],
             publicHeadersPath: "include",
             cxxSettings: [
-                .headerSearchPath("../../../"),
+                .headerSearchPath("../../"),
                 .headerSearchPath("include"),
                 .unsafeFlags(["-std=c++17"])
             ]
         ),
         .target(
             name: "ExpressionKit",
-            dependencies: ["ExpressionKitCore"],
+            dependencies: ["ExpressionKitBridge"],
             path: "Swift/Sources/ExpressionKit"
         ),
         .testTarget(

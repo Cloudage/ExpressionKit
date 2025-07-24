@@ -1,5 +1,5 @@
 import Foundation
-import ExpressionKitCore
+import ExpressionKitBridge
 
 /// A compiled expression that can be evaluated multiple times efficiently
 /// This enables the "parse once, execute many times" pattern

@@ -342,6 +342,31 @@ public:
 3. **ASTNode** - Base class for abstract syntax tree nodes
 4. **Parser** - Recursive descent parser
 5. **ExprTK** - Main expression utility class
+6. **ExpressionKitBridge** - C bridge for Swift integration (located in `Sources/ExpressionKitBridge/`)
+
+### Swift Integration Architecture
+
+ExpressionKit provides seamless Swift integration through a layered architecture:
+
+1. **ExpressionKit.hpp** - Core C++ header-only library
+2. **ExpressionKitBridge** - C interface bridge that wraps the C++ code for Swift compatibility
+3. **ExpressionKit (Swift)** - Swift wrapper providing idiomatic Swift APIs
+
+```
+Swift Code
+    ↓
+ExpressionKit (Swift Package)
+    ↓
+ExpressionKitBridge (C Interface)
+    ↓
+ExpressionKit.hpp (C++ Core)
+```
+
+This design ensures:
+- **Clean separation**: Each layer has a clear responsibility
+- **Swift safety**: The bridge handles C++/Swift interop complexities
+- **Performance**: Minimal overhead between layers
+- **Maintainability**: Changes to C++ core don't affect Swift API
 
 ### IBackend Interface
 

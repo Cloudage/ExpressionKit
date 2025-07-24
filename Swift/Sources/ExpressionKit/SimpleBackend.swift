@@ -1,5 +1,5 @@
 import Foundation
-import ExpressionKitCore
+import ExpressionKitBridge
 
 /// Simple backend that just stores variables and handles basic math functions
 public final class SimpleBackend {
