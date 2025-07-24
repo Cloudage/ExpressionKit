@@ -62,6 +62,13 @@ public:
     }
     
     Value Call(const std::string& name, const std::vector<Value>& args) override {
+        // First try standard mathematical functions from C++
+        Value standardResult;
+        if (ExprTK::CallStandardFunctions(name, args, standardResult)) {
+            return standardResult;
+        }
+        
+        // If not a standard function, delegate to Swift backend
         // Convert C++ Value vector to C ExprValue array
         std::vector<ExprValue> cArgs;
         cArgs.reserve(args.size());
