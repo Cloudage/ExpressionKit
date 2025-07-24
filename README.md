@@ -554,6 +554,34 @@ Common error types:
 
 ## 📚 More Examples
 
+### Running Token Demo
+
+See comprehensive token functionality demonstrations:
+
+#### C++ Token Demo
+```bash
+# Compile and run the C++ token demo
+cd CPP
+g++ -std=c++17 -I.. -o token_demo token_demo.cpp
+./token_demo
+
+# Or with CMake
+mkdir build && cd build
+cmake .. && make
+./TokenDemo
+```
+
+#### Swift Token Demo
+```bash
+# Run the Swift example with token features
+cd Swift/Examples/SwiftExample
+swift run
+```
+
+See the `CPP/token_demo.cpp` and `Swift/Examples/SwiftExample/Sources/ExpressionKitExample/main.swift` files for complete working examples of token collection and analysis.
+
+### Additional Examples
+
 See the `test.cpp` file for additional usage examples and test cases.
 
 ## 🤝 Contributing

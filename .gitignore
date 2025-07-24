@@ -40,6 +40,8 @@ CPackSourceConfig.cmake
 ExprTKTest
 TestExprTK
 test_exprtk
+token_demo
+TokenDemo
 
 # IDE files
 .vscode/
