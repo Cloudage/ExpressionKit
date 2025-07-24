@@ -26,7 +26,7 @@ let package = Package(
         .target(
             name: "ExpressionKitBridge",
             dependencies: [],
-            path: "Sources/ExpressionKitBridge",
+            path: "CPP/ExpressionKitBridge",
             sources: ["ExpressionKitBridge.cpp"],
             publicHeadersPath: "include",
             cxxSettings: [
