@@ -1,6 +1,6 @@
 # ExpressionKit
 
-A lightweight, interface-driven C++ expression parsing and evaluation library
+A lightweight, interface-driven C++ expression parsing and evaluation library with Swift support
 
 ## 🚀 Key Features
 
@@ -10,6 +10,7 @@ A lightweight, interface-driven C++ expression parsing and evaluation library
 - **Complete operator support**: Full coverage of arithmetic, comparison, and logical operators
 - **Exception-based error handling**: Clear error messages and robust exception mechanism
 - **Zero dependencies**: Depends only on the C++ standard library
+- **Swift Support**: Clean Swift API with Swift Package Manager integration
 
 ## 🤖 AI-Generated Code Notice
 
@@ -17,13 +18,35 @@ A lightweight, interface-driven C++ expression parsing and evaluation library
 
 The code follows modern C++ best practices and provides a clean, interface-based expression evaluation system.
 
-## 📄 License
-
-This project is licensed under the MIT License – see the license notice in the file headers.
-
 ## 🛠️ Quick Start
 
-### Basic Usage
+### Swift (Recommended)
+
+Add ExpressionKit to your Swift project using Swift Package Manager:
+
+```swift
+// Package.swift
+dependencies: [
+    .package(url: "https://github.com/Cloudage/ExpressionKit.git", from: "1.0.0")
+]
+```
+
+```swift
+import ExpressionKit
+
+// Direct evaluation
+let result = try ExpressionKit.evaluate("2 + 3 * 4")  // 14.0
+
+// Parse once, execute many times (high performance)
+let expression = try ExpressionKit.parse("(a + b) * c - 1")
+for _ in 0..<10000 {
+    let result = try expression.evaluate()  // Very fast!
+}
+```
+
+**📖 For complete Swift documentation, see [SWIFT_USAGE.md](SWIFT_USAGE.md)**
+
+### C++ (Original)
 
 ```cpp
 #include "ExpressionKit.hpp"
@@ -154,7 +177,11 @@ public:
 };
 ```
 
-## 🔧 Supported Syntax
+## 📄 License
+
+This project is licensed under the MIT License – see the license notice in the file headers.
+
+## 🔧 Supported Syntax (Both C++ and Swift)
 
 ### Data Types
 - **Numbers**: `42`, `3.14`, `-2.5`
