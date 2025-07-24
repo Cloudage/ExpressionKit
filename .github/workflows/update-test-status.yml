@@ -18,11 +18,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y cmake build-essential
-        
-    - name: Setup Swift
-      uses: swift-actions/setup-swift@v2
-      with:
-        swift-version: '5.9'
     
     - name: Make scripts executable
       run: chmod +x scripts/*.sh

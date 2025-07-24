@@ -23,7 +23,7 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 | **C++ (Catch2)** | **PASSED** | 19 test cases | 147 assertions |
 | **Swift (XCTest)** | **PASSED** | 30 test cases | 0 failures |
 
-*Last updated: 2025-07-24 09:56:56 UTC*
+*Last updated: 2025-07-24 10:14:56 UTC*
 
 ### Test Coverage
 
