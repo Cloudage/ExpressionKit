@@ -22,7 +22,7 @@ public final class SimpleEnvironment {
     
     public func callFunction(name: String, arguments: [Value]) throws -> Value {
         // All standard mathematical functions (min, max, abs, sqrt, pow, sin, cos, tan, log, exp, floor, ceil, round)
-        // are automatically handled by the C++ bridge layer via ExprTK::CallStandardFunctions()
+        // are automatically handled by the C++ bridge layer via ExpressionKit::CallStandardFunctions()
         // Only custom/domain-specific functions need to be implemented here
         
         throw ExpressionError.environmentError("Unknown function: \(name)")

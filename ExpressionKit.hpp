@@ -61,7 +61,7 @@ namespace ExpressionKit {
 
     // Forward declarations for internal use
     class ASTNode;
-    class ExprTK;
+    class ExpressionKit;
     using ASTNodePtr = std::shared_ptr<ASTNode>;
 
     /**
@@ -172,7 +172,7 @@ namespace ExpressionKit {
      * optional variable writes, and function calls during expression evaluation.
      *
      * @note The integrating application is responsible for managing the environment's
-     *       lifetime. ExprTK stores only a raw pointer and does not take ownership.
+     *       lifetime. ExpressionKit stores only a raw pointer and does not take ownership.
      */
     class IEnvironment {
         protected: IEnvironment() = default;
@@ -206,7 +206,7 @@ namespace ExpressionKit {
      * as an AST node that can be evaluated against an environment.
      *
      * @note This is an internal implementation detail. Users typically work
-     *       with compiled expressions through the ExprTK interface.
+     *       with compiled expressions through the ExpressionKit interface.
      */
     class ASTNode {
     public:
@@ -770,7 +770,7 @@ namespace ExpressionKit {
     /**
      * @brief Main expression toolkit class for parsing and evaluating expressions
      *
-     * ExprTK provides a complete expression evaluation system with support for:
+     * ExpressionKit provides a complete expression evaluation system with support for:
      * - Arithmetic operations (+, -, *, /)
      * - Comparison operations (==, !=, <, >, <=, >=)
      * - Logical operations (&&, ||, !, xor)
@@ -779,7 +779,7 @@ namespace ExpressionKit {
      *
      * Usage examples:
      * @code
-     * ExprTK exprtk;
+     * ExpressionKit exprtk;
      *
      * // Simple evaluation without variables
      * auto result = exprtk.Eval("2 + 3 * 4"); // Returns 14.0
@@ -797,11 +797,11 @@ namespace ExpressionKit {
      * }
      * @endcode
      *
-     * @note The ExprTK instance does not own the Environment object. The caller is
+     * @note The ExpressionKit instance does not own the Environment object. The caller is
      *       responsible for ensuring the Environment remains valid during expression
      *       evaluation.
      */
-    class ExprTK {
+    class ExpressionKit {
     public:
         /**
          * @brief Evaluate an expression string directly

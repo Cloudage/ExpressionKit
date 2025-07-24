@@ -66,7 +66,7 @@ public:
     Value Call(const std::string& name, const std::vector<Value>& args) override {
         // First try standard mathematical functions from C++
         Value standardResult;
-        if (ExprTK::CallStandardFunctions(name, args, standardResult)) {
+        if (ExpressionKit::CallStandardFunctions(name, args, standardResult)) {
             return standardResult;
         }
         
@@ -142,7 +142,7 @@ ExprASTHandle expr_parse(const char* expression) {
     }
     
     try {
-        auto ast = ExprTK::Parse(expression);
+        auto ast = ExpressionKit::Parse(expression);
         return reinterpret_cast<ExprASTHandle>(new ASTWrapper(ast));
     } catch (const ExprException& e) {
         setError(ExprErrorParseError, e.what());
@@ -201,7 +201,7 @@ ExprValue expr_evaluate(const char* expression, ExprEnvironmentHandle environmen
             environmentPtr = environmentWrapper->environment.get();
         }
         
-        Value result = ExprTK::Eval(expression, environmentPtr);
+        Value result = ExpressionKit::Eval(expression, environmentPtr);
         return convertToCValue(result);
     } catch (const ExprException& e) {
         setError(ExprErrorRuntimeError, e.what());
@@ -385,7 +385,7 @@ ExprASTHandle expr_parse_with_tokens(const char* expression, ExprTokenArray* tok
     
     try {
         std::vector<Token> cppTokens;
-        auto ast = ExprTK::Parse(std::string(expression), tokens ? &cppTokens : nullptr);
+        auto ast = ExpressionKit::Parse(std::string(expression), tokens ? &cppTokens : nullptr);
         
         if (tokens) {
             populateTokenArray(cppTokens, tokens);
@@ -419,7 +419,7 @@ ExprValue expr_evaluate_with_tokens(const char* expression, ExprEnvironmentHandl
         std::vector<Token> cppTokens;
         CallbackEnvironment* cppEnvironment = static_cast<CallbackEnvironment*>(environment);
         
-        auto result = ExprTK::Eval(std::string(expression), cppEnvironment, tokens ? &cppTokens : nullptr);
+        auto result = ExpressionKit::Eval(std::string(expression), cppEnvironment, tokens ? &cppTokens : nullptr);
         
         if (tokens) {
             populateTokenArray(cppTokens, tokens);

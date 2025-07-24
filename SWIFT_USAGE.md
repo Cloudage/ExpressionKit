@@ -322,8 +322,8 @@ If you're migrating from the C++ version:
 
 | C++ | Swift |
 |-----|-------|
-| `ExprTK::Eval("2+3")` | `try ExpressionKit.evaluate("2+3")` |
-| `ExprTK::Parse("2+3")` | `try ExpressionKit.parse("2+3")` |
+| `ExpressionKit::Eval("2+3")` | `try ExpressionKit.evaluate("2+3")` |
+| `ExpressionKit::Parse("2+3")` | `try ExpressionKit.parse("2+3")` |
 | `ast->evaluate(environment)` | `try expression.evaluate()` |
 | `Value(42.0)` | `Value.number(42.0)` or `42.0` |
 | `Value(true)` | `Value.boolean(true)` or `true` |

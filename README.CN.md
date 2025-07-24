@@ -94,16 +94,16 @@ for _ in 0..<10000 {
 using namespace ExpressionKit;
 
 // 求解简单数学表达式
-auto result = ExprTK::Eval("2 + 3 * 4");  // 返回 14.0
+auto result = ExpressionKit::Eval("2 + 3 * 4");  // 返回 14.0
 std::cout << "结果: " << result.asNumber() << std::endl;
 
 // 布尔表达式
-auto boolResult = ExprTK::Eval("true && false");  // 返回 false
+auto boolResult = ExpressionKit::Eval("true && false");  // 返回 false
 std::cout << "布尔结果: " << boolResult.asBoolean() << std::endl;
 
 // 用于语法高亮的词法序列收集
 std::vector<Token> tokens;
-auto resultWithTokens = ExprTK::Eval("2 + 3 * max(4, 5)", nullptr, &tokens);
+auto resultWithTokens = ExpressionKit::Eval("2 + 3 * max(4, 5)", nullptr, &tokens);
 std::cout << "结果: " << resultWithTokens.asNumber() << std::endl;
 for (const auto& token : tokens) {
     std::cout << "词法单元: " << (int)token.type << " '" << token.text 
@@ -118,7 +118,7 @@ for (const auto& token : tokens) {
 | **安装** | Swift Package Manager | 复制单个 .hpp 文件 |
 | **依赖** | 无（由 SPM 处理） | 无（仅头文件） |
 | **集成** | `import ExpressionKit` | `#include "ExpressionKit.hpp"` |
-| **API** | `ExpressionKit.evaluate()` | `ExprTK::Eval()` |
+| **API** | `ExpressionKit.evaluate()` | `ExpressionKit::Eval()` |
 | **性能** | ✅ 完整性能 | ✅ 完整性能 |
 | **功能** | ✅ 所有核心功能 | ✅ 所有功能 + Environment |
 
@@ -155,7 +155,7 @@ using namespace ExpressionKit;
 
 // 在求值时收集词法单元
 std::vector<Token> tokens;
-auto result = ExprTK::Eval("max(x + 5, y * 2)", &environment, &tokens);
+auto result = ExpressionKit::Eval("max(x + 5, y * 2)", &environment, &tokens);
 
 // 处理词法单元用于语法高亮
 for (const auto& token : tokens) {
@@ -167,7 +167,7 @@ for (const auto& token : tokens) {
 
 // 另一种方式：解析时收集词法单元用于预编译
 std::vector<Token> parseTokens;
-auto ast = ExprTK::Parse("complex_expression", &parseTokens);
+auto ast = ExpressionKit::Parse("complex_expression", &parseTokens);
 // parseTokens 现在包含所有用于语法高亮的词法单元
 auto result = ast->evaluate(&environment);
 ```
@@ -291,7 +291,7 @@ public:
                              const std::vector<ExpressionKit::Value>& args) override {
         // 首先尝试标准数学函数
         ExpressionKit::Value result;
-        if (ExpressionKit::ExprTK::CallStandardFunctions(name, args, result)) {
+        if (ExpressionKit::ExpressionKit::CallStandardFunctions(name, args, result)) {
             return result;
         }
         
@@ -311,15 +311,15 @@ int main() {
     GameEnvironment environment;
     
     // 游戏逻辑表达式
-    auto healthPercent = ExprTK::Eval("health / maxHealth", &environment);
+    auto healthPercent = ExpressionKit::Eval("health / maxHealth", &environment);
     std::cout << "生命值百分比: " << healthPercent.asNumber() << std::endl;
     
     // 复杂条件检查
-    auto needHealing = ExprTK::Eval("health < maxHealth * 0.5 && isAlive", &environment);
+    auto needHealing = ExpressionKit::Eval("health < maxHealth * 0.5 && isAlive", &environment);
     std::cout << "需要治疗: " << (needHealing.asBoolean() ? "是" : "否") << std::endl;
     
     // 函数调用
-    auto playerPos = ExprTK::Eval("distance(pos.x, pos.y, 0, 0)", &environment);
+    auto playerPos = ExpressionKit::Eval("distance(pos.x, pos.y, 0, 0)", &environment);
     std::cout << "距离原点: " << playerPos.asNumber() << std::endl;
     
     return 0;
@@ -347,9 +347,9 @@ private:
 public:
     HighPerformanceExample() {
         // 启动时预编译所有表达式
-        healthCheckExpr = ExprTK::Parse("health > 0 && health <= maxHealth");
-        damageCalcExpr = ExprTK::Parse("max(0, damage - armor) * (1.0 + level * 0.1)");
-        levelUpExpr = ExprTK::Parse("exp >= level * 100");
+        healthCheckExpr = ExpressionKit::Parse("health > 0 && health <= maxHealth");
+        damageCalcExpr = ExpressionKit::Parse("max(0, damage - armor) * (1.0 + level * 0.1)");
+        levelUpExpr = ExpressionKit::Parse("exp >= level * 100");
     }
     
     // 游戏循环中的高效执行
@@ -429,7 +429,7 @@ public:
         ExpressionKit::Value result;
         
         // 首先尝试标准数学函数
-        if (ExpressionKit::ExprTK::CallStandardFunctions(name, args, result)) {
+        if (ExpressionKit::ExpressionKit::CallStandardFunctions(name, args, result)) {
             return result;
         }
         
@@ -449,7 +449,7 @@ public:
 2. **IEnvironment** - 变量和函数访问接口
 3. **ASTNode** - 抽象语法树节点基类
 4. **Parser** - 递归下降解析器
-5. **ExprTK** - 主要的表达式工具类
+5. **ExpressionKit** - 主要的表达式工具类
 6. **ExpressionKitBridge** - Swift 集成的 C 桥接（位于 `Sources/ExpressionKitBridge/`）
 
 ### Swift 集成架构
@@ -508,11 +508,11 @@ public:
    ```cpp
    // 慢：每次都解析
    for (int i = 0; i < 1000000; ++i) {
-       auto result = ExprTK::Eval("complex_expression", &environment);
+       auto result = ExpressionKit::Eval("complex_expression", &environment);
    }
    
    // 快：预解析并重用
-   auto ast = ExprTK::Parse("complex_expression");
+   auto ast = ExpressionKit::Parse("complex_expression");
    for (int i = 0; i < 1000000; ++i) {
        auto result = ast->evaluate(&environment);
    }
@@ -535,7 +535,7 @@ ExpressionKit 使用异常进行错误处理：
 
 ```cpp
 try {
-    auto result = ExprTK::Eval("invalid expression ++ --", &environment);
+    auto result = ExpressionKit::Eval("invalid expression ++ --", &environment);
 } catch (const ExpressionKit::ExprException& e) {
     std::cerr << "表达式错误: " << e.what() << std::endl;
 }
