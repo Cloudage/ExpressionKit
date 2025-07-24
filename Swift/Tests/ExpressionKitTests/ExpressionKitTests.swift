@@ -403,6 +403,111 @@ final class ExpressionKitTests: XCTestCase {
         expressions.removeAll()
     }
     
+    // MARK: - Standard Mathematical Functions Tests
+    
+    func testStandardMathematicalFunctions() throws {
+        // Test two-argument functions
+        let minResult = try ExpressionKit.evaluate("min(10, 5)")
+        XCTAssertEqual(minResult, .number(5.0))
+        
+        let maxResult = try ExpressionKit.evaluate("max(10, 5)")
+        XCTAssertEqual(maxResult, .number(10.0))
+        
+        let powResult = try ExpressionKit.evaluate("pow(2, 3)")
+        XCTAssertEqual(powResult, .number(8.0))
+        
+        // Test single-argument functions
+        let sqrtResult = try ExpressionKit.evaluate("sqrt(16)")
+        XCTAssertEqual(sqrtResult, .number(4.0))
+        
+        let absResultPositive = try ExpressionKit.evaluate("abs(5)")
+        XCTAssertEqual(absResultPositive, .number(5.0))
+        
+        let absResultNegative = try ExpressionKit.evaluate("abs(-5)")
+        XCTAssertEqual(absResultNegative, .number(5.0))
+        
+        let floorResult = try ExpressionKit.evaluate("floor(3.7)")
+        XCTAssertEqual(floorResult, .number(3.0))
+        
+        let ceilResult = try ExpressionKit.evaluate("ceil(3.2)")
+        XCTAssertEqual(ceilResult, .number(4.0))
+        
+        let roundResult = try ExpressionKit.evaluate("round(3.6)")
+        XCTAssertEqual(roundResult, .number(4.0))
+        
+        // Test trigonometric functions
+        let sinResult = try ExpressionKit.evaluate("sin(0)")
+        XCTAssertEqual(try sinResult.asNumber(), 0.0, accuracy: 0.000001)
+        
+        let cosResult = try ExpressionKit.evaluate("cos(0)")
+        XCTAssertEqual(try cosResult.asNumber(), 1.0, accuracy: 0.000001)
+        
+        let tanResult = try ExpressionKit.evaluate("tan(0)")
+        XCTAssertEqual(try tanResult.asNumber(), 0.0, accuracy: 0.000001)
+        
+        // Test logarithmic and exponential functions
+        let expResult = try ExpressionKit.evaluate("exp(0)")
+        XCTAssertEqual(try expResult.asNumber(), 1.0, accuracy: 0.000001)
+        
+        let logResult = try ExpressionKit.evaluate("log(1)")
+        XCTAssertEqual(try logResult.asNumber(), 0.0, accuracy: 0.000001)
+    }
+    
+    func testStandardFunctionCompoundExpressions() throws {
+        // Complex expressions with standard functions
+        let result1 = try ExpressionKit.evaluate("max(abs(-5), sqrt(16))")
+        XCTAssertEqual(result1, .number(5.0))
+        
+        let result2 = try ExpressionKit.evaluate("min(ceil(3.2), floor(5.8))")
+        XCTAssertEqual(result2, .number(4.0))
+        
+        let result3 = try ExpressionKit.evaluate("pow(sqrt(4), 3)")
+        XCTAssertEqual(result3, .number(8.0))
+        
+        // With arithmetic operations
+        let result4 = try ExpressionKit.evaluate("sqrt(25) + abs(-3)")
+        XCTAssertEqual(result4, .number(8.0))
+        
+        let result5 = try ExpressionKit.evaluate("max(10, 5) * min(2, 3)")
+        XCTAssertEqual(result5, .number(20.0))
+        
+        let result6 = try ExpressionKit.evaluate("pow(2, 3) - sqrt(9)")
+        XCTAssertEqual(result6, .number(5.0))
+    }
+    
+    func testStandardFunctionErrorHandling() {
+        // Test error cases for standard functions
+        XCTAssertThrowsError(try ExpressionKit.evaluate("sqrt(-1)")) { error in
+            XCTAssertTrue(error is ExpressionError, "Should throw ExpressionError for sqrt(-1)")
+        }
+        
+        XCTAssertThrowsError(try ExpressionKit.evaluate("log(0)")) { error in
+            XCTAssertTrue(error is ExpressionError, "Should throw ExpressionError for log(0)")
+        }
+        
+        XCTAssertThrowsError(try ExpressionKit.evaluate("log(-1)")) { error in
+            XCTAssertTrue(error is ExpressionError, "Should throw ExpressionError for log(-1)")
+        }
+    }
+    
+    func testStandardFunctionsWithParseOnceExecuteMany() throws {
+        // Test that standard functions work with parse once, execute many pattern
+        let expression = try ExpressionKit.parse("sqrt(16)")
+        
+        // Execute the same expression multiple times
+        for _ in 0..<100 {
+            let result = try expression.evaluate()
+            XCTAssertEqual(result, .number(4.0))
+        }
+        
+        // Test complex expression
+        let complexExpression = try ExpressionKit.parse("max(abs(-5), sqrt(pow(2, 4)))")
+        for _ in 0..<100 {
+            let result = try complexExpression.evaluate()
+            XCTAssertEqual(result, .number(5.0)) // max(5, sqrt(16)) = max(5, 4) = 5
+        }
+    }
+    
     // MARK: - Helper Methods
     
     private func measureTime<T>(_ operation: () throws -> T) rethrows -> TimeInterval {

@@ -1,5 +1,5 @@
 import Foundation
-import ExpressionKitCore
+import ExpressionKitBridge
 
 /// Swift wrapper for ExpressionKit library
 /// Provides a clean Swift API while maintaining the "parse once, execute many times" capability

@@ -61,6 +61,7 @@ namespace ExpressionKit {
 
     // Forward declarations for internal use
     class ASTNode;
+    class ExprTK;
     using ASTNodePtr = std::shared_ptr<ASTNode>;
 
     /**
@@ -234,6 +235,99 @@ namespace ExpressionKit {
     };
 
     /**
+     * @brief Call standard mathematical functions
+     * 
+     * This function handles built-in mathematical functions:
+     * - min(a, b): Returns the smaller of two numbers
+     * - max(a, b): Returns the larger of two numbers
+     * - sqrt(x): Returns the square root of x
+     * - sin(x): Returns the sine of x (in radians)
+     * - cos(x): Returns the cosine of x (in radians)
+     * - tan(x): Returns the tangent of x (in radians)
+     * - abs(x): Returns the absolute value of x
+     * - pow(x, y): Returns x raised to the power of y
+     * - log(x): Returns the natural logarithm of x
+     * - exp(x): Returns e raised to the power of x
+     * - floor(x): Returns the largest integer less than or equal to x
+     * - ceil(x): Returns the smallest integer greater than or equal to x
+     * - round(x): Returns x rounded to the nearest integer
+     */
+    bool CallStandardFunctions(const std::string& functionName,
+                              const std::vector<Value>& args,
+                              Value& outResult) {
+        try {
+            // Two-argument functions
+            if (functionName == "min" && args.size() == 2) {
+                if (!args[0].isNumber() || !args[1].isNumber()) return false;
+                outResult = Value(std::min(args[0].asNumber(), args[1].asNumber()));
+                return true;
+            }
+            if (functionName == "max" && args.size() == 2) {
+                if (!args[0].isNumber() || !args[1].isNumber()) return false;
+                outResult = Value(std::max(args[0].asNumber(), args[1].asNumber()));
+                return true;
+            }
+            if (functionName == "pow" && args.size() == 2) {
+                if (!args[0].isNumber() || !args[1].isNumber()) return false;
+                outResult = Value(std::pow(args[0].asNumber(), args[1].asNumber()));
+                return true;
+            }
+
+            // Single-argument functions
+            if (args.size() == 1 && args[0].isNumber()) {
+                double x = args[0].asNumber();
+
+                if (functionName == "sqrt") {
+                    if (x < 0) return false; // Domain error
+                    outResult = Value(std::sqrt(x));
+                    return true;
+                }
+                if (functionName == "sin") {
+                    outResult = Value(std::sin(x));
+                    return true;
+                }
+                if (functionName == "cos") {
+                    outResult = Value(std::cos(x));
+                    return true;
+                }
+                if (functionName == "tan") {
+                    outResult = Value(std::tan(x));
+                    return true;
+                }
+                if (functionName == "abs") {
+                    outResult = Value(std::abs(x));
+                    return true;
+                }
+                if (functionName == "log") {
+                    if (x <= 0) return false; // Domain error
+                    outResult = Value(std::log(x));
+                    return true;
+                }
+                if (functionName == "exp") {
+                    outResult = Value(std::exp(x));
+                    return true;
+                }
+                if (functionName == "floor") {
+                    outResult = Value(std::floor(x));
+                    return true;
+                }
+                if (functionName == "ceil") {
+                    outResult = Value(std::ceil(x));
+                    return true;
+                }
+                if (functionName == "round") {
+                    outResult = Value(std::round(x));
+                    return true;
+                }
+            }
+
+            return false; // Function not found or invalid arguments
+        } catch (...) {
+            return false; // Error occurred
+        }
+    }
+
+    /**
      * @brief Enumeration of all supported operators
      *
      * This enum defines all arithmetic, comparison, and logical operators
@@ -357,11 +451,19 @@ namespace ExpressionKit {
             : name(n), args(std::move(a)) {}
 
         Value evaluate(IBackend* backend) const override {
-            if (!backend) throw ExprException("函数调用需要 IBackend");
             std::vector<Value> evaluatedArgs;
             for (const auto& arg : args) {
                 evaluatedArgs.push_back(arg->evaluate(backend));
             }
+            
+            // First try standard mathematical functions (works without backend)
+            Value standardResult;
+            if (CallStandardFunctions(name, evaluatedArgs, standardResult)) {
+                return standardResult;
+            }
+            
+            // If not a standard function, require backend
+            if (!backend) throw ExprException("函数调用需要 IBackend");
             return backend->Call(name, evaluatedArgs);
         }
     };
@@ -677,94 +779,12 @@ namespace ExpressionKit {
          * @param outResult Reference to store the result
          * @return true if the function was found and executed successfully, false otherwise
          *
-         * Supported functions:
-         * - min(a, b): Returns the smaller of two numbers
-         * - max(a, b): Returns the larger of two numbers
-         * - sqrt(x): Returns the square root of x
-         * - sin(x): Returns the sine of x (in radians)
-         * - cos(x): Returns the cosine of x (in radians)
-         * - tan(x): Returns the tangent of x (in radians)
-         * - abs(x): Returns the absolute value of x
-         * - pow(x, y): Returns x raised to the power of y
-         * - log(x): Returns the natural logarithm of x
-         * - exp(x): Returns e raised to the power of x
-         * - floor(x): Returns the largest integer less than or equal to x
-         * - ceil(x): Returns the smallest integer greater than or equal to x
-         * - round(x): Returns x rounded to the nearest integer
+         * This function delegates to the standalone CallStandardFunctions for consistency.
          */
         static bool CallStandardFunctions(const std::string& functionName,
                                         const std::vector<Value>& args,
                                         Value& outResult) {
-            try {
-                // Two-argument functions
-                if (functionName == "min" && args.size() == 2) {
-                    if (!args[0].isNumber() || !args[1].isNumber()) return false;
-                    outResult = Value(std::min(args[0].asNumber(), args[1].asNumber()));
-                    return true;
-                }
-                if (functionName == "max" && args.size() == 2) {
-                    if (!args[0].isNumber() || !args[1].isNumber()) return false;
-                    outResult = Value(std::max(args[0].asNumber(), args[1].asNumber()));
-                    return true;
-                }
-                if (functionName == "pow" && args.size() == 2) {
-                    if (!args[0].isNumber() || !args[1].isNumber()) return false;
-                    outResult = Value(std::pow(args[0].asNumber(), args[1].asNumber()));
-                    return true;
-                }
-
-                // Single-argument functions
-                if (args.size() == 1 && args[0].isNumber()) {
-                    double x = args[0].asNumber();
-
-                    if (functionName == "sqrt") {
-                        if (x < 0) return false; // Domain error
-                        outResult = Value(std::sqrt(x));
-                        return true;
-                    }
-                    if (functionName == "sin") {
-                        outResult = Value(std::sin(x));
-                        return true;
-                    }
-                    if (functionName == "cos") {
-                        outResult = Value(std::cos(x));
-                        return true;
-                    }
-                    if (functionName == "tan") {
-                        outResult = Value(std::tan(x));
-                        return true;
-                    }
-                    if (functionName == "abs") {
-                        outResult = Value(std::abs(x));
-                        return true;
-                    }
-                    if (functionName == "log") {
-                        if (x <= 0) return false; // Domain error
-                        outResult = Value(std::log(x));
-                        return true;
-                    }
-                    if (functionName == "exp") {
-                        outResult = Value(std::exp(x));
-                        return true;
-                    }
-                    if (functionName == "floor") {
-                        outResult = Value(std::floor(x));
-                        return true;
-                    }
-                    if (functionName == "ceil") {
-                        outResult = Value(std::ceil(x));
-                        return true;
-                    }
-                    if (functionName == "round") {
-                        outResult = Value(std::round(x));
-                        return true;
-                    }
-                }
-
-                return false; // Function not found or invalid arguments
-            } catch (...) {
-                return false; // Error occurred
-            }
+            return ExpressionKit::CallStandardFunctions(functionName, args, outResult);
         }
     };
 
