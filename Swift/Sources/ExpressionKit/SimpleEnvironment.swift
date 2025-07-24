@@ -1,8 +1,8 @@
 import Foundation
 import ExpressionKitBridge
 
-/// Simple backend that just stores variables and handles basic math functions
-public final class SimpleBackend {
+/// Simple environment that just stores variables and handles basic math functions
+public final class SimpleEnvironment {
     private var variables: [String: Value] = [:]
     
     public init(variables: [String: Value] = [:]) {
@@ -15,7 +15,7 @@ public final class SimpleBackend {
     
     public func getValue(for name: String) throws -> Value {
         guard let value = variables[name] else {
-            throw ExpressionError.backendError("Variable not found: \(name)")
+            throw ExpressionError.environmentError("Variable not found: \(name)")
         }
         return value
     }
@@ -25,6 +25,6 @@ public final class SimpleBackend {
         // are automatically handled by the C++ bridge layer via ExprTK::CallStandardFunctions()
         // Only custom/domain-specific functions need to be implemented here
         
-        throw ExpressionError.backendError("Unknown function: \(name)")
+        throw ExpressionError.environmentError("Unknown function: \(name)")
     }
 }

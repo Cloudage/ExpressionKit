@@ -35,7 +35,7 @@
  * ExpressionKit provides a clean and extensible way to parse and evaluate mathematical
  * and logical expressions. Key features include:
  *
- * - Interface-based variable and function access through Backend abstraction
+ * - Interface-based variable and function access through Environment abstraction
  * - Pre-parsed AST support for efficient repeated evaluation
  * - Support for numbers, booleans, variables, and function calls
  * - Comprehensive operator support (arithmetic, comparison, logical)
@@ -165,20 +165,20 @@ namespace ExpressionKit {
     };
 
     /**
-     * @brief Backend interface for variable access and function calls
+     * @brief Environment interface for variable access and function calls
      *
      * Implement this interface to provide custom variable storage and function
-     * implementations. The backend is responsible for handling variable reads,
+     * implementations. The environment is responsible for handling variable reads,
      * optional variable writes, and function calls during expression evaluation.
      *
-     * @note The integrating application is responsible for managing the backend's
+     * @note The integrating application is responsible for managing the environment's
      *       lifetime. ExprTK stores only a raw pointer and does not take ownership.
      */
-    class IBackend {
-        protected: IBackend() = default;
+    class IEnvironment {
+        protected: IEnvironment() = default;
 
     public:
-        virtual ~IBackend() = default;
+        virtual ~IEnvironment() = default;
 
         /**
          * @brief Get a variable value by name
@@ -203,7 +203,7 @@ namespace ExpressionKit {
      *
      * This is the foundation of the expression evaluation system. Every element
      * in an expression (numbers, variables, operators, functions) is represented
-     * as an AST node that can be evaluated against a backend.
+     * as an AST node that can be evaluated against an environment.
      *
      * @note This is an internal implementation detail. Users typically work
      *       with compiled expressions through the ExprTK interface.
@@ -214,11 +214,11 @@ namespace ExpressionKit {
 
         /**
          * @brief Evaluate this node and return its value
-         * @param backend Backend for variable and function resolution (can be null for constants)
+         * @param environment Environment for variable and function resolution (can be null for constants)
          * @return The computed value of this node
          * @throws ExprException If evaluation fails
          */
-        virtual Value evaluate(IBackend* backend) const = 0;
+        virtual Value evaluate(IEnvironment* environment) const = 0;
     };
 
     /**
@@ -231,7 +231,7 @@ namespace ExpressionKit {
         double value;
     public:
         explicit NumberNode(const double v) : value(v) {}
-        Value evaluate(IBackend*) const override {
+        Value evaluate(IEnvironment*) const override {
             return Value(value);
         }
     };
@@ -246,7 +246,7 @@ namespace ExpressionKit {
         bool value;
     public:
         explicit BooleanNode(const bool v) : value(v) {}
-        Value evaluate(IBackend*) const override {
+        Value evaluate(IEnvironment*) const override {
             return Value(value);
         }
     };
@@ -254,7 +254,7 @@ namespace ExpressionKit {
     /**
      * @brief AST node representing a variable reference
      *
-     * This node stores a variable name and delegates to the IBackend during
+     * This node stores a variable name and delegates to the IEnvironment during
      * evaluation to resolve the variable's current value.
      * Examples: x, pos.x, player_health
      */
@@ -262,9 +262,9 @@ namespace ExpressionKit {
         std::string name;
     public:
         explicit VariableNode(const std::string& n) : name(n) {}
-        Value evaluate(IBackend* backend) const override {
-            if (!backend) throw ExprException("变量访问需要 IBackend");
-            return backend->Get(name);
+        Value evaluate(IEnvironment* environment) const override {
+            if (!environment) throw ExprException("变量访问需要 IEnvironment");
+            return environment->Get(name);
         }
     };
 
@@ -393,11 +393,11 @@ namespace ExpressionKit {
         BinaryOpNode(ASTNodePtr l, const OperatorType o, ASTNodePtr r)
             : left(std::move(l)), right(std::move(r)), op(o) {}
 
-        Value evaluate(IBackend* backend) const override {
-            const Value lhs = left->evaluate(backend);
+        Value evaluate(IEnvironment* environment) const override {
+            const Value lhs = left->evaluate(environment);
 
             // 数值运算
-            if (const Value rhs = right->evaluate(backend); lhs.isNumber() && rhs.isNumber()) {
+            if (const Value rhs = right->evaluate(environment); lhs.isNumber() && rhs.isNumber()) {
                 const double a = lhs.asNumber();
                 const double b = rhs.asNumber();
                 switch (op) {
@@ -452,8 +452,8 @@ namespace ExpressionKit {
         UnaryOpNode(const OperatorType o, ASTNodePtr operand)
             : operand(std::move(operand)), op(o) {}
 
-        Value evaluate(IBackend* backend) const override {
-            const Value val = operand->evaluate(backend);
+        Value evaluate(IEnvironment* environment) const override {
+            const Value val = operand->evaluate(environment);
 
             switch (op) {
                 case OperatorType::NOT:
@@ -473,7 +473,7 @@ namespace ExpressionKit {
      *
      * This node stores a function name and a list of argument expressions.
      * During evaluation, it evaluates all arguments and delegates to the
-     * IBackend to perform the actual function Call.
+     * IEnvironment to perform the actual function Call.
      *
      * Examples: max(a, b), sqrt(x), distance(x1, y1, x2, y2)
      */
@@ -484,21 +484,21 @@ namespace ExpressionKit {
         FunctionCallNode(const std::string& n, std::vector<ASTNodePtr> a)
             : name(n), args(std::move(a)) {}
 
-        Value evaluate(IBackend* backend) const override {
+        Value evaluate(IEnvironment* environment) const override {
             std::vector<Value> evaluatedArgs;
             for (const auto& arg : args) {
-                evaluatedArgs.push_back(arg->evaluate(backend));
+                evaluatedArgs.push_back(arg->evaluate(environment));
             }
             
-            // First try standard mathematical functions (works without backend)
+            // First try standard mathematical functions (works without environment)
             Value standardResult;
             if (CallStandardFunctions(name, evaluatedArgs, standardResult)) {
                 return standardResult;
             }
             
-            // If not a standard function, require backend
-            if (!backend) throw ExprException("函数调用需要 IBackend");
-            return backend->Call(name, evaluatedArgs);
+            // If not a standard function, require environment
+            if (!environment) throw ExprException("函数调用需要 IEnvironment");
+            return environment->Call(name, evaluatedArgs);
         }
     };
 
@@ -774,7 +774,7 @@ namespace ExpressionKit {
      * - Arithmetic operations (+, -, *, /)
      * - Comparison operations (==, !=, <, >, <=, >=)
      * - Logical operations (&&, ||, !, xor)
-     * - Variables and functions via Backend interface
+     * - Variables and functions via Environment interface
      * - Expression compilation and caching for better performance
      *
      * Usage examples:
@@ -784,9 +784,9 @@ namespace ExpressionKit {
      * // Simple evaluation without variables
      * auto result = exprtk.Eval("2 + 3 * 4"); // Returns 14.0
      *
-     * // With backend for variables and functions
-     * MyBackend backend;
-     * exprtk.SetBackend(&backend);
+     * // With environment for variables and functions
+     * MyEnvironment environment;
+     * exprtk.SetEnvironment(&environment);
      * auto result2 = exprtk.Eval("x + sqrt(y)");
      *
      * // Compile once, execute multiple times
@@ -797,8 +797,8 @@ namespace ExpressionKit {
      * }
      * @endcode
      *
-     * @note The ExprTK instance does not own the Backend object. The caller is
-     *       responsible for ensuring the Backend remains valid during expression
+     * @note The ExprTK instance does not own the Environment object. The caller is
+     *       responsible for ensuring the Environment remains valid during expression
      *       evaluation.
      */
     class ExprTK {
@@ -806,7 +806,7 @@ namespace ExpressionKit {
         /**
          * @brief Evaluate an expression string directly
          * @param expression The expression string to evaluate
-         * @param backend Optional backend for variable and function resolution
+         * @param environment Optional environment for variable and function resolution
          * @return The evaluation result
          * @throws ExprException If parsing fails or evaluation encounters an error
          *
@@ -824,14 +824,14 @@ namespace ExpressionKit {
          * - Variables: x, pos.x, player_health
          * - Functions: max(a, b), sqrt(x)
          */
-        static Value Eval(const std::string& expression, IBackend* backend = nullptr) {
-            return Parse(expression)->evaluate(backend);
+        static Value Eval(const std::string& expression, IEnvironment* environment = nullptr) {
+            return Parse(expression)->evaluate(environment);
         }
 
         /**
          * @brief Evaluate an expression string directly with token collection
          * @param expression The expression string to evaluate
-         * @param backend Optional backend for variable and function resolution
+         * @param environment Optional environment for variable and function resolution
          * @param tokens Optional vector to collect tokens for syntax highlighting
          * @return The evaluation result
          * @throws ExprException If parsing fails or evaluation encounters an error
@@ -839,8 +839,8 @@ namespace ExpressionKit {
          * This method parses and evaluates the expression while optionally collecting
          * tokens that can be used for syntax highlighting or other analysis.
          */
-        static Value Eval(const std::string& expression, IBackend* backend, std::vector<Token>* tokens) {
-            return Parse(expression, tokens)->evaluate(backend);
+        static Value Eval(const std::string& expression, IEnvironment* environment, std::vector<Token>* tokens) {
+            return Parse(expression, tokens)->evaluate(environment);
         }
 
         /**

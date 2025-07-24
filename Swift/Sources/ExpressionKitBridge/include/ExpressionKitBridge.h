@@ -18,7 +18,7 @@ extern "C" {
 
 // Opaque handles for C++ objects
 typedef void* ExprASTHandle;
-typedef void* ExprBackendHandle;
+typedef void* ExprEnvironmentHandle;
 
 // Value type for expression results - matches C++ Value exactly  
 typedef enum {
@@ -40,19 +40,19 @@ typedef enum {
     ExprErrorParseError = 1,
     ExprErrorRuntimeError = 2,
     ExprErrorTypeError = 3,
-    ExprErrorBackendError = 4
+    ExprErrorEnvironmentError = 4
 } ExprErrorCode;
 
-// Backend callback function types
+// Environment callback function types
 typedef ExprValue (*ExprGetVariableCallback)(const char* name, void* context, ExprErrorCode* error);
 typedef ExprValue (*ExprCallFunctionCallback)(const char* name, const ExprValue* args, size_t argCount, void* context, ExprErrorCode* error);
 
-// Backend configuration
+// Environment configuration
 typedef struct {
     ExprGetVariableCallback getVariable;
     ExprCallFunctionCallback callFunction;
     void* context;
-} ExprBackendConfig;
+} ExprEnvironmentConfig;
 
 // Token types for syntax highlighting
 typedef enum {
@@ -89,18 +89,18 @@ ExprASTHandle expr_parse(const char* expression);
 // Parse expression into AST with token collection
 ExprASTHandle expr_parse_with_tokens(const char* expression, ExprTokenArray* tokens);
 
-// Evaluate AST with optional backend (returns invalid value on error, check expr_get_last_error)
-ExprValue expr_evaluate_ast(ExprASTHandle ast, ExprBackendHandle backend);
+// Evaluate AST with optional environment (returns invalid value on error, check expr_get_last_error)
+ExprValue expr_evaluate_ast(ExprASTHandle ast, ExprEnvironmentHandle environment);
 
 // Direct evaluation (combines parse + evaluate)
-ExprValue expr_evaluate(const char* expression, ExprBackendHandle backend);
+ExprValue expr_evaluate(const char* expression, ExprEnvironmentHandle environment);
 
 // Direct evaluation with token collection
-ExprValue expr_evaluate_with_tokens(const char* expression, ExprBackendHandle backend, ExprTokenArray* tokens);
+ExprValue expr_evaluate_with_tokens(const char* expression, ExprEnvironmentHandle environment, ExprTokenArray* tokens);
 
-// Backend management
-ExprBackendHandle expr_backend_create(const ExprBackendConfig* config);
-void expr_backend_destroy(ExprBackendHandle backend);
+// Environment management
+ExprEnvironmentHandle expr_environment_create(const ExprEnvironmentConfig* config);
+void expr_environment_destroy(ExprEnvironmentHandle environment);
 
 // AST memory management
 void expr_ast_retain(ExprASTHandle ast);
