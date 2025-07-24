@@ -22,7 +22,7 @@ add_executable(ExprTKTest test.cpp)
 target_link_libraries(ExprTKTest PRIVATE Catch2::Catch2WithMain)
 
 # 包含头文件目录
-target_include_directories(ExprTKTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(ExprTKTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 # 注册测试
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
