@@ -8,6 +8,12 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 DartConfiguration.tcl
+ExprTKTest_include-*.cmake
+ExprTKTest_tests-*.cmake
+
+# Swift Package Manager build artifacts
+.build/
+.swiftpm/
 
 # Build artifacts
 *.o
