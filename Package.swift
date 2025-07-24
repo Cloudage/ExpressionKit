@@ -26,11 +26,11 @@ let package = Package(
         .target(
             name: "ExpressionKitBridge",
             dependencies: [],
-            path: "CPP/ExpressionKitBridge",
+            path: "Swift/Sources/ExpressionKitBridge",
             sources: ["ExpressionKitBridge.cpp"],
             publicHeadersPath: "include",
             cxxSettings: [
-                .headerSearchPath("../../"),
+                .headerSearchPath("../../../"),
                 .headerSearchPath("include"),
                 .unsafeFlags(["-std=c++17"])
             ]

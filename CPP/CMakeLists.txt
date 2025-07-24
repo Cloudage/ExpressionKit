@@ -1,12 +1,26 @@
 cmake_minimum_required(VERSION 3.14)
-project(ExprTKProject)
+
+# Don't declare a project if we're being included from parent
+if(CMAKE_PROJECT_NAME STREQUAL "")
+    project(ExpressionKitTests)
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 
-# 启用测试
+# Use the parent ExpressionKit target if available, otherwise include header manually
+if(TARGET ExpressionKit)
+    set(EXPRESSIONKIT_TARGET ExpressionKit)
+else()
+    # Create a simple interface target for the header
+    add_library(ExpressionKitHeader INTERFACE)
+    target_include_directories(ExpressionKitHeader INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/..)
+    set(EXPRESSIONKIT_TARGET ExpressionKitHeader)
+endif()
+
+# Enable testing
 enable_testing()
 
-# 添加 Catch2
+# Add Catch2
 include(FetchContent)
 FetchContent_Declare(
         Catch2
@@ -15,18 +29,15 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
-# 添加测试可执行文件
-add_executable(ExprTKTest test.cpp)
+# Add test executable
+add_executable(ExpressionKitTest test.cpp)
 
-# 链接 Catch2
-target_link_libraries(ExprTKTest PRIVATE Catch2::Catch2WithMain)
+# Link ExpressionKit and Catch2
+target_link_libraries(ExpressionKitTest PRIVATE ${EXPRESSIONKIT_TARGET} Catch2::Catch2WithMain)
 
-# 包含头文件目录
-target_include_directories(ExprTKTest PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/..)
-
-# 注册测试
+# Register tests
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)
-catch_discover_tests(ExprTKTest)
+catch_discover_tests(ExpressionKitTest)
 
