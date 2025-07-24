@@ -5,7 +5,7 @@ public enum ExpressionError: Error, LocalizedError {
     case parseFailed(String)
     case evaluationFailed(String)
     case typeMismatch(String)
-    case backendError(String)
+    case environmentError(String)
     case unknownError(String)
     
     public var errorDescription: String? {
@@ -16,8 +16,8 @@ public enum ExpressionError: Error, LocalizedError {
             return "Evaluation failed: \(message)"
         case .typeMismatch(let message):
             return "Type mismatch: \(message)"
-        case .backendError(let message):
-            return "Backend error: \(message)"
+        case .environmentError(let message):
+            return "Environment error: \(message)"
         case .unknownError(let message):
             return "Unknown error: \(message)"
         }

@@ -16,7 +16,7 @@ public final class Expression {
         expr_ast_release(handle)
     }
     
-    /// Evaluate this expression (without backend for now)
+    /// Evaluate this expression (without environment for now)
     /// - Returns: The evaluation result
     /// - Throws: ExpressionError if evaluation fails
     public func evaluate() throws -> Value {

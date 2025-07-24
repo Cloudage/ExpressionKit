@@ -4,7 +4,7 @@
 
 ## 🚀 核心特性
 
-- **基于接口的变量读写**：通过 IBackend 接口灵活访问变量和函数
+- **基于接口的变量读写**：通过 IEnvironment 接口灵活访问变量和函数
 - **预解析 AST 执行**：支持表达式预编译，实现高效重复执行
 - **词法序列分析**：可选的词法单元收集，用于语法高亮和高级功能
 - **类型安全**：强类型的 Value 系统，支持数值和布尔类型
@@ -94,16 +94,16 @@ for _ in 0..<10000 {
 using namespace ExpressionKit;
 
 // 求解简单数学表达式
-auto result = ExprTK::Eval("2 + 3 * 4");  // 返回 14.0
+auto result = ExpressionKit::Eval("2 + 3 * 4");  // 返回 14.0
 std::cout << "结果: " << result.asNumber() << std::endl;
 
 // 布尔表达式
-auto boolResult = ExprTK::Eval("true && false");  // 返回 false
+auto boolResult = ExpressionKit::Eval("true && false");  // 返回 false
 std::cout << "布尔结果: " << boolResult.asBoolean() << std::endl;
 
 // 用于语法高亮的词法序列收集
 std::vector<Token> tokens;
-auto resultWithTokens = ExprTK::Eval("2 + 3 * max(4, 5)", nullptr, &tokens);
+auto resultWithTokens = ExpressionKit::Eval("2 + 3 * max(4, 5)", nullptr, &tokens);
 std::cout << "结果: " << resultWithTokens.asNumber() << std::endl;
 for (const auto& token : tokens) {
     std::cout << "词法单元: " << (int)token.type << " '" << token.text 
@@ -118,9 +118,9 @@ for (const auto& token : tokens) {
 | **安装** | Swift Package Manager | 复制单个 .hpp 文件 |
 | **依赖** | 无（由 SPM 处理） | 无（仅头文件） |
 | **集成** | `import ExpressionKit` | `#include "ExpressionKit.hpp"` |
-| **API** | `ExpressionKit.evaluate()` | `ExprTK::Eval()` |
+| **API** | `ExpressionKit.evaluate()` | `ExpressionKit::Eval()` |
 | **性能** | ✅ 完整性能 | ✅ 完整性能 |
-| **功能** | ✅ 所有核心功能 | ✅ 所有功能 + Backend |
+| **功能** | ✅ 所有核心功能 | ✅ 所有功能 + Environment |
 
 ### 我应该使用哪个版本？
 
@@ -155,7 +155,7 @@ using namespace ExpressionKit;
 
 // 在求值时收集词法单元
 std::vector<Token> tokens;
-auto result = ExprTK::Eval("max(x + 5, y * 2)", &backend, &tokens);
+auto result = ExpressionKit::Eval("max(x + 5, y * 2)", &environment, &tokens);
 
 // 处理词法单元用于语法高亮
 for (const auto& token : tokens) {
@@ -167,9 +167,9 @@ for (const auto& token : tokens) {
 
 // 另一种方式：解析时收集词法单元用于预编译
 std::vector<Token> parseTokens;
-auto ast = ExprTK::Parse("complex_expression", &parseTokens);
+auto ast = ExpressionKit::Parse("complex_expression", &parseTokens);
 // parseTokens 现在包含所有用于语法高亮的词法单元
-auto result = ast->evaluate(&backend);
+auto result = ast->evaluate(&environment);
 ```
 
 ### Swift 词法收集
@@ -256,18 +256,18 @@ do {
 }
 ```
 
-### 使用 IBackend 进行变量访问（C++）
+### 使用 IEnvironment 进行变量访问（C++）
 
 ```cpp
 #include "ExpressionKit.hpp"
 #include <unordered_map>
 
-class GameBackend : public ExpressionKit::IBackend {
+class GameEnvironment : public ExpressionKit::IEnvironment {
 private:
     std::unordered_map<std::string, ExpressionKit::Value> variables;
     
 public:
-    GameBackend() {
+    GameEnvironment() {
         // 初始化游戏状态
         variables["health"] = 100.0;
         variables["maxHealth"] = 100.0;
@@ -291,7 +291,7 @@ public:
                              const std::vector<ExpressionKit::Value>& args) override {
         // 首先尝试标准数学函数
         ExpressionKit::Value result;
-        if (ExpressionKit::ExprTK::CallStandardFunctions(name, args, result)) {
+        if (ExpressionKit::ExpressionKit::CallStandardFunctions(name, args, result)) {
             return result;
         }
         
@@ -308,18 +308,18 @@ public:
 
 // 使用示例
 int main() {
-    GameBackend backend;
+    GameEnvironment environment;
     
     // 游戏逻辑表达式
-    auto healthPercent = ExprTK::Eval("health / maxHealth", &backend);
+    auto healthPercent = ExpressionKit::Eval("health / maxHealth", &environment);
     std::cout << "生命值百分比: " << healthPercent.asNumber() << std::endl;
     
     // 复杂条件检查
-    auto needHealing = ExprTK::Eval("health < maxHealth * 0.5 && isAlive", &backend);
+    auto needHealing = ExpressionKit::Eval("health < maxHealth * 0.5 && isAlive", &environment);
     std::cout << "需要治疗: " << (needHealing.asBoolean() ? "是" : "否") << std::endl;
     
     // 函数调用
-    auto playerPos = ExprTK::Eval("distance(pos.x, pos.y, 0, 0)", &backend);
+    auto playerPos = ExpressionKit::Eval("distance(pos.x, pos.y, 0, 0)", &environment);
     std::cout << "距离原点: " << playerPos.asNumber() << std::endl;
     
     return 0;
@@ -338,7 +338,7 @@ ExpressionKit 的一个关键特性是支持**预解析 AST**，允许你：
 
 class HighPerformanceExample {
 private:
-    GameBackend backend;
+    GameEnvironment environment;
     // 预编译的表达式 AST
     std::shared_ptr<ExpressionKit::ASTNode> healthCheckExpr;
     std::shared_ptr<ExpressionKit::ASTNode> damageCalcExpr;
@@ -347,23 +347,23 @@ private:
 public:
     HighPerformanceExample() {
         // 启动时预编译所有表达式
-        healthCheckExpr = ExprTK::Parse("health > 0 && health <= maxHealth");
-        damageCalcExpr = ExprTK::Parse("max(0, damage - armor) * (1.0 + level * 0.1)");
-        levelUpExpr = ExprTK::Parse("exp >= level * 100");
+        healthCheckExpr = ExpressionKit::Parse("health > 0 && health <= maxHealth");
+        damageCalcExpr = ExpressionKit::Parse("max(0, damage - armor) * (1.0 + level * 0.1)");
+        levelUpExpr = ExpressionKit::Parse("exp >= level * 100");
     }
     
     // 游戏循环中的高效执行
     void gameLoop() {
         for (int frame = 0; frame < 10000; ++frame) {
             // 每帧执行而无需重新解析
-            bool playerAlive = healthCheckExpr->evaluate(&backend).asBoolean();
+            bool playerAlive = healthCheckExpr->evaluate(&environment).asBoolean();
             
             if (playerAlive) {
                 // 计算伤害（假设已设置 damage 和 armor）
-                double finalDamage = damageCalcExpr->evaluate(&backend).asNumber();
+                double finalDamage = damageCalcExpr->evaluate(&environment).asNumber();
                 
                 // 检查升级
-                bool canLevelUp = levelUpExpr->evaluate(&backend).asBoolean();
+                bool canLevelUp = levelUpExpr->evaluate(&environment).asBoolean();
                 
                 // 游戏逻辑...
             }
@@ -419,17 +419,17 @@ ExpressionKit 通过 `CallStandardFunctions` 方法提供了一套完整的标�
 | `ceil(x)` | 返回不小于 x 的最小整数 | `ceil(3.2)` → `4` |
 | `round(x)` | 返回 x 四舍五入到最近的整数 | `round(3.6)` → `4` |
 
-这些函数可以在 IBackend 实现中使用，以提供数学计算能力：
+这些函数可以在 IEnvironment 实现中使用，以提供数学计算能力：
 
 ```cpp
-class MathBackend : public ExpressionKit::IBackend {
+class MathEnvironment : public ExpressionKit::IEnvironment {
 public:
     ExpressionKit::Value Call(const std::string& name, 
                              const std::vector<ExpressionKit::Value>& args) override {
         ExpressionKit::Value result;
         
         // 首先尝试标准数学函数
-        if (ExpressionKit::ExprTK::CallStandardFunctions(name, args, result)) {
+        if (ExpressionKit::ExpressionKit::CallStandardFunctions(name, args, result)) {
             return result;
         }
         
@@ -446,10 +446,10 @@ public:
 ### 核心组件
 
 1. **Value** - 统一的值类型，支持数字和布尔值
-2. **IBackend** - 变量和函数访问接口
+2. **IEnvironment** - 变量和函数访问接口
 3. **ASTNode** - 抽象语法树节点基类
 4. **Parser** - 递归下降解析器
-5. **ExprTK** - 主要的表达式工具类
+5. **ExpressionKit** - 主要的表达式工具类
 6. **ExpressionKitBridge** - Swift 集成的 C 桥接（位于 `Sources/ExpressionKitBridge/`）
 
 ### Swift 集成架构
@@ -476,14 +476,14 @@ ExpressionKit.hpp (C++ 核心)
 - **高性能**：层之间的开销最小
 - **可维护性**：C++ 核心的更改不会影响 Swift API
 
-### IBackend 接口
+### IEnvironment 接口
 
-IBackend 是 ExpressionKit 的核心设计模式，提供：
+IEnvironment 是 ExpressionKit 的核心设计模式，提供：
 
 ```cpp
-class IBackend {
+class IEnvironment {
 public:
-    virtual ~IBackend() = default;
+    virtual ~IEnvironment() = default;
     
     // 必需：获取变量值
     virtual Value Get(const std::string& name) = 0;
@@ -497,7 +497,7 @@ public:
 这种设计的优势：
 - **解耦**：将表达式解析与具体数据源分离
 - **灵活性**：可以与任何数据源集成（数据库、配置文件、游戏状态等）
-- **可测试性**：易于为不同场景创建模拟 IBackend
+- **可测试性**：易于为不同场景创建模拟 IEnvironment
 - **性能**：避免字符串查找，支持直接内存访问
 
 ## 📊 性能特征
@@ -508,13 +508,13 @@ public:
    ```cpp
    // 慢：每次都解析
    for (int i = 0; i < 1000000; ++i) {
-       auto result = ExprTK::Eval("complex_expression", &backend);
+       auto result = ExpressionKit::Eval("complex_expression", &environment);
    }
    
    // 快：预解析并重用
-   auto ast = ExprTK::Parse("complex_expression");
+   auto ast = ExpressionKit::Parse("complex_expression");
    for (int i = 0; i < 1000000; ++i) {
-       auto result = ast->evaluate(&backend);
+       auto result = ast->evaluate(&environment);
    }
    ```
 
@@ -535,7 +535,7 @@ ExpressionKit 使用异常进行错误处理：
 
 ```cpp
 try {
-    auto result = ExprTK::Eval("invalid expression ++ --", &backend);
+    auto result = ExpressionKit::Eval("invalid expression ++ --", &environment);
 } catch (const ExpressionKit::ExprException& e) {
     std::cerr << "表达式错误: " << e.what() << std::endl;
 }

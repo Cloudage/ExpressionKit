@@ -36,7 +36,7 @@ public struct Token {
 /// Provides a clean Swift API while maintaining the "parse once, execute many times" capability
 public final class ExpressionKit {
     
-    /// Evaluate an expression string directly (without backend support for now)
+    /// Evaluate an expression string directly (without environment support for now)
     /// - Parameter expression: The expression string to evaluate
     /// - Returns: The evaluation result
     /// - Throws: ExpressionError if parsing or evaluation fails

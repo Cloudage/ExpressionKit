@@ -30,7 +30,7 @@ std::string tokenTypeName(TokenType type) {
 }
 
 // Function to demonstrate token collection for an expression
-void demonstrateTokens(const std::string& expression, IBackend* backend = nullptr) {
+void demonstrateTokens(const std::string& expression, IEnvironment* environment = nullptr) {
     std::cout << "\n" << std::string(60, '=') << std::endl;
     std::cout << "Expression: " << expression << std::endl;
     std::cout << std::string(60, '=') << std::endl;
@@ -38,7 +38,7 @@ void demonstrateTokens(const std::string& expression, IBackend* backend = nullpt
     try {
         // Collect tokens during evaluation
         std::vector<Token> tokens;
-        Value result = ExprTK::Eval(expression, backend, &tokens);
+        Value result = ExpressionKit::Eval(expression, environment, &tokens);
         
         std::cout << "Result: " << result.toString() << std::endl;
         std::cout << "\nTokens collected (" << tokens.size() << " total):" << std::endl;
@@ -58,8 +58,8 @@ void demonstrateTokens(const std::string& expression, IBackend* backend = nullpt
         // Demonstrate parsing with tokens (for pre-compilation scenarios)
         std::cout << "\n--- Alternative: Parse with tokens, then execute ---" << std::endl;
         std::vector<Token> parseTokens;
-        auto ast = ExprTK::Parse(expression, &parseTokens);
-        Value parseResult = ast->evaluate(backend);
+        auto ast = ExpressionKit::Parse(expression, &parseTokens);
+        Value parseResult = ast->evaluate(environment);
         
         std::cout << "Parse result: " << parseResult.toString() << std::endl;
         std::cout << "Parse tokens: " << parseTokens.size() << " (same as above)" << std::endl;
@@ -69,8 +69,8 @@ void demonstrateTokens(const std::string& expression, IBackend* backend = nullpt
     }
 }
 
-// Simple backend for variable demonstration
-class DemoBackend : public IBackend {
+// Simple environment for variable demonstration
+class DemoBackend : public IEnvironment {
     std::unordered_map<std::string, Value> variables;
     
 public:
@@ -92,7 +92,7 @@ public:
     Value Call(const std::string& name, const std::vector<Value>& args) override {
         // First try standard mathematical functions
         Value result;
-        if (ExprTK::CallStandardFunctions(name, args, result)) {
+        if (ExpressionKit::CallStandardFunctions(name, args, result)) {
             return result;
         }
         
@@ -129,20 +129,20 @@ int main() {
     // Mathematical functions
     demonstrateTokens("max(10, 5) + sqrt(16)");
     
-    // Now with backend for variables and custom functions
-    DemoBackend backend;
+    // Now with environment for variables and custom functions
+    DemoBackend environment;
     
     // Variable access
-    demonstrateTokens("x + y * pi", &backend);
+    demonstrateTokens("x + y * pi", &environment);
     
     // Complex expression with variables
-    demonstrateTokens("player.health / player.maxHealth >= 0.5", &backend);
+    demonstrateTokens("player.health / player.maxHealth >= 0.5", &environment);
     
     // Function call with variables
-    demonstrateTokens("distance(0, 0, x, y)", &backend);
+    demonstrateTokens("distance(0, 0, x, y)", &environment);
     
     // Mixed expression with everything
-    demonstrateTokens("isActive && (player.health > 50) && max(x, y) >= 5", &backend);
+    demonstrateTokens("isActive && (player.health > 50) && max(x, y) >= 5", &environment);
     
     std::cout << "\n" << std::string(60, '=') << std::endl;
     std::cout << "🎯 Use Cases for Token Sequences:" << std::endl;

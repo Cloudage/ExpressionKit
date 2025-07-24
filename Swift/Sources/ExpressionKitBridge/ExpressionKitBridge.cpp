@@ -44,20 +44,20 @@ static Value convertFromCValue(const ExprValue& cValue) {
     }
 }
 
-// Wrapper for C++ IBackend to bridge to C callbacks
-class CallbackBackend : public IBackend {
+// Wrapper for C++ IEnvironment to bridge to C callbacks
+class CallbackEnvironment : public IEnvironment {
 private:
-    ExprBackendConfig config;
+    ExprEnvironmentConfig config;
     
 public:
-    explicit CallbackBackend(const ExprBackendConfig& cfg) : config(cfg) {}
+    explicit CallbackEnvironment(const ExprEnvironmentConfig& cfg) : config(cfg) {}
     
     Value Get(const std::string& name) override {
         ExprErrorCode error = ExprErrorNone;
         ExprValue result = config.getVariable(name.c_str(), config.context, &error);
         
         if (error != ExprErrorNone) {
-            throw ExprException("Backend variable access failed: " + name);
+            throw ExprException("Environment variable access failed: " + name);
         }
         
         return convertFromCValue(result);
@@ -66,11 +66,11 @@ public:
     Value Call(const std::string& name, const std::vector<Value>& args) override {
         // First try standard mathematical functions from C++
         Value standardResult;
-        if (ExprTK::CallStandardFunctions(name, args, standardResult)) {
+        if (::ExpressionKit::ExpressionKit::CallStandardFunctions(name, args, standardResult)) {
             return standardResult;
         }
         
-        // If not a standard function, delegate to Swift backend
+        // If not a standard function, delegate to Swift environment
         // Convert C++ Value vector to C ExprValue array
         std::vector<ExprValue> cArgs;
         cArgs.reserve(args.size());
@@ -87,7 +87,7 @@ public:
                                              &error);
         
         if (error != ExprErrorNone) {
-            throw ExprException("Backend function call failed: " + name);
+            throw ExprException("Environment function call failed: " + name);
         }
         
         return convertFromCValue(result);
@@ -113,15 +113,15 @@ struct ASTWrapper {
     explicit ASTWrapper(std::shared_ptr<ASTNode> node) : ast(std::move(node)), refCount(1) {}
 };
 
-// Backend wrapper
-struct BackendWrapper {
-    std::unique_ptr<CallbackBackend> backend;
+// Environment wrapper
+struct EnvironmentWrapper {
+    std::unique_ptr<CallbackEnvironment> environment;
     void* swiftContext; // Store the Swift context pointer
     
-    BackendWrapper(const ExprBackendConfig& config) 
-        : backend(std::make_unique<CallbackBackend>(config)), swiftContext(config.context) {}
+    EnvironmentWrapper(const ExprEnvironmentConfig& config) 
+        : environment(std::make_unique<CallbackEnvironment>(config)), swiftContext(config.context) {}
         
-    ~BackendWrapper() {
+    ~EnvironmentWrapper() {
         // Release the Swift context when destroying
         if (swiftContext) {
             // This will be handled by Swift's deinit
@@ -142,7 +142,7 @@ ExprASTHandle expr_parse(const char* expression) {
     }
     
     try {
-        auto ast = ExprTK::Parse(expression);
+        auto ast = ::ExpressionKit::ExpressionKit::Parse(expression);
         return reinterpret_cast<ExprASTHandle>(new ASTWrapper(ast));
     } catch (const ExprException& e) {
         setError(ExprErrorParseError, e.what());
@@ -153,7 +153,7 @@ ExprASTHandle expr_parse(const char* expression) {
     }
 }
 
-ExprValue expr_evaluate_ast(ExprASTHandle ast, ExprBackendHandle backend) {
+ExprValue expr_evaluate_ast(ExprASTHandle ast, ExprEnvironmentHandle environment) {
     clearError();
     
     ExprValue invalidResult = { ExprValueTypeNumber, { 0.0 } };
@@ -165,14 +165,14 @@ ExprValue expr_evaluate_ast(ExprASTHandle ast, ExprBackendHandle backend) {
     
     try {
         auto* astWrapper = reinterpret_cast<ASTWrapper*>(ast);
-        IBackend* backendPtr = nullptr;
+        IEnvironment* environmentPtr = nullptr;
         
-        if (backend) {
-            auto* backendWrapper = reinterpret_cast<BackendWrapper*>(backend);
-            backendPtr = backendWrapper->backend.get();
+        if (environment) {
+            auto* environmentWrapper = reinterpret_cast<EnvironmentWrapper*>(environment);
+            environmentPtr = environmentWrapper->environment.get();
         }
         
-        Value result = astWrapper->ast->evaluate(backendPtr);
+        Value result = astWrapper->ast->evaluate(environmentPtr);
         return convertToCValue(result);
     } catch (const ExprException& e) {
         setError(ExprErrorRuntimeError, e.what());
@@ -183,7 +183,7 @@ ExprValue expr_evaluate_ast(ExprASTHandle ast, ExprBackendHandle backend) {
     }
 }
 
-ExprValue expr_evaluate(const char* expression, ExprBackendHandle backend) {
+ExprValue expr_evaluate(const char* expression, ExprEnvironmentHandle environment) {
     clearError();
     
     ExprValue invalidResult = { ExprValueTypeNumber, { 0.0 } };
@@ -194,14 +194,14 @@ ExprValue expr_evaluate(const char* expression, ExprBackendHandle backend) {
     }
     
     try {
-        IBackend* backendPtr = nullptr;
+        IEnvironment* environmentPtr = nullptr;
         
-        if (backend) {
-            auto* backendWrapper = reinterpret_cast<BackendWrapper*>(backend);
-            backendPtr = backendWrapper->backend.get();
+        if (environment) {
+            auto* environmentWrapper = reinterpret_cast<EnvironmentWrapper*>(environment);
+            environmentPtr = environmentWrapper->environment.get();
         }
         
-        Value result = ExprTK::Eval(expression, backendPtr);
+        Value result = ::ExpressionKit::ExpressionKit::Eval(expression, environmentPtr);
         return convertToCValue(result);
     } catch (const ExprException& e) {
         setError(ExprErrorRuntimeError, e.what());
@@ -212,25 +212,25 @@ ExprValue expr_evaluate(const char* expression, ExprBackendHandle backend) {
     }
 }
 
-ExprBackendHandle expr_backend_create(const ExprBackendConfig* config) {
+ExprEnvironmentHandle expr_environment_create(const ExprEnvironmentConfig* config) {
     clearError();
     
     if (!config || !config->getVariable || !config->callFunction) {
-        setError(ExprErrorBackendError, "Invalid backend configuration");
+        setError(ExprErrorEnvironmentError, "Invalid environment configuration");
         return nullptr;
     }
     
     try {
-        return reinterpret_cast<ExprBackendHandle>(new BackendWrapper(*config));
+        return reinterpret_cast<ExprEnvironmentHandle>(new EnvironmentWrapper(*config));
     } catch (const std::exception& e) {
-        setError(ExprErrorBackendError, std::string("Backend creation failed: ") + e.what());
+        setError(ExprErrorEnvironmentError, std::string("Environment creation failed: ") + e.what());
         return nullptr;
     }
 }
 
-void expr_backend_destroy(ExprBackendHandle backend) {
-    if (backend) {
-        auto* wrapper = reinterpret_cast<BackendWrapper*>(backend);
+void expr_environment_destroy(ExprEnvironmentHandle environment) {
+    if (environment) {
+        auto* wrapper = reinterpret_cast<EnvironmentWrapper*>(environment);
         // Release the Swift context
         if (wrapper->swiftContext) {
             // This should release the retained Swift object
@@ -385,7 +385,7 @@ ExprASTHandle expr_parse_with_tokens(const char* expression, ExprTokenArray* tok
     
     try {
         std::vector<Token> cppTokens;
-        auto ast = ExprTK::Parse(std::string(expression), tokens ? &cppTokens : nullptr);
+        auto ast = ::ExpressionKit::ExpressionKit::Parse(std::string(expression), tokens ? &cppTokens : nullptr);
         
         if (tokens) {
             populateTokenArray(cppTokens, tokens);
@@ -408,7 +408,7 @@ ExprASTHandle expr_parse_with_tokens(const char* expression, ExprTokenArray* tok
 }
 
 // Direct evaluation with token collection
-ExprValue expr_evaluate_with_tokens(const char* expression, ExprBackendHandle backend, ExprTokenArray* tokens) {
+ExprValue expr_evaluate_with_tokens(const char* expression, ExprEnvironmentHandle environment, ExprTokenArray* tokens) {
     if (!expression) {
         g_lastError = ExprErrorParseError;
         g_lastErrorMessage = "Null expression string";
@@ -417,9 +417,9 @@ ExprValue expr_evaluate_with_tokens(const char* expression, ExprBackendHandle ba
     
     try {
         std::vector<Token> cppTokens;
-        CallbackBackend* cppBackend = static_cast<CallbackBackend*>(backend);
+        CallbackEnvironment* cppEnvironment = static_cast<CallbackEnvironment*>(environment);
         
-        auto result = ExprTK::Eval(std::string(expression), cppBackend, tokens ? &cppTokens : nullptr);
+        auto result = ::ExpressionKit::ExpressionKit::Eval(std::string(expression), cppEnvironment, tokens ? &cppTokens : nullptr);
         
         if (tokens) {
             populateTokenArray(cppTokens, tokens);
