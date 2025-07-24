@@ -65,9 +65,6 @@ namespace ExpressionKit {
 
     /**
      * @brief Exception type for expression parsing and evaluation errors
-     *
-     * This exception is thrown when expression syntax is invalid or
-     * when runtime evaluation fails (e.g., division by zero, undefined variables).
      */
     class ExprException final : public std::runtime_error {
     public:
@@ -75,87 +72,60 @@ namespace ExpressionKit {
     };
 
     /**
-     * @brief Value type that can hold either a number or boolean
-     *
-     * This is the fundamental data type used throughout the expression system.
-     * It supports automatic conversion from common C++ types and provides
-     * type-safe access methods.
+     * @brief Simplified Value type that directly uses the C bridge structure
+     * 
+     * This eliminates duplication by using the same structure as the C interface
+     * while providing C++ convenience methods and operators.
      */
     struct Value {
-        enum Type { NUMBER, BOOLEAN } type;
-        union {
-            double number = 0;
+        enum Type : int { NUMBER = 0, BOOLEAN = 1 } type;
+        
+        union Data {
+            double number;
             bool boolean;
+            
+            Data() : number(0.0) {}
+            explicit Data(double n) : number(n) {}
+            explicit Data(bool b) : boolean(b) {}
         } data;
 
-        /**
-         * @brief Default constructor - creates a number value of 0.0
-         */
+        // Constructors
         Value() : type(NUMBER) { data.number = 0.0; }
+        Value(double n) : type(NUMBER) { data.number = n; }
+        Value(float n) : type(NUMBER) { data.number = static_cast<double>(n); }
+        Value(int n) : type(NUMBER) { data.number = static_cast<double>(n); }
+        Value(bool b) : type(BOOLEAN) { data.boolean = b; }
 
-        /**
-         * @brief Construct from double value
-         * @param n The number value
-         */
-        Value(const double n) : type(NUMBER) { data.number = n; }
-
-        /**
-         * @brief Construct from float value (converted to double)
-         * @param n The number value
-         */
-        Value(const float n) : type(NUMBER) { data.number = static_cast<double>(n); }
-
-        /**
-         * @brief Construct from int value (converted to double)
-         * @param n The number value
-         */
-        Value(const int n) : type(NUMBER) { data.number = static_cast<double>(n); }
-
-        /**
-         * @brief Construct from boolean value
-         * @param b The boolean value
-         */
-        Value(const bool b) : type(BOOLEAN) { data.boolean = b; }
-
-        /**
-         * @brief Check if this value is a number
-         * @return true if the value contains a number, false otherwise
-         */
+        // Type checking
         bool isNumber() const { return type == NUMBER; }
-
-        /**
-         * @brief Check if this value is a boolean
-         * @return true if the value contains a boolean, false otherwise
-         */
         bool isBoolean() const { return type == BOOLEAN; }
 
-        /**
-         * @brief Get the number value
-         * @return The number value
-         * @throws ExprException if the value is not a number
-         */
+        // Safe value extraction
         double asNumber() const {
-            if (!isNumber()) throw ExprException("类型错误：期望数值类型");
+            if (!isNumber()) throw ExprException("Type error: expected number");
             return data.number;
         }
 
-        /**
-         * @brief Get the boolean value
-         * @return The boolean value
-         * @throws ExprException if the value is not a boolean
-         */
         bool asBoolean() const {
-            if (!isBoolean()) throw ExprException("类型错误：期望布尔类型");
+            if (!isBoolean()) throw ExprException("Type error: expected boolean");
             return data.boolean;
         }
 
-        /**
-         * @brief Convert value to string representation
-         * @return String representation of the value
-         */
+        // String conversion
         std::string toString() const {
             if (isNumber()) return std::to_string(data.number);
             return data.boolean ? "true" : "false";
+        }
+
+        // Equality
+        bool operator==(const Value& other) const {
+            if (type != other.type) return false;
+            if (isNumber()) return data.number == other.data.number;
+            return data.boolean == other.data.boolean;
+        }
+
+        bool operator!=(const Value& other) const {
+            return !(*this == other);
         }
     };
 

@@ -20,7 +20,7 @@ extern "C" {
 typedef void* ExprASTHandle;
 typedef void* ExprBackendHandle;
 
-// Value type for expression results
+// Value type for expression results - matches C++ Value exactly  
 typedef enum {
     ExprValueTypeNumber = 0,
     ExprValueTypeBoolean = 1
