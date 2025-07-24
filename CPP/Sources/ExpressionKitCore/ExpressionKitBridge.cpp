@@ -8,12 +8,39 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <cstddef>
 
 using namespace ExpressionKit;
 
 // Thread-local error state
 thread_local ExprErrorCode g_lastError = ExprErrorNone;
 thread_local std::string g_lastErrorMessage;
+
+// Convert C++ Value to C ExprValue (should be binary compatible)
+static ExprValue convertToCValue(const Value& value) {
+    // Since Value and ExprValue have the same layout, we can cast directly
+    static_assert(sizeof(Value) == sizeof(ExprValue), "Value and ExprValue must have same size");
+    static_assert(offsetof(Value, type) == offsetof(ExprValue, type), "Type field must be at same offset");
+    static_assert(offsetof(Value, data) == offsetof(ExprValue, data), "Data field must be at same offset");
+    
+    ExprValue result;
+    result.type = static_cast<ExprValueType>(value.type);
+    if (value.isNumber()) {
+        result.data.number = value.data.number;
+    } else {
+        result.data.boolean = value.data.boolean;
+    }
+    return result;
+}
+
+// Convert C ExprValue to C++ Value
+static Value convertFromCValue(const ExprValue& cValue) {
+    if (cValue.type == ExprValueTypeNumber) {
+        return Value(cValue.data.number);
+    } else {
+        return Value(cValue.data.boolean);
+    }
+}
 
 // Wrapper for C++ IBackend to bridge to C callbacks
 class CallbackBackend : public IBackend {
@@ -31,11 +58,7 @@ public:
             throw ExprException("Backend variable access failed: " + name);
         }
         
-        if (result.type == ExprValueTypeNumber) {
-            return Value(result.data.number);
-        } else {
-            return Value(result.data.boolean);
-        }
+        return convertFromCValue(result);
     }
     
     Value Call(const std::string& name, const std::vector<Value>& args) override {
@@ -44,15 +67,7 @@ public:
         cArgs.reserve(args.size());
         
         for (const auto& arg : args) {
-            ExprValue cArg;
-            if (arg.isNumber()) {
-                cArg.type = ExprValueTypeNumber;
-                cArg.data.number = arg.asNumber();
-            } else {
-                cArg.type = ExprValueTypeBoolean;
-                cArg.data.boolean = arg.asBoolean();
-            }
-            cArgs.push_back(cArg);
+            cArgs.push_back(convertToCValue(arg));
         }
         
         ExprErrorCode error = ExprErrorNone;
@@ -66,11 +81,7 @@ public:
             throw ExprException("Backend function call failed: " + name);
         }
         
-        if (result.type == ExprValueTypeNumber) {
-            return Value(result.data.number);
-        } else {
-            return Value(result.data.boolean);
-        }
+        return convertFromCValue(result);
     }
 };
 
@@ -83,19 +94,6 @@ static void setError(ExprErrorCode code, const std::string& message) {
 static void clearError() {
     g_lastError = ExprErrorNone;
     g_lastErrorMessage.clear();
-}
-
-// Convert C++ Value to C ExprValue
-static ExprValue convertToCValue(const Value& value) {
-    ExprValue result;
-    if (value.isNumber()) {
-        result.type = ExprValueTypeNumber;
-        result.data.number = value.asNumber();
-    } else {
-        result.type = ExprValueTypeBoolean;
-        result.data.boolean = value.asBoolean();
-    }
-    return result;
 }
 
 // AST wrapper with reference counting

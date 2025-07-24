@@ -27,6 +27,6 @@ public final class Expression {
             throw ExpressionError.evaluationFailed(message)
         }
         
-        return Value(from: result)
+        return result
     }
 }

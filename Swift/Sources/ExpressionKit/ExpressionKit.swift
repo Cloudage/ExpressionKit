@@ -17,7 +17,7 @@ public final class ExpressionKit {
             throw ExpressionError.evaluationFailed(message)
         }
         
-        return Value(from: result)
+        return result
     }
     
     /// Parse an expression into a reusable Expression object

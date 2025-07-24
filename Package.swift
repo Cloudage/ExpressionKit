@@ -31,6 +31,7 @@ let package = Package(
             publicHeadersPath: "include",
             cxxSettings: [
                 .headerSearchPath("../../../"),
+                .headerSearchPath("include"),
                 .unsafeFlags(["-std=c++17"])
             ]
         ),

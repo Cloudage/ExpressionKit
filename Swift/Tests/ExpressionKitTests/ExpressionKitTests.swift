@@ -280,11 +280,8 @@ final class ExpressionKitTests: XCTestCase {
         XCTAssertEqual(try ExpressionKit.evaluate("3.14"), .number(3.14))
         // Use delta for floating point comparison due to precision
         let result = try ExpressionKit.evaluate("3.14 + 1")
-        if case .number(let value) = result {
-            XCTAssertEqual(value, 4.14, accuracy: 0.000001)
-        } else {
-            XCTFail("Expected number result")
-        }
+        XCTAssertTrue(result.isNumber)
+        XCTAssertEqual(result.data.number, 4.14, accuracy: 0.000001)
         XCTAssertEqual(try ExpressionKit.evaluate("2.5 * 2"), .number(5.0))
     }
     
