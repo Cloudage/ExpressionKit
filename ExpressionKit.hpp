@@ -61,7 +61,7 @@ namespace ExpressionKit {
 
     // Forward declarations for internal use
     class ASTNode;
-    class ExpressionKit;
+    class Expression;
     using ASTNodePtr = std::shared_ptr<ASTNode>;
 
     /**
@@ -770,7 +770,7 @@ namespace ExpressionKit {
     /**
      * @brief Main expression toolkit class for parsing and evaluating expressions
      *
-     * ExpressionKit provides a complete expression evaluation system with support for:
+     * Expression provides a complete expression evaluation system with support for:
      * - Arithmetic operations (+, -, *, /)
      * - Comparison operations (==, !=, <, >, <=, >=)
      * - Logical operations (&&, ||, !, xor)
@@ -779,7 +779,7 @@ namespace ExpressionKit {
      *
      * Usage examples:
      * @code
-     * ExpressionKit exprtk;
+     * Expression exprtk;
      *
      * // Simple evaluation without variables
      * auto result = exprtk.Eval("2 + 3 * 4"); // Returns 14.0
@@ -797,11 +797,11 @@ namespace ExpressionKit {
      * }
      * @endcode
      *
-     * @note The ExpressionKit instance does not own the Environment object. The caller is
+     * @note The Expression instance does not own the Environment object. The caller is
      *       responsible for ensuring the Environment remains valid during expression
      *       evaluation.
      */
-    class ExpressionKit {
+    class Expression {
     public:
         /**
          * @brief Evaluate an expression string directly
@@ -893,28 +893,28 @@ namespace ExpressionKit {
      * @brief Evaluate an expression string directly (namespace-level convenience function)
      */
     inline Value Eval(const std::string& expression, IEnvironment* environment = nullptr) {
-        return ExpressionKit::Eval(expression, environment);
+        return Expression::Eval(expression, environment);
     }
 
     /**
      * @brief Evaluate an expression string directly with token collection (namespace-level convenience function)
      */
     inline Value Eval(const std::string& expression, IEnvironment* environment, std::vector<Token>* tokens) {
-        return ExpressionKit::Eval(expression, environment, tokens);
+        return Expression::Eval(expression, environment, tokens);
     }
 
     /**
      * @brief Parse an expression string into an Abstract Syntax Tree (namespace-level convenience function)
      */
     inline ASTNodePtr Parse(const std::string& expression) {
-        return ExpressionKit::Parse(expression);
+        return Expression::Parse(expression);
     }
 
     /**
      * @brief Parse an expression string into an Abstract Syntax Tree with token collection (namespace-level convenience function)
      */
     inline ASTNodePtr Parse(const std::string& expression, std::vector<Token>* tokens) {
-        return ExpressionKit::Parse(expression, tokens);
+        return Expression::Parse(expression, tokens);
     }
 
 } // namespace ExpressionKit

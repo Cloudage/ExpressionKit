@@ -38,7 +38,7 @@ void demonstrateTokens(const std::string& expression, IEnvironment* environment 
     try {
         // Collect tokens during evaluation
         std::vector<Token> tokens;
-        Value result = ExpressionKit::Eval(expression, environment, &tokens);
+        Value result = Expression::Eval(expression, environment, &tokens);
         
         std::cout << "Result: " << result.toString() << std::endl;
         std::cout << "\nTokens collected (" << tokens.size() << " total):" << std::endl;
@@ -58,7 +58,7 @@ void demonstrateTokens(const std::string& expression, IEnvironment* environment 
         // Demonstrate parsing with tokens (for pre-compilation scenarios)
         std::cout << "\n--- Alternative: Parse with tokens, then execute ---" << std::endl;
         std::vector<Token> parseTokens;
-        auto ast = ExpressionKit::Parse(expression, &parseTokens);
+        auto ast = Expression::Parse(expression, &parseTokens);
         Value parseResult = ast->evaluate(environment);
         
         std::cout << "Parse result: " << parseResult.toString() << std::endl;
@@ -92,7 +92,7 @@ public:
     Value Call(const std::string& name, const std::vector<Value>& args) override {
         // First try standard mathematical functions
         Value result;
-        if (ExpressionKit::CallStandardFunctions(name, args, result)) {
+        if (Expression::CallStandardFunctions(name, args, result)) {
             return result;
         }
         

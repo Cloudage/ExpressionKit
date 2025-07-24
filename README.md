@@ -69,10 +69,10 @@ Then import and use:
 import ExpressionKit
 
 // Direct evaluation
-let result = try ExpressionKit.evaluate("2 + 3 * 4")  // 14.0
+let result = try Expression.evaluate("2 + 3 * 4")  // 14.0
 
 // Parse once, execute many times (high performance)
-let expression = try ExpressionKit.parse("(a + b) * c - 1")
+let expression = try Expression.parse("(a + b) * c - 1")
 for _ in 0..<10000 {
     let result = try expression.evaluate()  // Very fast!
 }
@@ -93,16 +93,16 @@ For C++ projects, simply **copy the single header file** `ExpressionKit.hpp` to 
 using namespace ExpressionKit;
 
 // Evaluate simple math expressions
-auto result = ExpressionKit::Eval("2 + 3 * 4");  // Returns 14.0
+auto result = Expression::Eval("2 + 3 * 4");  // Returns 14.0
 std::cout << "Result: " << result.asNumber() << std::endl;
 
 // Boolean expressions
-auto boolResult = ExpressionKit::Eval("true && false");  // Returns false
+auto boolResult = Expression::Eval("true && false");  // Returns false
 std::cout << "Boolean result: " << boolResult.asBoolean() << std::endl;
 
 // Token sequence collection for syntax highlighting
 std::vector<Token> tokens;
-auto resultWithTokens = ExpressionKit::Eval("2 + 3 * max(4, 5)", nullptr, &tokens);
+auto resultWithTokens = Expression::Eval("2 + 3 * max(4, 5)", nullptr, &tokens);
 std::cout << "Result: " << resultWithTokens.asNumber() << std::endl;
 for (const auto& token : tokens) {
     std::cout << "Token: " << (int)token.type << " '" << token.text 
@@ -117,7 +117,7 @@ for (const auto& token : tokens) {
 | **Setup** | Swift Package Manager | Copy single .hpp file |
 | **Dependencies** | None (handled by SPM) | None (header-only) |
 | **Integration** | `import ExpressionKit` | `#include "ExpressionKit.hpp"` |
-| **API** | `ExpressionKit.evaluate()` | `ExpressionKit::Eval()` |
+| **API** | `Expression.evaluate()` | `Expression::Eval()` |
 | **Performance** | ✅ Full performance | ✅ Full performance |
 | **Features** | ✅ All core features | ✅ All features + Environment |
 
@@ -154,7 +154,7 @@ using namespace ExpressionKit;
 
 // Collect tokens during evaluation
 std::vector<Token> tokens;
-auto result = ExpressionKit::Eval("max(x + 5, y * 2)", &environment, &tokens);
+auto result = Expression::Eval("max(x + 5, y * 2)", &environment, &tokens);
 
 // Process tokens for syntax highlighting
 for (const auto& token : tokens) {
@@ -166,7 +166,7 @@ for (const auto& token : tokens) {
 
 // Alternative: Parse with tokens for pre-compilation
 std::vector<Token> parseTokens;
-auto ast = ExpressionKit::Parse("complex_expression", &parseTokens);
+auto ast = Expression::Parse("complex_expression", &parseTokens);
 // parseTokens now contains all tokens for syntax highlighting
 auto result = ast->evaluate(&environment);
 ```
@@ -177,7 +177,7 @@ auto result = ast->evaluate(&environment);
 import ExpressionKit
 
 // Evaluate with token collection
-let (value, tokens) = try ExpressionKit.evaluate("max(x + 5, y * 2)", collectTokens: true)
+let (value, tokens) = try Expression.evaluate("max(x + 5, y * 2)", collectTokens: true)
 print("Result: \(value)")
 
 if let tokens = tokens {
@@ -187,7 +187,7 @@ if let tokens = tokens {
 }
 
 // Parse with token collection for pre-compilation
-let (expression, parseTokens) = try ExpressionKit.parse("complex_expression", collectTokens: true)
+let (expression, parseTokens) = try Expression.parse("complex_expression", collectTokens: true)
 // parseTokens contains all tokens for analysis
 let result = try expression.evaluate()
 ```
@@ -224,22 +224,22 @@ The overhead is primarily from string allocation for token text. For performance
 import ExpressionKit
 
 // Basic arithmetic
-let result1 = try ExpressionKit.evaluate("2 + 3 * 4")  // 14.0
+let result1 = try Expression.evaluate("2 + 3 * 4")  // 14.0
 
 // Boolean logic
-let result2 = try ExpressionKit.evaluate("true && (5 > 3)")  // true
+let result2 = try Expression.evaluate("true && (5 > 3)")  // true
 
 // Complex expressions
-let result3 = try ExpressionKit.evaluate("(2 + 3) * 4 - 1")  // 19.0
+let result3 = try Expression.evaluate("(2 + 3) * 4 - 1")  // 19.0
 
 // Parse once, execute many times for high performance
-let expression = try ExpressionKit.parse("(a + b) * c - 1")
+let expression = try Expression.parse("(a + b) * c - 1")
 for _ in 0..<10000 {
     let result = try expression.evaluate()  // Very fast repeated execution
 }
 
 // Token sequence collection for syntax highlighting
-let (value, tokens) = try ExpressionKit.evaluate("2 + 3 * max(4, 5)", collectTokens: true)
+let (value, tokens) = try Expression.evaluate("2 + 3 * max(4, 5)", collectTokens: true)
 print("Result: \(value)")
 if let tokens = tokens {
     for token in tokens {
@@ -249,7 +249,7 @@ if let tokens = tokens {
 
 // Error handling
 do {
-    let result = try ExpressionKit.evaluate("1 / 0")
+    let result = try Expression.evaluate("1 / 0")
 } catch let error as ExpressionError {
     print("Expression error: \(error.localizedDescription)")
 }
@@ -290,7 +290,7 @@ public:
                              const std::vector<ExpressionKit::Value>& args) override {
         // Try standard mathematical functions first
         ExpressionKit::Value result;
-        if (ExpressionKit::ExpressionKit::CallStandardFunctions(name, args, result)) {
+        if (Expression::CallStandardFunctions(name, args, result)) {
             return result;
         }
         
@@ -310,15 +310,15 @@ int main() {
     GameEnvironment environment;
     
     // Game logic expressions
-    auto healthPercent = ExpressionKit::Eval("health / maxHealth", &environment);
+    auto healthPercent = Expression::Eval("health / maxHealth", &environment);
     std::cout << "Health percentage: " << healthPercent.asNumber() << std::endl;
     
     // Complex condition checks
-    auto needHealing = ExpressionKit::Eval("health < maxHealth * 0.5 && isAlive", &environment);
+    auto needHealing = Expression::Eval("health < maxHealth * 0.5 && isAlive", &environment);
     std::cout << "Needs healing: " << (needHealing.asBoolean() ? "Yes" : "No") << std::endl;
     
     // Function calls
-    auto playerPos = ExpressionKit::Eval("distance(pos.x, pos.y, 0, 0)", &environment);
+    auto playerPos = Expression::Eval("distance(pos.x, pos.y, 0, 0)", &environment);
     std::cout << "Distance from origin: " << playerPos.asNumber() << std::endl;
     
     return 0;
@@ -346,9 +346,9 @@ private:
 public:
     HighPerformanceExample() {
         // Pre-compile all expressions at startup
-        healthCheckExpr = ExpressionKit::Parse("health > 0 && health <= maxHealth");
-        damageCalcExpr = ExpressionKit::Parse("max(0, damage - armor) * (1.0 + level * 0.1)");
-        levelUpExpr = ExpressionKit::Parse("exp >= level * 100");
+        healthCheckExpr = Expression::Parse("health > 0 && health <= maxHealth");
+        damageCalcExpr = Expression::Parse("max(0, damage - armor) * (1.0 + level * 0.1)");
+        levelUpExpr = Expression::Parse("exp >= level * 100");
     }
     
     // Efficient execution in game loop
@@ -428,7 +428,7 @@ public:
         ExpressionKit::Value result;
         
         // Try standard mathematical functions first
-        if (ExpressionKit::ExpressionKit::CallStandardFunctions(name, args, result)) {
+        if (Expression::CallStandardFunctions(name, args, result)) {
             return result;
         }
         
@@ -506,11 +506,11 @@ Advantages of this design:
    ```cpp
    // Slow: parse every time
    for (int i = 0; i < 1000000; ++i) {
-       auto result = ExpressionKit::Eval("complex_expression", &environment);
+       auto result = Expression::Eval("complex_expression", &environment);
    }
    
    // Fast: pre-parse and reuse
-   auto ast = ExpressionKit::Parse("complex_expression");
+   auto ast = Expression::Parse("complex_expression");
    for (int i = 0; i < 1000000; ++i) {
        auto result = ast->evaluate(&environment);
    }
@@ -533,7 +533,7 @@ ExpressionKit uses exceptions for error handling:
 
 ```cpp
 try {
-    auto result = ExpressionKit::Eval("invalid expression ++ --", &environment);
+    auto result = Expression::Eval("invalid expression ++ --", &environment);
 } catch (const ExpressionKit::ExprException& e) {
     std::cerr << "Expression error: " << e.what() << std::endl;
 }

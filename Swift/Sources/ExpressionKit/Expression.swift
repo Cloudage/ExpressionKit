@@ -3,7 +3,7 @@ import ExpressionKitBridge
 
 /// A compiled expression that can be evaluated multiple times efficiently
 /// This enables the "parse once, execute many times" pattern
-public final class Expression {
+public final class CompiledExpression {
     private let handle: ExprASTHandle
     
     /// Internal initializer with AST handle
