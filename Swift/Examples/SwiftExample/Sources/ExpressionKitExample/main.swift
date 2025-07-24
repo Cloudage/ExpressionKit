@@ -27,16 +27,16 @@ print("parsing for syntax highlighting, analysis, and other advanced features.")
 print("\n📝 Testing basic functionality...")
 
 // Test basic arithmetic - Value now directly uses ExprValue
-let result1 = try! Expression.evaluate("2 + 3 * 4")
+let result1 = try! Expression.eval("2 + 3 * 4")
 print("2 + 3 * 4 = \(result1)") // Should print: 14.0
 
 // Test boolean operations
-let result2 = try! Expression.evaluate("true && false || true")
+let result2 = try! Expression.eval("true && false || true")
 print("true && false || true = \(result2)") // Should print: true
 
 // Test parse once, execute many times
 let expression = try! Expression.parse("(5 + 3) * 2 - 1")
-let result3 = try! expression.evaluate()
+let result3 = try! expression.eval()
 print("(5 + 3) * 2 - 1 = \(result3)") // Should print: 15.0
 
 // Test type checking with the new API
@@ -59,7 +59,7 @@ print("\n🎯 Now demonstrating TOKEN SEQUENCE functionality...")
 
 // Basic arithmetic expression with tokens
 do {
-    let (value, tokens) = try Expression.evaluate("2 + 3 * 4", collectTokens: true)
+    let (value, tokens) = try Expression.eval("2 + 3 * 4", collectTokens: true)
     print("Result: \(value)")
     if let tokens = tokens {
         printTokens(tokens, for: "2 + 3 * 4")
@@ -70,7 +70,7 @@ do {
 
 // Boolean expression with tokens
 do {
-    let (value, tokens) = try Expression.evaluate("true && (false || !true)", collectTokens: true)
+    let (value, tokens) = try Expression.eval("true && (false || !true)", collectTokens: true)
     print("Result: \(value)")
     if let tokens = tokens {
         printTokens(tokens, for: "true && (false || !true)")
@@ -81,7 +81,7 @@ do {
 
 // Complex expression with parentheses
 do {
-    let (value, tokens) = try Expression.evaluate("(10 + 5) * 2 - 3", collectTokens: true)
+    let (value, tokens) = try Expression.eval("(10 + 5) * 2 - 3", collectTokens: true)
     print("Result: \(value)")
     if let tokens = tokens {
         printTokens(tokens, for: "(10 + 5) * 2 - 3")
@@ -92,7 +92,7 @@ do {
 
 // Mathematical functions with tokens
 do {
-    let (value, tokens) = try Expression.evaluate("max(10, 5) + sqrt(16)", collectTokens: true)
+    let (value, tokens) = try Expression.eval("max(10, 5) + sqrt(16)", collectTokens: true)
     print("Result: \(value)")
     if let tokens = tokens {
         printTokens(tokens, for: "max(10, 5) + sqrt(16)")
@@ -122,13 +122,13 @@ let complexExpr = "((2 + 3) * 4 - 1) / (5 + 2) >= 1.5 && true"
 
 let startTime1 = Date()
 for _ in 0..<1000 {
-    _ = try! Expression.evaluate(complexExpr)
+    _ = try! Expression.eval(complexExpr)
 }
 let time1 = Date().timeIntervalSince(startTime1)
 
 let startTime2 = Date()
 for _ in 0..<1000 {
-    _ = try! Expression.evaluate(complexExpr, collectTokens: true)
+    _ = try! Expression.eval(complexExpr, collectTokens: true)
 }
 let time2 = Date().timeIntervalSince(startTime2)
 
