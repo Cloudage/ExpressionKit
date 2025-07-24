@@ -884,9 +884,38 @@ namespace ExpressionKit {
         static bool CallStandardFunctions(const std::string& functionName,
                                         const std::vector<Value>& args,
                                         Value& outResult) {
-            return ExpressionKit::CallStandardFunctions(functionName, args, outResult);
+            return ::ExpressionKit::CallStandardFunctions(functionName, args, outResult);
         }
     };
+
+    // Namespace-level convenience functions for backward compatibility and easier usage
+    /**
+     * @brief Evaluate an expression string directly (namespace-level convenience function)
+     */
+    inline Value Eval(const std::string& expression, IEnvironment* environment = nullptr) {
+        return ExpressionKit::Eval(expression, environment);
+    }
+
+    /**
+     * @brief Evaluate an expression string directly with token collection (namespace-level convenience function)
+     */
+    inline Value Eval(const std::string& expression, IEnvironment* environment, std::vector<Token>* tokens) {
+        return ExpressionKit::Eval(expression, environment, tokens);
+    }
+
+    /**
+     * @brief Parse an expression string into an Abstract Syntax Tree (namespace-level convenience function)
+     */
+    inline ASTNodePtr Parse(const std::string& expression) {
+        return ExpressionKit::Parse(expression);
+    }
+
+    /**
+     * @brief Parse an expression string into an Abstract Syntax Tree with token collection (namespace-level convenience function)
+     */
+    inline ASTNodePtr Parse(const std::string& expression, std::vector<Token>* tokens) {
+        return ExpressionKit::Parse(expression, tokens);
+    }
 
 } // namespace ExpressionKit
 
