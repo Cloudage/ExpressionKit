@@ -65,6 +65,40 @@ namespace ExpressionKit {
     using ASTNodePtr = std::shared_ptr<ASTNode>;
 
     /**
+     * @brief Token types for syntax highlighting and analysis
+     *
+     * This enumeration defines all possible token types that can be identified
+     * during expression parsing, useful for syntax highlighting and other
+     * analysis features.
+     */
+    enum class TokenType {
+        NUMBER,       // Numeric literals: 42, 3.14, -2.5
+        BOOLEAN,      // Boolean literals: true, false
+        IDENTIFIER,   // Variables and function names: x, pos.x, sqrt
+        OPERATOR,     // Operators: +, -, *, /, ==, !=, &&, ||, etc.
+        PARENTHESIS,  // Parentheses: (, )
+        COMMA,        // Function argument separator: ,
+        WHITESPACE,   // Spaces, tabs (optional for highlighting)
+        UNKNOWN       // Unrecognized tokens
+    };
+
+    /**
+     * @brief Token structure for syntax highlighting and analysis
+     *
+     * Contains information about a single token identified during parsing,
+     * including its type, position in the source text, and the actual text.
+     */
+    struct Token {
+        TokenType type;        // Type of the token
+        size_t start;          // Starting position in source text
+        size_t length;         // Length of the token
+        std::string text;      // The actual token text
+
+        Token(TokenType t, size_t s, size_t l, const std::string& txt)
+            : type(t), start(s), length(l), text(txt) {}
+    };
+
+    /**
      * @brief Exception type for expression parsing and evaluation errors
      */
     class ExprException final : public std::runtime_error {
@@ -492,15 +526,33 @@ namespace ExpressionKit {
     class Parser {
         std::string expr;
         size_t pos = 0;
+        std::vector<Token>* tokens = nullptr;  // Optional token collection
+
+        void addToken(TokenType type, size_t start, size_t length, const std::string& text) {
+            if (tokens) {
+                tokens->emplace_back(type, start, length, text);
+            }
+        }
+
+        void addToken(TokenType type, size_t start, size_t length) {
+            if (tokens && start + length <= expr.length()) {
+                addToken(type, start, length, expr.substr(start, length));
+            }
+        }
 
         void skipWhitespace() {
+            size_t start = pos;
             while (pos < expr.size() && std::isspace(expr[pos])) ++pos;
+            if (tokens && pos > start) {
+                addToken(TokenType::WHITESPACE, start, pos - start);
+            }
         }
 
         bool match(const std::string& str) {
             skipWhitespace();
             if (pos + str.length() <= expr.size() &&
                 expr.substr(pos, str.length()) == str) {
+                addToken(TokenType::OPERATOR, pos, str.length(), str);
                 pos += str.length();
                 return true;
             }
@@ -510,6 +562,9 @@ namespace ExpressionKit {
         bool match(const char c) {
             skipWhitespace();
             if (pos < expr.size() && expr[pos] == c) {
+                TokenType type = (c == '(' || c == ')') ? TokenType::PARENTHESIS :
+                                (c == ',') ? TokenType::COMMA : TokenType::OPERATOR;
+                addToken(type, pos, 1, std::string(1, c));
                 ++pos;
                 return true;
             }
@@ -531,6 +586,8 @@ namespace ExpressionKit {
         char consume() {
             skipWhitespace();
             if (pos >= expr.size()) throw ExprException("意外的表达式结尾");
+            char c = expr[pos];
+            addToken(TokenType::OPERATOR, pos, 1, std::string(1, c));
             return expr[pos++];
         }
 
@@ -652,14 +709,17 @@ namespace ExpressionKit {
             }
 
             if (std::isdigit(peek()) || peek() == '.') {
+                size_t start = pos;
                 std::string num;
                 while (pos < expr.size() && (std::isdigit(expr[pos]) || expr[pos] == '.')) {
                     num += expr[pos++];
                 }
+                addToken(TokenType::NUMBER, start, pos - start, num);
                 return std::make_shared<NumberNode>(std::stod(num));
             }
 
             if (std::isalpha(peek())) {
+                size_t start = pos;
                 std::string ident;
                 while (pos < expr.size() && (std::isalnum(expr[pos]) || expr[pos] == '.' || expr[pos] == '_')) {
                     ident += expr[pos++];
@@ -673,12 +733,20 @@ namespace ExpressionKit {
                         } while (match(','));
                         if (!match(')')) throw ExprException("函数调用缺少右括号");
                     }
+                    addToken(TokenType::IDENTIFIER, start, ident.length(), ident);
                     return std::make_shared<FunctionCallNode>(ident, args);
                 }
 
-                if (ident == "true") return std::make_shared<BooleanNode>(true);
-                if (ident == "false") return std::make_shared<BooleanNode>(false);
+                if (ident == "true") {
+                    addToken(TokenType::BOOLEAN, start, ident.length(), ident);
+                    return std::make_shared<BooleanNode>(true);
+                }
+                if (ident == "false") {
+                    addToken(TokenType::BOOLEAN, start, ident.length(), ident);
+                    return std::make_shared<BooleanNode>(false);
+                }
 
+                addToken(TokenType::IDENTIFIER, start, ident.length(), ident);
                 return std::make_shared<VariableNode>(ident);
             }
 
@@ -687,6 +755,8 @@ namespace ExpressionKit {
 
     public:
         explicit Parser(const std::string& expression) : expr(expression) {}
+        explicit Parser(const std::string& expression, std::vector<Token>* tokenVector) 
+            : expr(expression), tokens(tokenVector) {}
 
         ASTNodePtr parse() {
             pos = 0;
@@ -759,6 +829,21 @@ namespace ExpressionKit {
         }
 
         /**
+         * @brief Evaluate an expression string directly with token collection
+         * @param expression The expression string to evaluate
+         * @param backend Optional backend for variable and function resolution
+         * @param tokens Optional vector to collect tokens for syntax highlighting
+         * @return The evaluation result
+         * @throws ExprException If parsing fails or evaluation encounters an error
+         *
+         * This method parses and evaluates the expression while optionally collecting
+         * tokens that can be used for syntax highlighting or other analysis.
+         */
+        static Value Eval(const std::string& expression, IBackend* backend, std::vector<Token>* tokens) {
+            return Parse(expression, tokens)->evaluate(backend);
+        }
+
+        /**
          * @brief Parse an expression string into an Abstract Syntax Tree
          * @param expression The expression string to parse
          * @return The root AST node
@@ -769,6 +854,21 @@ namespace ExpressionKit {
          */
         static ASTNodePtr Parse(const std::string& expression) {
             Parser parser(expression);
+            return parser.parse();
+        }
+
+        /**
+         * @brief Parse an expression string into an Abstract Syntax Tree with token collection
+         * @param expression The expression string to parse
+         * @param tokens Optional vector to collect tokens for syntax highlighting
+         * @return The root AST node
+         * @throws ExprException If the expression syntax is invalid
+         *
+         * This method parses the expression while optionally collecting tokens
+         * that can be used for syntax highlighting or other analysis.
+         */
+        static ASTNodePtr Parse(const std::string& expression, std::vector<Token>* tokens) {
+            Parser parser(expression, tokens);
             return parser.parse();
         }
 
