@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-
-# Don't declare a project if we're being included from parent
-if(CMAKE_PROJECT_NAME STREQUAL "")
-    project(ExpressionKitTests)
-endif()
+project(ExpressionKitTests)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -17,9 +13,6 @@ else()
     set(EXPRESSIONKIT_TARGET ExpressionKitHeader)
 endif()
 
-# Enable testing
-enable_testing()
-
 # Add Catch2
 include(FetchContent)
 FetchContent_Declare(
@@ -30,14 +23,15 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 # Add test executable
-add_executable(ExpressionKitTest test.cpp)
+add_executable(ExprTKTest test.cpp)
 
 # Link ExpressionKit and Catch2
-target_link_libraries(ExpressionKitTest PRIVATE ${EXPRESSIONKIT_TARGET} Catch2::Catch2WithMain)
+target_link_libraries(ExprTKTest PRIVATE ${EXPRESSIONKIT_TARGET} Catch2::Catch2WithMain)
 
-# Register tests
+# Enable testing and register tests
+enable_testing()
 list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)
-catch_discover_tests(ExpressionKitTest)
+catch_discover_tests(ExprTKTest)
 

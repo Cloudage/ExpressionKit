@@ -10,6 +10,9 @@ CTestTestfile.cmake
 DartConfiguration.tcl
 ExprTKTest_include-*.cmake
 ExprTKTest_tests-*.cmake
+Makefile
+CPackConfig.cmake
+CPackSourceConfig.cmake
 
 # CMake files in subdirectories  
 */CMakeCache.txt
