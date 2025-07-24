@@ -79,3 +79,10 @@ docs/latex/
 
 # Testing artifacts
 Testing/
+
+# Test script temporary files
+*_test_output.txt
+*_test_status.txt
+*_test_cases.txt
+*_test_assertions.txt
+*_test_failures.txt
