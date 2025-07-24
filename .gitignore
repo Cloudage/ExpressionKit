@@ -11,6 +11,14 @@ DartConfiguration.tcl
 ExprTKTest_include-*.cmake
 ExprTKTest_tests-*.cmake
 
+# CMake files in subdirectories  
+*/CMakeCache.txt
+*/CMakeFiles/
+*/cmake_install.cmake
+*/_deps/
+*/Testing/
+*/*.cmake
+
 # Swift Package Manager build artifacts
 .build/
 .swiftpm/
@@ -79,3 +87,10 @@ docs/latex/
 
 # Testing artifacts
 Testing/
+
+# Test script temporary files
+*_test_output.txt
+*_test_status.txt
+*_test_cases.txt
+*_test_assertions.txt
+*_test_failures.txt

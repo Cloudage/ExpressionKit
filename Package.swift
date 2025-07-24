@@ -26,23 +26,23 @@ let package = Package(
         .target(
             name: "ExpressionKitCore",
             dependencies: [],
-            path: "Sources/ExpressionKitCore",
+            path: "CPP/Sources/ExpressionKitCore",
             sources: ["ExpressionKitBridge.cpp"],
             publicHeadersPath: "include",
             cxxSettings: [
-                .headerSearchPath("../.."),
+                .headerSearchPath("../../../"),
                 .unsafeFlags(["-std=c++17"])
             ]
         ),
         .target(
             name: "ExpressionKit",
             dependencies: ["ExpressionKitCore"],
-            path: "Sources/ExpressionKit"
+            path: "Swift/Sources/ExpressionKit"
         ),
         .testTarget(
             name: "ExpressionKitTests",
             dependencies: ["ExpressionKit"],
-            path: "Tests/ExpressionKitTests"
+            path: "Swift/Tests/ExpressionKitTests"
         ),
     ]
 )

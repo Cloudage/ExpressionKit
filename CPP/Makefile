@@ -57,10 +57,10 @@ RM = /usr/local/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/runner/work/ExpressionKit/ExpressionKit
+CMAKE_SOURCE_DIR = /home/runner/work/ExpressionKit/ExpressionKit/CPP
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/runner/work/ExpressionKit/ExpressionKit
+CMAKE_BINARY_DIR = /home/runner/work/ExpressionKit/ExpressionKit/CPP
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -97,9 +97,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/runner/work/ExpressionKit/ExpressionKit/CMakeFiles /home/runner/work/ExpressionKit/ExpressionKit//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/runner/work/ExpressionKit/ExpressionKit/CPP/CMakeFiles /home/runner/work/ExpressionKit/ExpressionKit/CPP//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/runner/work/ExpressionKit/ExpressionKit/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/runner/work/ExpressionKit/ExpressionKit/CPP/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
