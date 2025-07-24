@@ -532,3 +532,117 @@ TEST_CASE("Standard Mathematical Functions", "[standard_functions]") {
         REQUIRE(ExprTK::CallStandardFunctions("sqrt", args, result) == false);
     }
 }
+
+TEST_CASE("Token Collection", "[tokens]") {
+    
+    SECTION("Basic number token") {
+        std::vector<Token> tokens;
+        ExprTK::Eval("42", nullptr, &tokens);
+        
+        REQUIRE(tokens.size() == 1);
+        REQUIRE(tokens[0].type == TokenType::NUMBER);
+        REQUIRE(tokens[0].text == "42");
+        REQUIRE(tokens[0].start == 0);
+        REQUIRE(tokens[0].length == 2);
+    }
+    
+    SECTION("Basic boolean token") {
+        std::vector<Token> tokens;
+        ExprTK::Eval("true", nullptr, &tokens);
+        
+        REQUIRE(tokens.size() == 1);
+        REQUIRE(tokens[0].type == TokenType::BOOLEAN);
+        REQUIRE(tokens[0].text == "true");
+    }
+    
+    SECTION("Basic identifier token") {
+        TestBackend backend;
+        backend.set("x", Value(5.0));
+        
+        std::vector<Token> tokens;
+        ExprTK::Eval("x", &backend, &tokens);
+        
+        REQUIRE(tokens.size() == 1);
+        REQUIRE(tokens[0].type == TokenType::IDENTIFIER);
+        REQUIRE(tokens[0].text == "x");
+    }
+    
+    SECTION("Arithmetic expression tokens") {
+        std::vector<Token> tokens;
+        ExprTK::Eval("2 + 3", nullptr, &tokens);
+        
+        // Should collect at least: "2", "+", "3" (whitespace may vary)
+        REQUIRE(tokens.size() >= 3);
+        
+        // Find the specific token types
+        bool hasNumber2 = false, hasPlus = false, hasNumber3 = false;
+        for (const auto& token : tokens) {
+            if (token.type == TokenType::NUMBER && token.text == "2") hasNumber2 = true;
+            if (token.type == TokenType::OPERATOR && token.text == "+") hasPlus = true;
+            if (token.type == TokenType::NUMBER && token.text == "3") hasNumber3 = true;
+        }
+        
+        REQUIRE(hasNumber2);
+        REQUIRE(hasPlus);
+        REQUIRE(hasNumber3);
+    }
+    
+    SECTION("Complex expression tokens") {
+        TestBackend backend;
+        backend.set("x", Value(10.0));
+        
+        std::vector<Token> tokens;
+        ExprTK::Eval("(x + 5) * 2", &backend, &tokens);
+        
+        // Find specific token types
+        bool hasParenthesis = false;
+        bool hasIdentifier = false;
+        bool hasOperator = false;
+        bool hasNumber = false;
+        
+        for (const auto& token : tokens) {
+            if (token.type == TokenType::PARENTHESIS) hasParenthesis = true;
+            if (token.type == TokenType::IDENTIFIER) hasIdentifier = true;
+            if (token.type == TokenType::OPERATOR) hasOperator = true;
+            if (token.type == TokenType::NUMBER) hasNumber = true;
+        }
+        
+        REQUIRE(hasParenthesis);
+        REQUIRE(hasIdentifier);
+        REQUIRE(hasOperator);
+        REQUIRE(hasNumber);
+    }
+    
+    SECTION("Function call tokens") {
+        TestBackend backend;
+        
+        std::vector<Token> tokens;
+        ExprTK::Eval("add(2, 3)", &backend, &tokens);
+        
+        // Should have function name, parentheses, numbers, and comma
+        bool hasFunction = false;
+        bool hasComma = false;
+        
+        for (const auto& token : tokens) {
+            if (token.type == TokenType::IDENTIFIER && token.text == "add") hasFunction = true;
+            if (token.type == TokenType::COMMA) hasComma = true;
+        }
+        
+        REQUIRE(hasFunction);
+        REQUIRE(hasComma);
+    }
+    
+    SECTION("Parse with tokens vs without tokens") {
+        // Test that parsing with and without tokens produces the same AST
+        TestBackend backend;
+        backend.set("x", Value(10.0));
+        
+        auto result1 = ExprTK::Eval("x + 5", &backend);
+        
+        std::vector<Token> tokens;
+        auto result2 = ExprTK::Eval("x + 5", &backend, &tokens);
+        
+        REQUIRE(result1.asNumber() == result2.asNumber());
+        REQUIRE(tokens.size() > 0); // Should have collected some tokens
+    }
+}

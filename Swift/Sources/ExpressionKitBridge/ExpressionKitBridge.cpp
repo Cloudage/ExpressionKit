@@ -9,6 +9,8 @@
 #include <string>
 #include <thread>
 #include <cstddef>
+#include <cstring>
+#include <cstdlib>
 
 using namespace ExpressionKit;
 
@@ -301,6 +303,141 @@ bool expr_value_as_boolean(const ExprValue* value) {
         return value->data.boolean;
     }
     return false;
+}
+
+// Convert C++ TokenType to C ExprTokenType
+static ExprTokenType convertTokenType(TokenType type) {
+    switch (type) {
+        case TokenType::NUMBER: return ExprTokenTypeNumber;
+        case TokenType::BOOLEAN: return ExprTokenTypeBoolean;
+        case TokenType::IDENTIFIER: return ExprTokenTypeIdentifier;
+        case TokenType::OPERATOR: return ExprTokenTypeOperator;
+        case TokenType::PARENTHESIS: return ExprTokenTypeParenthesis;
+        case TokenType::COMMA: return ExprTokenTypeComma;
+        case TokenType::WHITESPACE: return ExprTokenTypeWhitespace;
+        case TokenType::UNKNOWN: return ExprTokenTypeUnknown;
+    }
+    return ExprTokenTypeUnknown;
+}
+
+// Convert C++ tokens to C token array
+static void populateTokenArray(const std::vector<Token>& cppTokens, ExprTokenArray* cArray) {
+    if (!cArray) return;
+    
+    cArray->count = cppTokens.size();
+    cArray->capacity = cppTokens.size();
+    cArray->tokens = static_cast<ExprToken*>(malloc(sizeof(ExprToken) * cArray->count));
+    
+    for (size_t i = 0; i < cppTokens.size(); ++i) {
+        const auto& cppToken = cppTokens[i];
+        ExprToken& cToken = cArray->tokens[i];
+        
+        cToken.type = convertTokenType(cppToken.type);
+        cToken.start = cppToken.start;
+        cToken.length = cppToken.length;
+        
+        // Allocate and copy the text
+        cToken.text = static_cast<char*>(malloc(cppToken.text.size() + 1));
+        strcpy(cToken.text, cppToken.text.c_str());
+    }
+}
+
+// Token management functions
+ExprTokenArray* expr_token_array_create(void) {
+    auto* array = static_cast<ExprTokenArray*>(malloc(sizeof(ExprTokenArray)));
+    array->tokens = nullptr;
+    array->count = 0;
+    array->capacity = 0;
+    return array;
+}
+
+void expr_token_array_destroy(ExprTokenArray* array) {
+    if (!array) return;
+    
+    // Free all text strings
+    for (size_t i = 0; i < array->count; ++i) {
+        free(array->tokens[i].text);
+    }
+    
+    // Free the tokens array
+    free(array->tokens);
+    
+    // Free the array structure
+    free(array);
+}
+
+size_t expr_token_array_size(const ExprTokenArray* array) {
+    return array ? array->count : 0;
+}
+
+const ExprToken* expr_token_array_get(const ExprTokenArray* array, size_t index) {
+    if (!array || index >= array->count) return nullptr;
+    return &array->tokens[index];
+}
+
+// Parse expression with token collection
+ExprASTHandle expr_parse_with_tokens(const char* expression, ExprTokenArray* tokens) {
+    if (!expression) {
+        g_lastError = ExprErrorParseError;
+        g_lastErrorMessage = "Null expression string";
+        return nullptr;
+    }
+    
+    try {
+        std::vector<Token> cppTokens;
+        auto ast = ExprTK::Parse(std::string(expression), tokens ? &cppTokens : nullptr);
+        
+        if (tokens) {
+            populateTokenArray(cppTokens, tokens);
+        }
+        
+        g_lastError = ExprErrorNone;
+        g_lastErrorMessage.clear();
+        
+        // Return a copy of the shared_ptr on the heap
+        return new ASTNodePtr(ast);
+    } catch (const ExprException& e) {
+        g_lastError = ExprErrorParseError;
+        g_lastErrorMessage = e.what();
+        return nullptr;
+    } catch (const std::exception& e) {
+        g_lastError = ExprErrorRuntimeError;
+        g_lastErrorMessage = std::string("Unexpected error: ") + e.what();
+        return nullptr;
+    }
+}
+
+// Direct evaluation with token collection
+ExprValue expr_evaluate_with_tokens(const char* expression, ExprBackendHandle backend, ExprTokenArray* tokens) {
+    if (!expression) {
+        g_lastError = ExprErrorParseError;
+        g_lastErrorMessage = "Null expression string";
+        return expr_make_number(0.0);
+    }
+    
+    try {
+        std::vector<Token> cppTokens;
+        CallbackBackend* cppBackend = static_cast<CallbackBackend*>(backend);
+        
+        auto result = ExprTK::Eval(std::string(expression), cppBackend, tokens ? &cppTokens : nullptr);
+        
+        if (tokens) {
+            populateTokenArray(cppTokens, tokens);
+        }
+        
+        g_lastError = ExprErrorNone;
+        g_lastErrorMessage.clear();
+        
+        return convertToCValue(result);
+    } catch (const ExprException& e) {
+        g_lastError = ExprErrorRuntimeError;
+        g_lastErrorMessage = e.what();
+        return expr_make_number(0.0);
+    } catch (const std::exception& e) {
+        g_lastError = ExprErrorRuntimeError;
+        g_lastErrorMessage = std::string("Unexpected error: ") + e.what();
+        return expr_make_number(0.0);
+    }
 }
 
 } // extern "C"

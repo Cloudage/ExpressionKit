@@ -54,16 +54,49 @@ typedef struct {
     void* context;
 } ExprBackendConfig;
 
+// Token types for syntax highlighting
+typedef enum {
+    ExprTokenTypeNumber = 0,
+    ExprTokenTypeBoolean = 1,
+    ExprTokenTypeIdentifier = 2,
+    ExprTokenTypeOperator = 3,
+    ExprTokenTypeParenthesis = 4,
+    ExprTokenTypeComma = 5,
+    ExprTokenTypeWhitespace = 6,
+    ExprTokenTypeUnknown = 7
+} ExprTokenType;
+
+// Token structure for syntax highlighting
+typedef struct {
+    ExprTokenType type;
+    size_t start;
+    size_t length;
+    char* text;  // Null-terminated string
+} ExprToken;
+
+// Token array structure for C interface
+typedef struct {
+    ExprToken* tokens;
+    size_t count;
+    size_t capacity;
+} ExprTokenArray;
+
 // Core API functions
 
 // Parse expression into AST (returns NULL on error, check expr_get_last_error)
 ExprASTHandle expr_parse(const char* expression);
+
+// Parse expression into AST with token collection
+ExprASTHandle expr_parse_with_tokens(const char* expression, ExprTokenArray* tokens);
 
 // Evaluate AST with optional backend (returns invalid value on error, check expr_get_last_error)
 ExprValue expr_evaluate_ast(ExprASTHandle ast, ExprBackendHandle backend);
 
 // Direct evaluation (combines parse + evaluate)
 ExprValue expr_evaluate(const char* expression, ExprBackendHandle backend);
+
+// Direct evaluation with token collection
+ExprValue expr_evaluate_with_tokens(const char* expression, ExprBackendHandle backend, ExprTokenArray* tokens);
 
 // Backend management
 ExprBackendHandle expr_backend_create(const ExprBackendConfig* config);
@@ -85,6 +118,12 @@ bool expr_value_is_number(const ExprValue* value);
 bool expr_value_is_boolean(const ExprValue* value);
 double expr_value_as_number(const ExprValue* value);
 bool expr_value_as_boolean(const ExprValue* value);
+
+// Token management functions
+ExprTokenArray* expr_token_array_create(void);
+void expr_token_array_destroy(ExprTokenArray* array);
+size_t expr_token_array_size(const ExprTokenArray* array);
+const ExprToken* expr_token_array_get(const ExprTokenArray* array, size_t index);
 
 #ifdef __cplusplus
 }
