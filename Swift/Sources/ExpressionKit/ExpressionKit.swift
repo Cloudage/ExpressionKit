@@ -34,7 +34,7 @@ public struct Token {
 
 /// Swift wrapper for ExpressionKit library
 /// Provides a clean Swift API while maintaining the "parse once, execute many times" capability
-public final class ExpressionKit {
+public final class Expression {
     
     /// Evaluate an expression string directly (without environment support for now)
     /// - Parameter expression: The expression string to evaluate
@@ -81,13 +81,13 @@ public final class ExpressionKit {
     /// - Parameter expression: The expression string to parse
     /// - Returns: A compiled Expression that can be evaluated multiple times
     /// - Throws: ExpressionError if parsing fails
-    public static func parse(_ expression: String) throws -> Expression {
+    public static func parse(_ expression: String) throws -> CompiledExpression {
         guard let handle = expr_parse(expression) else {
             let message = String(cString: expr_get_last_error_message())
             throw ExpressionError.parseFailed(message)
         }
         
-        return Expression(handle: handle)
+        return CompiledExpression(handle: handle)
     }
     
     /// Parse an expression into a reusable Expression object with token collection
@@ -96,7 +96,7 @@ public final class ExpressionKit {
     ///   - collectTokens: Whether to collect tokens for syntax highlighting
     /// - Returns: A tuple containing the compiled Expression and optional tokens
     /// - Throws: ExpressionError if parsing fails
-    public static func parse(_ expression: String, collectTokens: Bool) throws -> (expression: Expression, tokens: [Token]?) {
+    public static func parse(_ expression: String, collectTokens: Bool) throws -> (expression: CompiledExpression, tokens: [Token]?) {
         if collectTokens {
             let tokenArray = expr_token_array_create()
             defer { expr_token_array_destroy(tokenArray) }
@@ -107,7 +107,7 @@ public final class ExpressionKit {
             }
             
             let tokens = extractTokens(from: tokenArray!)
-            return (expression: Expression(handle: handle), tokens: tokens)
+            return (expression: CompiledExpression(handle: handle), tokens: tokens)
         } else {
             let expr = try parse(expression)
             return (expression: expr, tokens: nil)

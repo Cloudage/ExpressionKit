@@ -70,10 +70,10 @@ dependencies: [
 import ExpressionKit
 
 // 直接求值
-let result = try ExpressionKit.evaluate("2 + 3 * 4")  // 14.0
+let result = try Expression.evaluate("2 + 3 * 4")  // 14.0
 
 // 解析一次，执行多次（高性能）
-let expression = try ExpressionKit.parse("(a + b) * c - 1")
+let expression = try Expression.parse("(a + b) * c - 1")
 for _ in 0..<10000 {
     let result = try expression.evaluate()  // 非常快！
 }
@@ -94,16 +94,16 @@ for _ in 0..<10000 {
 using namespace ExpressionKit;
 
 // 求解简单数学表达式
-auto result = ExpressionKit::Eval("2 + 3 * 4");  // 返回 14.0
+auto result = Expression::Eval("2 + 3 * 4");  // 返回 14.0
 std::cout << "结果: " << result.asNumber() << std::endl;
 
 // 布尔表达式
-auto boolResult = ExpressionKit::Eval("true && false");  // 返回 false
+auto boolResult = Expression::Eval("true && false");  // 返回 false
 std::cout << "布尔结果: " << boolResult.asBoolean() << std::endl;
 
 // 用于语法高亮的词法序列收集
 std::vector<Token> tokens;
-auto resultWithTokens = ExpressionKit::Eval("2 + 3 * max(4, 5)", nullptr, &tokens);
+auto resultWithTokens = Expression::Eval("2 + 3 * max(4, 5)", nullptr, &tokens);
 std::cout << "结果: " << resultWithTokens.asNumber() << std::endl;
 for (const auto& token : tokens) {
     std::cout << "词法单元: " << (int)token.type << " '" << token.text 
@@ -118,7 +118,7 @@ for (const auto& token : tokens) {
 | **安装** | Swift Package Manager | 复制单个 .hpp 文件 |
 | **依赖** | 无（由 SPM 处理） | 无（仅头文件） |
 | **集成** | `import ExpressionKit` | `#include "ExpressionKit.hpp"` |
-| **API** | `ExpressionKit.evaluate()` | `ExpressionKit::Eval()` |
+| **API** | `Expression.evaluate()` | `Expression::Eval()` |
 | **性能** | ✅ 完整性能 | ✅ 完整性能 |
 | **功能** | ✅ 所有核心功能 | ✅ 所有功能 + Environment |
 
@@ -155,7 +155,7 @@ using namespace ExpressionKit;
 
 // 在求值时收集词法单元
 std::vector<Token> tokens;
-auto result = ExpressionKit::Eval("max(x + 5, y * 2)", &environment, &tokens);
+auto result = Expression::Eval("max(x + 5, y * 2)", &environment, &tokens);
 
 // 处理词法单元用于语法高亮
 for (const auto& token : tokens) {
@@ -167,7 +167,7 @@ for (const auto& token : tokens) {
 
 // 另一种方式：解析时收集词法单元用于预编译
 std::vector<Token> parseTokens;
-auto ast = ExpressionKit::Parse("complex_expression", &parseTokens);
+auto ast = Expression::Parse("complex_expression", &parseTokens);
 // parseTokens 现在包含所有用于语法高亮的词法单元
 auto result = ast->evaluate(&environment);
 ```
@@ -178,7 +178,7 @@ auto result = ast->evaluate(&environment);
 import ExpressionKit
 
 // 求值时收集词法单元
-let (value, tokens) = try ExpressionKit.evaluate("max(x + 5, y * 2)", collectTokens: true)
+let (value, tokens) = try Expression.evaluate("max(x + 5, y * 2)", collectTokens: true)
 print("结果: \(value)")
 
 if let tokens = tokens {
@@ -188,7 +188,7 @@ if let tokens = tokens {
 }
 
 // 解析时收集词法单元用于预编译
-let (expression, parseTokens) = try ExpressionKit.parse("complex_expression", collectTokens: true)
+let (expression, parseTokens) = try Expression.parse("complex_expression", collectTokens: true)
 // parseTokens 包含所有用于分析的词法单元
 let result = try expression.evaluate()
 ```
@@ -225,22 +225,22 @@ let result = try expression.evaluate()
 import ExpressionKit
 
 // 基本算术
-let result1 = try ExpressionKit.evaluate("2 + 3 * 4")  // 14.0
+let result1 = try Expression.evaluate("2 + 3 * 4")  // 14.0
 
 // 布尔逻辑
-let result2 = try ExpressionKit.evaluate("true && (5 > 3)")  // true
+let result2 = try Expression.evaluate("true && (5 > 3)")  // true
 
 // 复杂表达式
-let result3 = try ExpressionKit.evaluate("(2 + 3) * 4 - 1")  // 19.0
+let result3 = try Expression.evaluate("(2 + 3) * 4 - 1")  // 19.0
 
 // 解析一次，执行多次以获得高性能
-let expression = try ExpressionKit.parse("(a + b) * c - 1")
+let expression = try Expression.parse("(a + b) * c - 1")
 for _ in 0..<10000 {
     let result = try expression.evaluate()  // 非常快的重复执行
 }
 
 // 用于语法高亮的词法序列收集
-let (value, tokens) = try ExpressionKit.evaluate("2 + 3 * max(4, 5)", collectTokens: true)
+let (value, tokens) = try Expression.evaluate("2 + 3 * max(4, 5)", collectTokens: true)
 print("结果: \(value)")
 if let tokens = tokens {
     for token in tokens {
@@ -250,7 +250,7 @@ if let tokens = tokens {
 
 // 错误处理
 do {
-    let result = try ExpressionKit.evaluate("1 / 0")
+    let result = try Expression.evaluate("1 / 0")
 } catch let error as ExpressionError {
     print("表达式错误: \(error.localizedDescription)")
 }
@@ -262,9 +262,9 @@ do {
 #include "ExpressionKit.hpp"
 #include <unordered_map>
 
-class GameEnvironment : public ExpressionKit::IEnvironment {
+class GameEnvironment : public Expression::IEnvironment {
 private:
-    std::unordered_map<std::string, ExpressionKit::Value> variables;
+    std::unordered_map<std::string, Expression::Value> variables;
     
 public:
     GameEnvironment() {
@@ -278,20 +278,20 @@ public:
     }
     
     // 实现变量读取
-    ExpressionKit::Value Get(const std::string& name) override {
+    Expression::Value Get(const std::string& name) override {
         auto it = variables.find(name);
         if (it == variables.end()) {
-            throw ExpressionKit::ExprException("未找到变量: " + name);
+            throw Expression::ExprException("未找到变量: " + name);
         }
         return it->second;
     }
     
     // 实现函数调用
-    ExpressionKit::Value Call(const std::string& name, 
-                             const std::vector<ExpressionKit::Value>& args) override {
+    Expression::Value Call(const std::string& name, 
+                             const std::vector<Expression::Value>& args) override {
         // 首先尝试标准数学函数
-        ExpressionKit::Value result;
-        if (ExpressionKit::ExpressionKit::CallStandardFunctions(name, args, result)) {
+        Expression::Value result;
+        if (Expression::Expression::CallStandardFunctions(name, args, result)) {
             return result;
         }
         
@@ -300,9 +300,9 @@ public:
             double x1 = args[0].asNumber(), y1 = args[1].asNumber();
             double x2 = args[2].asNumber(), y2 = args[3].asNumber();
             double dx = x2 - x1, dy = y2 - y1;
-            return ExpressionKit::Value(std::sqrt(dx*dx + dy*dy));
+            return Expression::Value(std::sqrt(dx*dx + dy*dy));
         }
-        throw ExpressionKit::ExprException("未知函数: " + name);
+        throw Expression::ExprException("未知函数: " + name);
     }
 };
 
@@ -311,15 +311,15 @@ int main() {
     GameEnvironment environment;
     
     // 游戏逻辑表达式
-    auto healthPercent = ExpressionKit::Eval("health / maxHealth", &environment);
+    auto healthPercent = Expression::Eval("health / maxHealth", &environment);
     std::cout << "生命值百分比: " << healthPercent.asNumber() << std::endl;
     
     // 复杂条件检查
-    auto needHealing = ExpressionKit::Eval("health < maxHealth * 0.5 && isAlive", &environment);
+    auto needHealing = Expression::Eval("health < maxHealth * 0.5 && isAlive", &environment);
     std::cout << "需要治疗: " << (needHealing.asBoolean() ? "是" : "否") << std::endl;
     
     // 函数调用
-    auto playerPos = ExpressionKit::Eval("distance(pos.x, pos.y, 0, 0)", &environment);
+    auto playerPos = Expression::Eval("distance(pos.x, pos.y, 0, 0)", &environment);
     std::cout << "距离原点: " << playerPos.asNumber() << std::endl;
     
     return 0;
@@ -340,16 +340,16 @@ class HighPerformanceExample {
 private:
     GameEnvironment environment;
     // 预编译的表达式 AST
-    std::shared_ptr<ExpressionKit::ASTNode> healthCheckExpr;
-    std::shared_ptr<ExpressionKit::ASTNode> damageCalcExpr;
-    std::shared_ptr<ExpressionKit::ASTNode> levelUpExpr;
+    std::shared_ptr<Expression::ASTNode> healthCheckExpr;
+    std::shared_ptr<Expression::ASTNode> damageCalcExpr;
+    std::shared_ptr<Expression::ASTNode> levelUpExpr;
     
 public:
     HighPerformanceExample() {
         // 启动时预编译所有表达式
-        healthCheckExpr = ExpressionKit::Parse("health > 0 && health <= maxHealth");
-        damageCalcExpr = ExpressionKit::Parse("max(0, damage - armor) * (1.0 + level * 0.1)");
-        levelUpExpr = ExpressionKit::Parse("exp >= level * 100");
+        healthCheckExpr = Expression::Parse("health > 0 && health <= maxHealth");
+        damageCalcExpr = Expression::Parse("max(0, damage - armor) * (1.0 + level * 0.1)");
+        levelUpExpr = Expression::Parse("exp >= level * 100");
     }
     
     // 游戏循环中的高效执行
@@ -422,19 +422,19 @@ ExpressionKit 通过 `CallStandardFunctions` 方法提供了一套完整的标�
 这些函数可以在 IEnvironment 实现中使用，以提供数学计算能力：
 
 ```cpp
-class MathEnvironment : public ExpressionKit::IEnvironment {
+class MathEnvironment : public Expression::IEnvironment {
 public:
-    ExpressionKit::Value Call(const std::string& name, 
-                             const std::vector<ExpressionKit::Value>& args) override {
-        ExpressionKit::Value result;
+    Expression::Value Call(const std::string& name, 
+                             const std::vector<Expression::Value>& args) override {
+        Expression::Value result;
         
         // 首先尝试标准数学函数
-        if (ExpressionKit::ExpressionKit::CallStandardFunctions(name, args, result)) {
+        if (Expression::Expression::CallStandardFunctions(name, args, result)) {
             return result;
         }
         
         // 自定义函数...
-        throw ExpressionKit::ExprException("未知函数: " + name);
+        throw Expression::ExprException("未知函数: " + name);
     }
     
     // ... 其他方法
@@ -508,11 +508,11 @@ public:
    ```cpp
    // 慢：每次都解析
    for (int i = 0; i < 1000000; ++i) {
-       auto result = ExpressionKit::Eval("complex_expression", &environment);
+       auto result = Expression::Eval("complex_expression", &environment);
    }
    
    // 快：预解析并重用
-   auto ast = ExpressionKit::Parse("complex_expression");
+   auto ast = Expression::Parse("complex_expression");
    for (int i = 0; i < 1000000; ++i) {
        auto result = ast->evaluate(&environment);
    }
@@ -535,8 +535,8 @@ ExpressionKit 使用异常进行错误处理：
 
 ```cpp
 try {
-    auto result = ExpressionKit::Eval("invalid expression ++ --", &environment);
-} catch (const ExpressionKit::ExprException& e) {
+    auto result = Expression::Eval("invalid expression ++ --", &environment);
+} catch (const Expression::ExprException& e) {
     std::cerr << "表达式错误: " << e.what() << std::endl;
 }
 ```
