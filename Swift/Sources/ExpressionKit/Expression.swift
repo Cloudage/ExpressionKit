@@ -19,7 +19,7 @@ public final class CompiledExpression {
     /// Evaluate this expression (without environment for now)
     /// - Returns: The evaluation result
     /// - Throws: ExpressionError if evaluation fails
-    public func evaluate() throws -> Value {
+    public func eval() throws -> Value {
         let result = expr_evaluate_ast(handle, nil)
         
         if expr_get_last_error() != ExprErrorNone {
