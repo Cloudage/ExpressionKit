@@ -1,4 +1,0 @@
-module ExpressionKitCore {
-    umbrella "/home/runner/work/ExpressionKit/ExpressionKit/Sources/ExpressionKitCore/include"
-    export *
-}

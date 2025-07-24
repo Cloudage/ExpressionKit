@@ -111,4 +111,38 @@ final class ExpressionKitTests: XCTestCase {
         let boolLiteral: Value = true
         XCTAssertEqual(boolLiteral, .boolean(true))
     }
+    
+    func testSwiftWrapperCorrectness() throws {
+        // Verify that Swift wrapper properly integrates with C++ backend
+        // This confirms the packaging/wrapper is working correctly
+        
+        // Test basic functionality through Swift API
+        let simpleResult = try ExpressionKit.evaluate("2 + 3")
+        XCTAssertEqual(simpleResult, .number(5.0), "Basic arithmetic should work through Swift wrapper")
+        
+        // Test complex expression to verify parser integration
+        let complexResult = try ExpressionKit.evaluate("(2 + 3) * 4 - 1")
+        XCTAssertEqual(complexResult, .number(19.0), "Complex expressions should parse and evaluate correctly")
+        
+        // Test boolean expressions to verify all value types work
+        let boolResult = try ExpressionKit.evaluate("5 > 3 && 2 == 2")
+        XCTAssertEqual(boolResult, .boolean(true), "Boolean logic should work through Swift wrapper")
+        
+        // Test parse-once execute-many pattern to verify AST integration
+        let expression = try ExpressionKit.parse("10 - 3 * 2")
+        let result1 = try expression.evaluate()
+        let result2 = try expression.evaluate()
+        XCTAssertEqual(result1, .number(4.0), "First execution should be correct")
+        XCTAssertEqual(result2, .number(4.0), "Second execution should give same result")
+        XCTAssertEqual(result1, result2, "Multiple executions should be consistent")
+        
+        // Test error handling to verify exception bridging works
+        XCTAssertThrowsError(try ExpressionKit.parse("1 + * 3")) { error in
+            XCTAssertTrue(error is ExpressionError, "Should throw ExpressionError for invalid syntax")
+        }
+        
+        XCTAssertThrowsError(try ExpressionKit.evaluate("1 / 0")) { error in
+            XCTAssertTrue(error is ExpressionError, "Should throw ExpressionError for division by zero")
+        }
+    }
 }
