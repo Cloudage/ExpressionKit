@@ -140,6 +140,19 @@ ExprTKTest/fast:
 .PHONY : ExprTKTest/fast
 
 #=============================================================================
+# Target rules for targets named TokenDemo
+
+# Build rule for target.
+TokenDemo: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TokenDemo
+.PHONY : TokenDemo
+
+# fast build rule for target.
+TokenDemo/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TokenDemo.dir/build.make CMakeFiles/TokenDemo.dir/build
+.PHONY : TokenDemo/fast
+
+#=============================================================================
 # Target rules for targets named Experimental
 
 # Build rule for target.
@@ -553,6 +566,30 @@ test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/ExprTKTest.dir/build.make CMakeFiles/ExprTKTest.dir/test.cpp.s
 .PHONY : test.cpp.s
 
+token_demo.o: token_demo.cpp.o
+.PHONY : token_demo.o
+
+# target to build an object file
+token_demo.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TokenDemo.dir/build.make CMakeFiles/TokenDemo.dir/token_demo.cpp.o
+.PHONY : token_demo.cpp.o
+
+token_demo.i: token_demo.cpp.i
+.PHONY : token_demo.i
+
+# target to preprocess a source file
+token_demo.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TokenDemo.dir/build.make CMakeFiles/TokenDemo.dir/token_demo.cpp.i
+.PHONY : token_demo.cpp.i
+
+token_demo.s: token_demo.cpp.s
+.PHONY : token_demo.s
+
+# target to generate assembly for a file
+token_demo.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TokenDemo.dir/build.make CMakeFiles/TokenDemo.dir/token_demo.cpp.s
+.PHONY : token_demo.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -593,9 +630,13 @@ help:
 	@echo "... Catch2"
 	@echo "... Catch2WithMain"
 	@echo "... ExprTKTest"
+	@echo "... TokenDemo"
 	@echo "... test.o"
 	@echo "... test.i"
 	@echo "... test.s"
+	@echo "... token_demo.o"
+	@echo "... token_demo.i"
+	@echo "... token_demo.s"
 .PHONY : help
 
 
