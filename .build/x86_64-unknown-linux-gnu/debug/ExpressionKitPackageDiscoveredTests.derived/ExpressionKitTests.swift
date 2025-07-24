@@ -12,6 +12,7 @@ fileprivate extension ExpressionKitTests {
         ("testErrorHandling", testErrorHandling),
         ("testParseOnceComplex", testParseOnceComplex),
         ("testParseOnceExecuteMany", testParseOnceExecuteMany),
+        ("testSwiftWrapperCorrectness", testSwiftWrapperCorrectness),
         ("testValueLiterals", testValueLiterals),
         ("testValueTypes", testValueTypes)
     ]
