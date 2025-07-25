@@ -24,11 +24,11 @@ Or add it via Xcode: File → Add Package Dependencies, then enter the repositor
 import ExpressionKit
 
 // Simple arithmetic
-let result = try Expression.evaluate("2 + 3 * 4")
+let result = try Expression.eval("2 + 3 * 4")
 print(result) // .number(14.0)
 
 // Boolean expressions
-let boolResult = try Expression.evaluate("true && false")
+let boolResult = try Expression.eval("true && false")
 print(boolResult) // .boolean(false)
 ```
 
@@ -44,7 +44,7 @@ let expression = try Expression.parse("(a + b) * c - 1")
 
 // Execute many times (very efficient)
 for i in 0..<10000 {
-    let result = try expression.evaluate()
+    let result = try expression.eval()
     print(result) // Same result each time: .number(some_value)
 }
 ```
@@ -91,7 +91,7 @@ public struct Token {
 import ExpressionKit
 
 // Evaluate with token collection
-let (value, tokens) = try Expression.evaluate("2 + 3 * max(4, 5)", collectTokens: true)
+let (value, tokens) = try Expression.eval("2 + 3 * max(4, 5)", collectTokens: true)
 print("Result: \(value)")
 
 if let tokens = tokens {
@@ -154,7 +154,7 @@ if let tokens = tokens {
   ```swift
   func validateExpression(_ expr: String) -> [ValidationError] {
       do {
-          let (_, tokens) = try Expression.evaluate(expr, collectTokens: true)
+          let (_, tokens) = try Expression.eval(expr, collectTokens: true)
           // Analyze tokens for potential issues
           return analyzeTokens(tokens)
       } catch {
@@ -237,7 +237,7 @@ ExpressionKit uses Swift's error handling system:
 
 ```swift
 do {
-    let result = try Expression.evaluate("2 + 3")
+    let result = try Expression.eval("2 + 3")
     print("Result: \\(result)")
 } catch let error as ExpressionError {
     print("Expression error: \\(error.localizedDescription)")
@@ -258,16 +258,16 @@ Error types:
 
 ```swift
 // Complex arithmetic with precedence
-let result1 = try Expression.evaluate("2 + 3 * 4 - 1")  // 13.0
+let result1 = try Expression.eval("2 + 3 * 4 - 1")  // 13.0
 
 // Boolean logic
-let result2 = try Expression.evaluate("true && (false || true)")  // true
+let result2 = try Expression.eval("true && (false || true)")  // true
 
 // Comparisons
-let result3 = try Expression.evaluate("(5 + 3) > (2 * 3)")  // true (8 > 6)
+let result3 = try Expression.eval("(5 + 3) > (2 * 3)")  // true (8 > 6)
 
 // Mixed operations
-let result4 = try Expression.evaluate("5 > 3 && 2 == 2")  // true
+let result4 = try Expression.eval("5 > 3 && 2 == 2")  // true
 ```
 
 ### Performance Characteristics
@@ -281,14 +281,14 @@ let expression = "((2 + 3) * 4 - 1) / (5 + 2) >= 1.5 && true"
 // Without tokens: ~0.5ms per evaluation
 let start1 = Date()
 for _ in 0..<1000 {
-    _ = try! Expression.evaluate(expression)
+    _ = try! Expression.eval(expression)
 }
 let timeWithoutTokens = Date().timeIntervalSince(start1)
 
 // With tokens: ~0.55ms per evaluation
 let start2 = Date()
 for _ in 0..<1000 {
-    _ = try! Expression.evaluate(expression, collectTokens: true)
+    _ = try! Expression.eval(expression, collectTokens: true)
 }
 let timeWithTokens = Date().timeIntervalSince(start2)
 
@@ -322,8 +322,8 @@ If you're migrating from the C++ version:
 
 | C++ | Swift |
 |-----|-------|
-| `ExpressionKit::Eval("2+3")` | `try Expression.evaluate("2+3")` |
+| `ExpressionKit::Eval("2+3")` | `try Expression.eval("2+3")` |
 | `ExpressionKit::Parse("2+3")` | `try Expression.parse("2+3")` |
-| `ast->evaluate(environment)` | `try expression.evaluate()` |
+| `ast->evaluate(environment)` | `try expression.eval()` |
 | `Value(42.0)` | `Value.number(42.0)` or `42.0` |
 | `Value(true)` | `Value.boolean(true)` or `true` |

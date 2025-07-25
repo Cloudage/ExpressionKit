@@ -69,12 +69,12 @@ Then import and use:
 import ExpressionKit
 
 // Direct evaluation
-let result = try Expression.evaluate("2 + 3 * 4")  // 14.0
+let result = try Expression.eval("2 + 3 * 4")  // 14.0
 
 // Parse once, execute many times (high performance)
 let expression = try Expression.parse("(a + b) * c - 1")
 for _ in 0..<10000 {
-    let result = try expression.evaluate()  // Very fast!
+    let result = try expression.eval()  // Very fast!
 }
 ```
 
@@ -117,7 +117,7 @@ for (const auto& token : tokens) {
 | **Setup** | Swift Package Manager | Copy single .hpp file |
 | **Dependencies** | None (handled by SPM) | None (header-only) |
 | **Integration** | `import ExpressionKit` | `#include "ExpressionKit.hpp"` |
-| **API** | `Expression.evaluate()` | `Expression::Eval()` |
+| **API** | `Expression.eval()` | `Expression::Eval()` |
 | **Performance** | ✅ Full performance | ✅ Full performance |
 | **Features** | ✅ All core features | ✅ All features + Environment |
 
@@ -177,7 +177,7 @@ auto result = ast->evaluate(&environment);
 import ExpressionKit
 
 // Evaluate with token collection
-let (value, tokens) = try Expression.evaluate("max(x + 5, y * 2)", collectTokens: true)
+let (value, tokens) = try Expression.eval("max(x + 5, y * 2)", collectTokens: true)
 print("Result: \(value)")
 
 if let tokens = tokens {
@@ -189,7 +189,7 @@ if let tokens = tokens {
 // Parse with token collection for pre-compilation
 let (expression, parseTokens) = try Expression.parse("complex_expression", collectTokens: true)
 // parseTokens contains all tokens for analysis
-let result = try expression.evaluate()
+let result = try expression.eval()
 ```
 
 ### Use Cases for Token Sequences
@@ -224,22 +224,22 @@ The overhead is primarily from string allocation for token text. For performance
 import ExpressionKit
 
 // Basic arithmetic
-let result1 = try Expression.evaluate("2 + 3 * 4")  // 14.0
+let result1 = try Expression.eval("2 + 3 * 4")  // 14.0
 
 // Boolean logic
-let result2 = try Expression.evaluate("true && (5 > 3)")  // true
+let result2 = try Expression.eval("true && (5 > 3)")  // true
 
 // Complex expressions
-let result3 = try Expression.evaluate("(2 + 3) * 4 - 1")  // 19.0
+let result3 = try Expression.eval("(2 + 3) * 4 - 1")  // 19.0
 
 // Parse once, execute many times for high performance
 let expression = try Expression.parse("(a + b) * c - 1")
 for _ in 0..<10000 {
-    let result = try expression.evaluate()  // Very fast repeated execution
+    let result = try expression.eval()  // Very fast repeated execution
 }
 
 // Token sequence collection for syntax highlighting
-let (value, tokens) = try Expression.evaluate("2 + 3 * max(4, 5)", collectTokens: true)
+let (value, tokens) = try Expression.eval("2 + 3 * max(4, 5)", collectTokens: true)
 print("Result: \(value)")
 if let tokens = tokens {
     for token in tokens {
@@ -249,7 +249,7 @@ if let tokens = tokens {
 
 // Error handling
 do {
-    let result = try Expression.evaluate("1 / 0")
+    let result = try Expression.eval("1 / 0")
 } catch let error as ExpressionError {
     print("Expression error: \(error.localizedDescription)")
 }

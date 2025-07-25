@@ -40,7 +40,7 @@ public final class Expression {
     /// - Parameter expression: The expression string to evaluate
     /// - Returns: The evaluation result
     /// - Throws: ExpressionError if parsing or evaluation fails
-    public static func evaluate(_ expression: String) throws -> Value {
+    public static func eval(_ expression: String) throws -> Value {
         let result = expr_evaluate(expression, nil)
         
         if expr_get_last_error() != ExprErrorNone {
@@ -57,7 +57,7 @@ public final class Expression {
     ///   - collectTokens: Whether to collect tokens for syntax highlighting
     /// - Returns: A tuple containing the evaluation result and optional tokens
     /// - Throws: ExpressionError if parsing or evaluation fails
-    public static func evaluate(_ expression: String, collectTokens: Bool) throws -> (value: Value, tokens: [Token]?) {
+    public static func eval(_ expression: String, collectTokens: Bool) throws -> (value: Value, tokens: [Token]?) {
         if collectTokens {
             let tokenArray = expr_token_array_create()
             defer { expr_token_array_destroy(tokenArray) }
@@ -72,7 +72,7 @@ public final class Expression {
             let tokens = extractTokens(from: tokenArray!)
             return (value: result, tokens: tokens)
         } else {
-            let value = try evaluate(expression)
+            let value = try eval(expression)
             return (value: value, tokens: nil)
         }
     }

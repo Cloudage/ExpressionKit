@@ -70,12 +70,12 @@ dependencies: [
 import ExpressionKit
 
 // 直接求值
-let result = try Expression.evaluate("2 + 3 * 4")  // 14.0
+let result = try Expression.eval("2 + 3 * 4")  // 14.0
 
 // 解析一次，执行多次（高性能）
 let expression = try Expression.parse("(a + b) * c - 1")
 for _ in 0..<10000 {
-    let result = try expression.evaluate()  // 非常快！
+    let result = try expression.eval()  // 非常快！
 }
 ```
 
@@ -118,7 +118,7 @@ for (const auto& token : tokens) {
 | **安装** | Swift Package Manager | 复制单个 .hpp 文件 |
 | **依赖** | 无（由 SPM 处理） | 无（仅头文件） |
 | **集成** | `import ExpressionKit` | `#include "ExpressionKit.hpp"` |
-| **API** | `Expression.evaluate()` | `Expression::Eval()` |
+| **API** | `Expression.eval()` | `Expression::Eval()` |
 | **性能** | ✅ 完整性能 | ✅ 完整性能 |
 | **功能** | ✅ 所有核心功能 | ✅ 所有功能 + Environment |
 
@@ -178,7 +178,7 @@ auto result = ast->evaluate(&environment);
 import ExpressionKit
 
 // 求值时收集词法单元
-let (value, tokens) = try Expression.evaluate("max(x + 5, y * 2)", collectTokens: true)
+let (value, tokens) = try Expression.eval("max(x + 5, y * 2)", collectTokens: true)
 print("结果: \(value)")
 
 if let tokens = tokens {
@@ -190,7 +190,7 @@ if let tokens = tokens {
 // 解析时收集词法单元用于预编译
 let (expression, parseTokens) = try Expression.parse("complex_expression", collectTokens: true)
 // parseTokens 包含所有用于分析的词法单元
-let result = try expression.evaluate()
+let result = try expression.eval()
 ```
 
 ### 词法序列的使用场景
@@ -225,22 +225,22 @@ let result = try expression.evaluate()
 import ExpressionKit
 
 // 基本算术
-let result1 = try Expression.evaluate("2 + 3 * 4")  // 14.0
+let result1 = try Expression.eval("2 + 3 * 4")  // 14.0
 
 // 布尔逻辑
-let result2 = try Expression.evaluate("true && (5 > 3)")  // true
+let result2 = try Expression.eval("true && (5 > 3)")  // true
 
 // 复杂表达式
-let result3 = try Expression.evaluate("(2 + 3) * 4 - 1")  // 19.0
+let result3 = try Expression.eval("(2 + 3) * 4 - 1")  // 19.0
 
 // 解析一次，执行多次以获得高性能
 let expression = try Expression.parse("(a + b) * c - 1")
 for _ in 0..<10000 {
-    let result = try expression.evaluate()  // 非常快的重复执行
+    let result = try expression.eval()  // 非常快的重复执行
 }
 
 // 用于语法高亮的词法序列收集
-let (value, tokens) = try Expression.evaluate("2 + 3 * max(4, 5)", collectTokens: true)
+let (value, tokens) = try Expression.eval("2 + 3 * max(4, 5)", collectTokens: true)
 print("结果: \(value)")
 if let tokens = tokens {
     for token in tokens {
@@ -250,7 +250,7 @@ if let tokens = tokens {
 
 // 错误处理
 do {
-    let result = try Expression.evaluate("1 / 0")
+    let result = try Expression.eval("1 / 0")
 } catch let error as ExpressionError {
     print("表达式错误: \(error.localizedDescription)")
 }

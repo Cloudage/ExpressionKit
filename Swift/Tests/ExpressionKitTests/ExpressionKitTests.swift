@@ -7,114 +7,114 @@ final class ExpressionKitTests: XCTestCase {
     // MARK: - Basic Arithmetic Tests
     
     func testBasicArithmetic() throws {
-        XCTAssertEqual(try Expression.evaluate("2 + 3"), .number(5.0))
-        XCTAssertEqual(try Expression.evaluate("10 - 3"), .number(7.0))
-        XCTAssertEqual(try Expression.evaluate("4 * 5"), .number(20.0))
-        XCTAssertEqual(try Expression.evaluate("15 / 3"), .number(5.0))
-        XCTAssertEqual(try Expression.evaluate("2 + 3 * 4"), .number(14.0))
+        XCTAssertEqual(try Expression.eval("2 + 3"), .number(5.0))
+        XCTAssertEqual(try Expression.eval("10 - 3"), .number(7.0))
+        XCTAssertEqual(try Expression.eval("4 * 5"), .number(20.0))
+        XCTAssertEqual(try Expression.eval("15 / 3"), .number(5.0))
+        XCTAssertEqual(try Expression.eval("2 + 3 * 4"), .number(14.0))
     }
     
     func testArithmeticPrecedence() throws {
-        XCTAssertEqual(try Expression.evaluate("2 + 3 * 4"), .number(14.0)) // 2 + (3 * 4)
-        XCTAssertEqual(try Expression.evaluate("2 * 3 + 4"), .number(10.0)) // (2 * 3) + 4
-        XCTAssertEqual(try Expression.evaluate("10 - 2 * 3"), .number(4.0)) // 10 - (2 * 3)
-        XCTAssertEqual(try Expression.evaluate("12 / 3 + 2"), .number(6.0)) // (12 / 3) + 2
+        XCTAssertEqual(try Expression.eval("2 + 3 * 4"), .number(14.0)) // 2 + (3 * 4)
+        XCTAssertEqual(try Expression.eval("2 * 3 + 4"), .number(10.0)) // (2 * 3) + 4
+        XCTAssertEqual(try Expression.eval("10 - 2 * 3"), .number(4.0)) // 10 - (2 * 3)
+        XCTAssertEqual(try Expression.eval("12 / 3 + 2"), .number(6.0)) // (12 / 3) + 2
     }
     
     func testParenthesesGrouping() throws {
-        XCTAssertEqual(try Expression.evaluate("(2 + 3) * 4"), .number(20.0))
-        XCTAssertEqual(try Expression.evaluate("2 * (3 + 4)"), .number(14.0))
-        XCTAssertEqual(try Expression.evaluate("(10 - 2) / (3 + 1)"), .number(2.0))
-        XCTAssertEqual(try Expression.evaluate("((2 + 3) * 4) - 1"), .number(19.0))
+        XCTAssertEqual(try Expression.eval("(2 + 3) * 4"), .number(20.0))
+        XCTAssertEqual(try Expression.eval("2 * (3 + 4)"), .number(14.0))
+        XCTAssertEqual(try Expression.eval("(10 - 2) / (3 + 1)"), .number(2.0))
+        XCTAssertEqual(try Expression.eval("((2 + 3) * 4) - 1"), .number(19.0))
     }
     
     func testComplexArithmetic() throws {
-        XCTAssertEqual(try Expression.evaluate("(2 + 3) * 4 - 1"), .number(19.0))
-        XCTAssertEqual(try Expression.evaluate("10 / (2 + 3) * 4"), .number(8.0))
-        XCTAssertEqual(try Expression.evaluate("1 + 2 * 3 + 4"), .number(11.0))
-        XCTAssertEqual(try Expression.evaluate("(1 + 2) * (3 + 4)"), .number(21.0))
+        XCTAssertEqual(try Expression.eval("(2 + 3) * 4 - 1"), .number(19.0))
+        XCTAssertEqual(try Expression.eval("10 / (2 + 3) * 4"), .number(8.0))
+        XCTAssertEqual(try Expression.eval("1 + 2 * 3 + 4"), .number(11.0))
+        XCTAssertEqual(try Expression.eval("(1 + 2) * (3 + 4)"), .number(21.0))
     }
     
     // MARK: - Boolean Logic Tests
     
     func testBasicBooleanLogic() throws {
-        XCTAssertEqual(try Expression.evaluate("true"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("false"), .boolean(false))
-        XCTAssertEqual(try Expression.evaluate("true && true"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("true && false"), .boolean(false))
-        XCTAssertEqual(try Expression.evaluate("false && false"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("true"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("false"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("true && true"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("true && false"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("false && false"), .boolean(false))
     }
     
     func testLogicalOperators() throws {
         // AND operations
-        XCTAssertEqual(try Expression.evaluate("true && true"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("true and true"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("true && false"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("true && true"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("true and true"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("true && false"), .boolean(false))
         
         // OR operations
-        XCTAssertEqual(try Expression.evaluate("true || false"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("true or false"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("false || false"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("true || false"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("true or false"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("false || false"), .boolean(false))
         
         // NOT operations
-        XCTAssertEqual(try Expression.evaluate("!true"), .boolean(false))
-        XCTAssertEqual(try Expression.evaluate("not true"), .boolean(false))
-        XCTAssertEqual(try Expression.evaluate("!false"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("!true"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("not true"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("!false"), .boolean(true))
         
         // XOR operations
-        XCTAssertEqual(try Expression.evaluate("true xor false"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("true xor true"), .boolean(false))
-        XCTAssertEqual(try Expression.evaluate("false xor false"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("true xor false"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("true xor true"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("false xor false"), .boolean(false))
     }
     
     func testBooleanPrecedence() throws {
-        XCTAssertEqual(try Expression.evaluate("true || false && false"), .boolean(true)) // true || (false && false)
-        XCTAssertEqual(try Expression.evaluate("!false && true"), .boolean(true)) // (!false) && true
-        XCTAssertEqual(try Expression.evaluate("true && false || true"), .boolean(true)) // (true && false) || true
+        XCTAssertEqual(try Expression.eval("true || false && false"), .boolean(true)) // true || (false && false)
+        XCTAssertEqual(try Expression.eval("!false && true"), .boolean(true)) // (!false) && true
+        XCTAssertEqual(try Expression.eval("true && false || true"), .boolean(true)) // (true && false) || true
     }
     
     func testBooleanParentheses() throws {
-        XCTAssertEqual(try Expression.evaluate("(true || false) && false"), .boolean(false))
-        XCTAssertEqual(try Expression.evaluate("!(true && false)"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("(true xor false) && true"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("(true || false) && false"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("!(true && false)"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("(true xor false) && true"), .boolean(true))
     }
     
     // MARK: - Comparison Tests
     
     func testComparisonOperators() throws {
         // Equality
-        XCTAssertEqual(try Expression.evaluate("5 == 5"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("5 == 3"), .boolean(false))
-        XCTAssertEqual(try Expression.evaluate("5 != 3"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("5 != 5"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("5 == 5"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("5 == 3"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("5 != 3"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("5 != 5"), .boolean(false))
         
         // Less than / Greater than
-        XCTAssertEqual(try Expression.evaluate("3 < 5"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("5 < 3"), .boolean(false))
-        XCTAssertEqual(try Expression.evaluate("5 > 3"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("3 > 5"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("3 < 5"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("5 < 3"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("5 > 3"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("3 > 5"), .boolean(false))
         
         // Less than or equal / Greater than or equal
-        XCTAssertEqual(try Expression.evaluate("3 <= 5"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("5 <= 5"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("5 <= 3"), .boolean(false))
-        XCTAssertEqual(try Expression.evaluate("5 >= 3"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("5 >= 5"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("3 >= 5"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("3 <= 5"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("5 <= 5"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("5 <= 3"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("5 >= 3"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("5 >= 5"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("3 >= 5"), .boolean(false))
     }
     
     func testComparisonWithExpressions() throws {
-        XCTAssertEqual(try Expression.evaluate("(2 + 3) > 4"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("(2 * 3) == 6"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("(10 / 2) <= 5"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("(5 - 1) != 3"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("(2 + 3) > 4"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("(2 * 3) == 6"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("(10 / 2) <= 5"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("(5 - 1) != 3"), .boolean(true))
     }
     
     func testMixedLogicalComparison() throws {
-        XCTAssertEqual(try Expression.evaluate("5 > 3 && 2 == 2"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("5 < 3 || 2 == 2"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("!(5 == 3) && true"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("(5 > 3) xor (2 == 3)"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("5 > 3 && 2 == 2"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("5 < 3 || 2 == 2"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("!(5 == 3) && true"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("(5 > 3) xor (2 == 3)"), .boolean(true))
     }
     
     // MARK: - Parse Once, Execute Many Tests
@@ -124,7 +124,7 @@ final class ExpressionKitTests: XCTestCase {
         
         // Execute multiple times to ensure consistency
         for _ in 0..<1000 {
-            let result = try expression.evaluate()
+            let result = try expression.eval()
             XCTAssertEqual(result, .number(14.0))
         }
     }
@@ -134,7 +134,7 @@ final class ExpressionKitTests: XCTestCase {
         
         // Execute multiple times with same result
         for _ in 0..<100 {
-            let result = try expression.evaluate()
+            let result = try expression.eval()
             XCTAssertEqual(result, .number(15.0)) // (5 + 3) * 2 - 1 = 8 * 2 - 1 = 16 - 1 = 15
         }
     }
@@ -143,7 +143,7 @@ final class ExpressionKitTests: XCTestCase {
         let expression = try Expression.parse("true && (5 > 3)")
         
         for _ in 0..<100 {
-            let result = try expression.evaluate()
+            let result = try expression.eval()
             XCTAssertEqual(result, .boolean(true))
         }
     }
@@ -155,9 +155,9 @@ final class ExpressionKitTests: XCTestCase {
         
         // Execute each multiple times to ensure independence
         for _ in 0..<50 {
-            XCTAssertEqual(try expr1.evaluate(), .number(5.0))
-            XCTAssertEqual(try expr2.evaluate(), .number(20.0))
-            XCTAssertEqual(try expr3.evaluate(), .boolean(false))
+            XCTAssertEqual(try expr1.eval(), .number(5.0))
+            XCTAssertEqual(try expr2.eval(), .number(20.0))
+            XCTAssertEqual(try expr3.eval(), .boolean(false))
         }
     }
     
@@ -191,7 +191,7 @@ final class ExpressionKitTests: XCTestCase {
         ]
         
         for expr in errorExpressions {
-            XCTAssertThrowsError(try Expression.evaluate(expr)) { error in
+            XCTAssertThrowsError(try Expression.eval(expr)) { error in
                 XCTAssertTrue(error is ExpressionError, "Should throw ExpressionError for: \(expr)")
             }
         }
@@ -267,41 +267,41 @@ final class ExpressionKitTests: XCTestCase {
     
     func testSpecialNumbers() throws {
         // Test zero
-        XCTAssertEqual(try Expression.evaluate("0"), .number(0.0))
-        XCTAssertEqual(try Expression.evaluate("0 + 5"), .number(5.0))
-        XCTAssertEqual(try Expression.evaluate("5 * 0"), .number(0.0))
+        XCTAssertEqual(try Expression.eval("0"), .number(0.0))
+        XCTAssertEqual(try Expression.eval("0 + 5"), .number(5.0))
+        XCTAssertEqual(try Expression.eval("5 * 0"), .number(0.0))
         
         // Test negative numbers
-        XCTAssertEqual(try Expression.evaluate("-5"), .number(-5.0))
-        XCTAssertEqual(try Expression.evaluate("-5 + 3"), .number(-2.0))
-        XCTAssertEqual(try Expression.evaluate("(-5) * 2"), .number(-10.0))
+        XCTAssertEqual(try Expression.eval("-5"), .number(-5.0))
+        XCTAssertEqual(try Expression.eval("-5 + 3"), .number(-2.0))
+        XCTAssertEqual(try Expression.eval("(-5) * 2"), .number(-10.0))
         
         // Test decimal numbers
-        XCTAssertEqual(try Expression.evaluate("3.14"), .number(3.14))
+        XCTAssertEqual(try Expression.eval("3.14"), .number(3.14))
         // Use delta for floating point comparison due to precision
-        let result = try Expression.evaluate("3.14 + 1")
+        let result = try Expression.eval("3.14 + 1")
         XCTAssertTrue(result.isNumber)
         XCTAssertEqual(result.data.number, 4.14, accuracy: 0.000001)
-        XCTAssertEqual(try Expression.evaluate("2.5 * 2"), .number(5.0))
+        XCTAssertEqual(try Expression.eval("2.5 * 2"), .number(5.0))
     }
     
     func testWhitespaceHandling() throws {
-        XCTAssertEqual(try Expression.evaluate("  2  +  3  "), .number(5.0))
-        XCTAssertEqual(try Expression.evaluate("\t2\t*\t3\t"), .number(6.0))
-        XCTAssertEqual(try Expression.evaluate("( 2 + 3 ) * 4"), .number(20.0))
-        XCTAssertEqual(try Expression.evaluate("true && false"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("  2  +  3  "), .number(5.0))
+        XCTAssertEqual(try Expression.eval("\t2\t*\t3\t"), .number(6.0))
+        XCTAssertEqual(try Expression.eval("( 2 + 3 ) * 4"), .number(20.0))
+        XCTAssertEqual(try Expression.eval("true && false"), .boolean(false))
     }
     
     func testComplexNestedExpressions() throws {
         // Deeply nested arithmetic
-        XCTAssertEqual(try Expression.evaluate("((2 + 3) * (4 + 1)) - ((3 * 2) + 1)"), .number(18.0))
+        XCTAssertEqual(try Expression.eval("((2 + 3) * (4 + 1)) - ((3 * 2) + 1)"), .number(18.0))
         
         // Complex boolean logic
-        XCTAssertEqual(try Expression.evaluate("(true && false) || (true && true)"), .boolean(true))
-        XCTAssertEqual(try Expression.evaluate("!(false || (true && false))"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("(true && false) || (true && true)"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("!(false || (true && false))"), .boolean(true))
         
         // Mixed arithmetic and boolean
-        XCTAssertEqual(try Expression.evaluate("(5 + 3) > 7 && (2 * 3) == 6"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("(5 + 3) > 7 && (2 * 3) == 6"), .boolean(true))
     }
     
     // MARK: - Performance Tests
@@ -315,7 +315,7 @@ final class ExpressionKitTests: XCTestCase {
             do {
                 let expr = try Expression.parse(expression)
                 for _ in 0..<iterations {
-                    _ = try expr.evaluate()
+                    _ = try expr.eval()
                 }
             } catch {
                 XCTFail("Parse once test failed: \(error)")
@@ -326,7 +326,7 @@ final class ExpressionKitTests: XCTestCase {
         let parseManyTime = measureTime {
             for _ in 0..<iterations {
                 do {
-                    _ = try Expression.evaluate(expression)
+                    _ = try Expression.eval(expression)
                 } catch {
                     XCTFail("Parse many test failed: \(error)")
                 }
@@ -347,7 +347,7 @@ final class ExpressionKitTests: XCTestCase {
             do {
                 let expression = try Expression.parse("(2 + 3) * 4 - 1")
                 for _ in 0..<10000 {
-                    _ = try expression.evaluate()
+                    _ = try expression.eval()
                 }
             } catch {
                 XCTFail("Performance test failed: \(error)")
@@ -361,12 +361,12 @@ final class ExpressionKitTests: XCTestCase {
         // Test that Swift API properly wraps C++ functionality
         
         // Direct evaluation
-        let directResult = try Expression.evaluate("2 + 3 * 4")
+        let directResult = try Expression.eval("2 + 3 * 4")
         XCTAssertEqual(directResult, .number(14.0))
         
         // Parse and evaluate
         let expression = try Expression.parse("2 + 3 * 4")
-        let parseResult = try expression.evaluate()
+        let parseResult = try expression.eval()
         XCTAssertEqual(parseResult, .number(14.0))
         
         // Results should be identical
@@ -395,7 +395,7 @@ final class ExpressionKitTests: XCTestCase {
         
         // Evaluate all expressions
         for (i, expr) in expressions.enumerated() {
-            let result = try expr.evaluate()
+            let result = try expr.eval()
             XCTAssertEqual(result, .number(Double(i + 1)))
         }
         
@@ -407,85 +407,85 @@ final class ExpressionKitTests: XCTestCase {
     
     func testStandardMathematicalFunctions() throws {
         // Test two-argument functions
-        let minResult = try Expression.evaluate("min(10, 5)")
+        let minResult = try Expression.eval("min(10, 5)")
         XCTAssertEqual(minResult, .number(5.0))
         
-        let maxResult = try Expression.evaluate("max(10, 5)")
+        let maxResult = try Expression.eval("max(10, 5)")
         XCTAssertEqual(maxResult, .number(10.0))
         
-        let powResult = try Expression.evaluate("pow(2, 3)")
+        let powResult = try Expression.eval("pow(2, 3)")
         XCTAssertEqual(powResult, .number(8.0))
         
         // Test single-argument functions
-        let sqrtResult = try Expression.evaluate("sqrt(16)")
+        let sqrtResult = try Expression.eval("sqrt(16)")
         XCTAssertEqual(sqrtResult, .number(4.0))
         
-        let absResultPositive = try Expression.evaluate("abs(5)")
+        let absResultPositive = try Expression.eval("abs(5)")
         XCTAssertEqual(absResultPositive, .number(5.0))
         
-        let absResultNegative = try Expression.evaluate("abs(-5)")
+        let absResultNegative = try Expression.eval("abs(-5)")
         XCTAssertEqual(absResultNegative, .number(5.0))
         
-        let floorResult = try Expression.evaluate("floor(3.7)")
+        let floorResult = try Expression.eval("floor(3.7)")
         XCTAssertEqual(floorResult, .number(3.0))
         
-        let ceilResult = try Expression.evaluate("ceil(3.2)")
+        let ceilResult = try Expression.eval("ceil(3.2)")
         XCTAssertEqual(ceilResult, .number(4.0))
         
-        let roundResult = try Expression.evaluate("round(3.6)")
+        let roundResult = try Expression.eval("round(3.6)")
         XCTAssertEqual(roundResult, .number(4.0))
         
         // Test trigonometric functions
-        let sinResult = try Expression.evaluate("sin(0)")
+        let sinResult = try Expression.eval("sin(0)")
         XCTAssertEqual(try sinResult.asNumber(), 0.0, accuracy: 0.000001)
         
-        let cosResult = try Expression.evaluate("cos(0)")
+        let cosResult = try Expression.eval("cos(0)")
         XCTAssertEqual(try cosResult.asNumber(), 1.0, accuracy: 0.000001)
         
-        let tanResult = try Expression.evaluate("tan(0)")
+        let tanResult = try Expression.eval("tan(0)")
         XCTAssertEqual(try tanResult.asNumber(), 0.0, accuracy: 0.000001)
         
         // Test logarithmic and exponential functions
-        let expResult = try Expression.evaluate("exp(0)")
+        let expResult = try Expression.eval("exp(0)")
         XCTAssertEqual(try expResult.asNumber(), 1.0, accuracy: 0.000001)
         
-        let logResult = try Expression.evaluate("log(1)")
+        let logResult = try Expression.eval("log(1)")
         XCTAssertEqual(try logResult.asNumber(), 0.0, accuracy: 0.000001)
     }
     
     func testStandardFunctionCompoundExpressions() throws {
         // Complex expressions with standard functions
-        let result1 = try Expression.evaluate("max(abs(-5), sqrt(16))")
+        let result1 = try Expression.eval("max(abs(-5), sqrt(16))")
         XCTAssertEqual(result1, .number(5.0))
         
-        let result2 = try Expression.evaluate("min(ceil(3.2), floor(5.8))")
+        let result2 = try Expression.eval("min(ceil(3.2), floor(5.8))")
         XCTAssertEqual(result2, .number(4.0))
         
-        let result3 = try Expression.evaluate("pow(sqrt(4), 3)")
+        let result3 = try Expression.eval("pow(sqrt(4), 3)")
         XCTAssertEqual(result3, .number(8.0))
         
         // With arithmetic operations
-        let result4 = try Expression.evaluate("sqrt(25) + abs(-3)")
+        let result4 = try Expression.eval("sqrt(25) + abs(-3)")
         XCTAssertEqual(result4, .number(8.0))
         
-        let result5 = try Expression.evaluate("max(10, 5) * min(2, 3)")
+        let result5 = try Expression.eval("max(10, 5) * min(2, 3)")
         XCTAssertEqual(result5, .number(20.0))
         
-        let result6 = try Expression.evaluate("pow(2, 3) - sqrt(9)")
+        let result6 = try Expression.eval("pow(2, 3) - sqrt(9)")
         XCTAssertEqual(result6, .number(5.0))
     }
     
     func testStandardFunctionErrorHandling() {
         // Test error cases for standard functions
-        XCTAssertThrowsError(try Expression.evaluate("sqrt(-1)")) { error in
+        XCTAssertThrowsError(try Expression.eval("sqrt(-1)")) { error in
             XCTAssertTrue(error is ExpressionError, "Should throw ExpressionError for sqrt(-1)")
         }
         
-        XCTAssertThrowsError(try Expression.evaluate("log(0)")) { error in
+        XCTAssertThrowsError(try Expression.eval("log(0)")) { error in
             XCTAssertTrue(error is ExpressionError, "Should throw ExpressionError for log(0)")
         }
         
-        XCTAssertThrowsError(try Expression.evaluate("log(-1)")) { error in
+        XCTAssertThrowsError(try Expression.eval("log(-1)")) { error in
             XCTAssertTrue(error is ExpressionError, "Should throw ExpressionError for log(-1)")
         }
     }
@@ -496,16 +496,64 @@ final class ExpressionKitTests: XCTestCase {
         
         // Execute the same expression multiple times
         for _ in 0..<100 {
-            let result = try expression.evaluate()
+            let result = try expression.eval()
             XCTAssertEqual(result, .number(4.0))
         }
         
         // Test complex expression
         let complexExpression = try Expression.parse("max(abs(-5), sqrt(pow(2, 4)))")
         for _ in 0..<100 {
-            let result = try complexExpression.evaluate()
+            let result = try complexExpression.eval()
             XCTAssertEqual(result, .number(5.0)) // max(5, sqrt(16)) = max(5, 4) = 5
         }
+    }
+    
+    // MARK: - EnvironmentProtocol Tests
+    
+    func testEnvironmentProtocolConformance() {
+        // Test that SimpleEnvironment conforms to EnvironmentProtocol
+        let environment: EnvironmentProtocol = SimpleEnvironment()
+        XCTAssertTrue(environment is SimpleEnvironment)
+        // Remove redundant check - if environment is declared as EnvironmentProtocol, it conforms by definition
+    }
+    
+    func testSimpleEnvironmentProtocolMethods() throws {
+        let environment = SimpleEnvironment()
+        
+        // Test setValue and getValue
+        environment.setValue(.number(42.0), for: "x")
+        environment.setValue(.boolean(true), for: "flag")
+        
+        let xValue = try environment.getValue(for: "x")
+        XCTAssertEqual(xValue, .number(42.0))
+        
+        let flagValue = try environment.getValue(for: "flag")
+        XCTAssertEqual(flagValue, .boolean(true))
+        
+        // Test error for unknown variable
+        XCTAssertThrowsError(try environment.getValue(for: "unknown")) { error in
+            XCTAssertTrue(error is ExpressionError, "Should throw ExpressionError for unknown variable")
+        }
+        
+        // Test error for unknown function
+        XCTAssertThrowsError(try environment.callFunction(name: "unknownFunction", arguments: [])) { error in
+            XCTAssertTrue(error is ExpressionError, "Should throw ExpressionError for unknown function")
+        }
+    }
+    
+    func testEnvironmentProtocolTypeErasing() throws {
+        // Test that we can use SimpleEnvironment through EnvironmentProtocol
+        let concreteEnvironment = SimpleEnvironment()
+        concreteEnvironment.setValue(.number(100.0), for: "health")
+        concreteEnvironment.setValue(.number(80.0), for: "maxHealth")
+        
+        let environment: EnvironmentProtocol = concreteEnvironment
+        
+        let healthValue = try environment.getValue(for: "health")
+        XCTAssertEqual(healthValue, .number(100.0))
+        
+        let maxHealthValue = try environment.getValue(for: "maxHealth")
+        XCTAssertEqual(maxHealthValue, .number(80.0))
     }
     
     // MARK: - Helper Methods

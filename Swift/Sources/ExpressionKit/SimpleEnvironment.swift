@@ -2,7 +2,7 @@ import Foundation
 import ExpressionKitBridge
 
 /// Simple environment that just stores variables and handles basic math functions
-public final class SimpleEnvironment {
+public final class SimpleEnvironment: EnvironmentProtocol {
     private var variables: [String: Value] = [:]
     
     public init(variables: [String: Value] = [:]) {
