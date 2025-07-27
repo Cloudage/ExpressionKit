@@ -555,6 +555,15 @@ TEST_CASE("Token Collection", "[tokens]") {
         REQUIRE(tokens[0].text == "true");
     }
     
+    SECTION("Basic string token") {
+        std::vector<Token> tokens;
+        Expression::Eval("\"hello\"", nullptr, &tokens);
+        
+        REQUIRE(tokens.size() == 1);
+        REQUIRE(tokens[0].type == TokenType::STRING);
+        REQUIRE(tokens[0].text == "\"hello\"");
+    }
+    
     SECTION("Basic identifier token") {
         TestEnvironment environment;
         environment.set("x", Value(5.0));
@@ -644,5 +653,416 @@ TEST_CASE("Token Collection", "[tokens]") {
         
         REQUIRE(result1.asNumber() == result2.asNumber());
         REQUIRE(tokens.size() > 0); // Should have collected some tokens
+    }
+}
+
+TEST_CASE("String Literals", "[strings]") {
+    
+    SECTION("Basic string literals") {
+        auto result = Expression::Eval("\"hello\"", nullptr);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "hello");
+    }
+    
+    SECTION("Empty string") {
+        auto result = Expression::Eval("\"\"", nullptr);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "");
+    }
+    
+    SECTION("String with spaces") {
+        auto result = Expression::Eval("\"hello world\"", nullptr);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "hello world");
+    }
+    
+    SECTION("Strings with escape sequences") {
+        // Test newline escape
+        auto result1 = Expression::Eval("\"hello\\nworld\"", nullptr);
+        REQUIRE(result1.asString() == "hello\nworld");
+        
+        // Test tab escape
+        auto result2 = Expression::Eval("\"hello\\tworld\"", nullptr);
+        REQUIRE(result2.asString() == "hello\tworld");
+        
+        // Test backslash escape
+        auto result3 = Expression::Eval("\"hello\\\\world\"", nullptr);
+        REQUIRE(result3.asString() == "hello\\world");
+        
+        // Test quote escape
+        auto result4 = Expression::Eval("\"hello\\\"world\"", nullptr);
+        REQUIRE(result4.asString() == "hello\"world");
+        
+        // Test carriage return escape
+        auto result5 = Expression::Eval("\"hello\\rworld\"", nullptr);
+        REQUIRE(result5.asString() == "hello\rworld");
+    }
+    
+    SECTION("String with unknown escape sequence") {
+        // Unknown escape sequences should be preserved
+        auto result = Expression::Eval("\"hello\\xworld\"", nullptr);
+        REQUIRE(result.asString() == "hello\\xworld");
+    }
+    
+    SECTION("Unterminated string should throw") {
+        REQUIRE_THROWS_AS(Expression::Eval("\"unterminated", nullptr), ExprException);
+    }
+}
+
+TEST_CASE("String Concatenation", "[strings]") {
+    
+    SECTION("Basic string concatenation") {
+        auto result = Expression::Eval("\"hello\" + \"world\"", nullptr);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "helloworld");
+    }
+    
+    SECTION("String concatenation with spaces") {
+        auto result = Expression::Eval("\"hello \" + \"world\"", nullptr);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "hello world");
+    }
+    
+    SECTION("Multiple string concatenation") {
+        auto result = Expression::Eval("\"a\" + \"b\" + \"c\"", nullptr);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "abc");
+    }
+    
+    SECTION("String concatenation with parentheses") {
+        auto result = Expression::Eval("\"hello \" + (\"beautiful \" + \"world\")", nullptr);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "hello beautiful world");
+    }
+    
+    SECTION("String concatenation with numbers") {
+        auto result1 = Expression::Eval("\"value: \" + 42", nullptr);
+        REQUIRE(result1.isString());
+        REQUIRE(result1.asString() == "value: 42.000000");
+        
+        auto result2 = Expression::Eval("123 + \" is the number\"", nullptr);
+        REQUIRE(result2.isString());
+        REQUIRE(result2.asString() == "123.000000 is the number");
+    }
+    
+    SECTION("String concatenation with booleans") {
+        auto result1 = Expression::Eval("\"status: \" + true", nullptr);
+        REQUIRE(result1.isString());
+        REQUIRE(result1.asString() == "status: true");
+        
+        auto result2 = Expression::Eval("false + \" value\"", nullptr);
+        REQUIRE(result2.isString());
+        REQUIRE(result2.asString() == "false value");
+    }
+}
+
+TEST_CASE("String Comparison", "[strings]") {
+    
+    SECTION("String equality") {
+        REQUIRE(Expression::Eval("\"hello\" == \"hello\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("\"hello\" == \"world\"", nullptr).asBoolean() == false);
+        REQUIRE(Expression::Eval("\"\" == \"\"", nullptr).asBoolean() == true);
+    }
+    
+    SECTION("String inequality") {
+        REQUIRE(Expression::Eval("\"hello\" != \"world\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("\"hello\" != \"hello\"", nullptr).asBoolean() == false);
+    }
+    
+    SECTION("String lexicographic comparison") {
+        // Less than
+        REQUIRE(Expression::Eval("\"apple\" < \"banana\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("\"banana\" < \"apple\"", nullptr).asBoolean() == false);
+        REQUIRE(Expression::Eval("\"apple\" < \"apple\"", nullptr).asBoolean() == false);
+        
+        // Greater than  
+        REQUIRE(Expression::Eval("\"banana\" > \"apple\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("\"apple\" > \"banana\"", nullptr).asBoolean() == false);
+        REQUIRE(Expression::Eval("\"apple\" > \"apple\"", nullptr).asBoolean() == false);
+        
+        // Less than or equal
+        REQUIRE(Expression::Eval("\"apple\" <= \"banana\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("\"apple\" <= \"apple\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("\"banana\" <= \"apple\"", nullptr).asBoolean() == false);
+        
+        // Greater than or equal
+        REQUIRE(Expression::Eval("\"banana\" >= \"apple\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("\"apple\" >= \"apple\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("\"apple\" >= \"banana\"", nullptr).asBoolean() == false);
+    }
+    
+    SECTION("String comparison with different types should throw for ordering") {
+        REQUIRE_THROWS_AS(Expression::Eval("\"hello\" > 42", nullptr), ExprException);
+        REQUIRE_THROWS_AS(Expression::Eval("42 < \"world\"", nullptr), ExprException);
+        REQUIRE_THROWS_AS(Expression::Eval("\"test\" >= true", nullptr), ExprException);
+    }
+    
+    SECTION("Mixed-type equality comparison") {
+        // Different types should be not equal
+        REQUIRE(Expression::Eval("\"42\" == 42", nullptr).asBoolean() == false);
+        REQUIRE(Expression::Eval("\"true\" == true", nullptr).asBoolean() == false);
+        REQUIRE(Expression::Eval("\"42\" != 42", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("\"true\" != true", nullptr).asBoolean() == true);
+    }
+}
+
+TEST_CASE("Type Conversion", "[strings]") {
+    
+    SECTION("String to number conversion") {
+        auto value1 = Value("42");
+        REQUIRE(value1.asNumber() == 42.0);
+        
+        auto value2 = Value("3.14");
+        REQUIRE(value2.asNumber() == Approx(3.14));
+        
+        auto value3 = Value("-5.5");
+        REQUIRE(value3.asNumber() == Approx(-5.5));
+    }
+    
+    SECTION("Invalid string to number conversion should throw") {
+        auto value1 = Value("hello");
+        REQUIRE_THROWS_AS(value1.asNumber(), ExprException);
+        
+        auto value2 = Value("123abc");
+        REQUIRE_THROWS_AS(value2.asNumber(), ExprException);
+        
+        auto value3 = Value("");
+        REQUIRE_THROWS_AS(value3.asNumber(), ExprException);
+    }
+    
+    SECTION("String to boolean conversion") {
+        auto value1 = Value("hello");
+        REQUIRE(value1.asBoolean() == true); // Non-empty string is true
+        
+        auto value2 = Value("");
+        REQUIRE(value2.asBoolean() == false); // Empty string is false
+        
+        auto value3 = Value("0");
+        REQUIRE(value3.asBoolean() == true); // Even "0" string is true (non-empty)
+    }
+    
+    SECTION("Number to string conversion") {
+        auto value1 = Value(42.0);
+        REQUIRE(value1.asString() == "42.000000");
+        
+        auto value2 = Value(3.14);
+        // Note: exact string representation may vary, just check it contains the number
+        std::string str = value2.asString();
+        REQUIRE(str.find("3.14") != std::string::npos);
+    }
+    
+    SECTION("Boolean to string conversion") {
+        auto value1 = Value(true);
+        REQUIRE(value1.asString() == "true");
+        
+        auto value2 = Value(false);
+        REQUIRE(value2.asString() == "false");
+    }
+    
+    SECTION("Boolean to number conversion") {
+        auto value1 = Value(true);
+        REQUIRE(value1.asNumber() == 1.0);
+        
+        auto value2 = Value(false);
+        REQUIRE(value2.asNumber() == 0.0);
+    }
+    
+    SECTION("Number to boolean conversion") {
+        auto value1 = Value(1.0);
+        REQUIRE(value1.asBoolean() == true);
+        
+        auto value2 = Value(0.0);
+        REQUIRE(value2.asBoolean() == false);
+        
+        auto value3 = Value(-5.5);
+        REQUIRE(value3.asBoolean() == true); // Non-zero is true
+    }
+}
+
+TEST_CASE("String Variables and Functions", "[strings]") {
+    
+    class StringTestEnvironment : public IEnvironment {
+        std::map<std::string, Value> variables;
+    public:
+        StringTestEnvironment() {
+            variables["name"] = Value("Alice");
+            variables["greeting"] = Value("Hello");
+            variables["count"] = Value(5.0);
+            variables["isActive"] = Value(true);
+        }
+        
+        Value Get(const std::string& name) override {
+            if (const auto it = variables.find(name); it != variables.end()) return it->second;
+            throw ExprException("变量未定义：" + name);
+        }
+        
+        Value Call(const std::string& name, const std::vector<Value>& args) override {
+            if (name == "concat" && args.size() == 2) {
+                return Value(args[0].asString() + args[1].asString());
+            }
+            throw ExprException("未定义的函数：" + name);
+        }
+    };
+    
+    StringTestEnvironment environment;
+    
+    SECTION("String variables") {
+        auto result = Expression::Eval("name", &environment);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "Alice");
+    }
+    
+    SECTION("String concatenation with variables") {
+        auto result = Expression::Eval("greeting + \", \" + name", &environment);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "Hello, Alice");
+    }
+    
+    SECTION("Mixed type expressions with string variables") {
+        auto result1 = Expression::Eval("name + \" has \" + count + \" items\"", &environment);
+        REQUIRE(result1.isString());
+        REQUIRE(result1.asString() == "Alice has 5.000000 items");
+        
+        auto result2 = Expression::Eval("\"User \" + name + \" is \" + isActive", &environment);
+        REQUIRE(result2.isString());
+        REQUIRE(result2.asString() == "User Alice is true");
+    }
+    
+    SECTION("String comparison with variables") {
+        REQUIRE(Expression::Eval("name == \"Alice\"", &environment).asBoolean() == true);
+        REQUIRE(Expression::Eval("greeting != \"Hi\"", &environment).asBoolean() == true);
+        REQUIRE(Expression::Eval("name > \"A\"", &environment).asBoolean() == true);
+    }
+    
+    SECTION("String functions") {
+        auto result = Expression::Eval("concat(greeting, name)", &environment);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "HelloAlice");
+    }
+}
+
+TEST_CASE("Complex String Expressions", "[strings]") {
+    
+    SECTION("Nested string concatenation with arithmetic") {
+        auto result = Expression::Eval("\"Result: \" + (5 + 3) + \" items\"", nullptr);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "Result: 8.000000 items");
+    }
+    
+    SECTION("String expressions with boolean logic") {
+        auto result1 = Expression::Eval("(\"a\" < \"b\") && (\"hello\" != \"world\")", nullptr);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("(\"test\" == \"test\") || (\"x\" > \"z\")", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+    }
+    
+    SECTION("Parenthesized string expressions") {
+        auto result = Expression::Eval("(\"hello\" + \" \") + (\"beautiful\" + \" world\")", nullptr);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "hello beautiful world");
+    }
+    
+    SECTION("String expression with escape sequences in concatenation") {
+        auto result = Expression::Eval("\"Line 1\\n\" + \"Line 2\\t\" + \"End\"", nullptr);
+        REQUIRE(result.isString());
+        REQUIRE(result.asString() == "Line 1\nLine 2\tEnd");
+    }
+}
+
+TEST_CASE("String In Operator", "[strings]") {
+    
+    SECTION("Basic string containment") {
+        auto result1 = Expression::Eval("\"abc\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result1.isBoolean());
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("\"xyz\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result2.isBoolean());
+        REQUIRE(result2.asBoolean() == false);
+    }
+    
+    SECTION("Case sensitive containment") {
+        auto result1 = Expression::Eval("\"ABC\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result1.asBoolean() == false);
+        
+        auto result2 = Expression::Eval("\"sing\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+    }
+    
+    SECTION("Empty string containment") {
+        auto result1 = Expression::Eval("\"\" in \"hello world\"", nullptr);
+        REQUIRE(result1.asBoolean() == true); // Empty string is contained in any string
+        
+        auto result2 = Expression::Eval("\"hello\" in \"\"", nullptr);
+        REQUIRE(result2.asBoolean() == false); // Non-empty string is not contained in empty string
+    }
+    
+    SECTION("Exact match containment") {
+        auto result1 = Expression::Eval("\"hello\" in \"hello\"", nullptr);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("\"hello world\" in \"hello world\"", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+    }
+    
+    SECTION("Partial word containment") {
+        auto result1 = Expression::Eval("\"can\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("\"sing\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+        
+        auto result3 = Expression::Eval("\"my\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result3.asBoolean() == true);
+    }
+    
+    SECTION("String in operator with variables") {
+        TestEnvironment environment;
+        environment.set("text", Value("The quick brown fox"));
+        environment.set("search", Value("brown"));
+        environment.set("missing", Value("zebra"));
+        
+        auto result1 = Expression::Eval("search in text", &environment);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("missing in text", &environment);
+        REQUIRE(result2.asBoolean() == false);
+        
+        auto result3 = Expression::Eval("\"quick\" in text", &environment);
+        REQUIRE(result3.asBoolean() == true);
+    }
+    
+    SECTION("String in operator with complex expressions") {
+        auto result1 = Expression::Eval("(\"a\" + \"b\") in \"abc\"", nullptr);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("\"test\" in (\"This is a \" + \"test string\")", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+    }
+    
+    SECTION("Boolean logic with in operator") {
+        auto result1 = Expression::Eval("(\"abc\" in \"abcdef\") && (\"xyz\" in \"xyz123\")", nullptr);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("(\"abc\" in \"abcdef\") || (\"xyz\" in \"123\")", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+        
+        auto result3 = Expression::Eval("!(\"xyz\" in \"abc\")", nullptr);
+        REQUIRE(result3.asBoolean() == true);
+    }
+    
+    SECTION("In operator with escape sequences") {
+        auto result1 = Expression::Eval("\"\\n\" in \"Hello\\nWorld\"", nullptr);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("\"\\t\" in \"Tab\\there\"", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+    }
+    
+    SECTION("In operator should require string operands") {
+        REQUIRE_THROWS_AS(Expression::Eval("5 in \"hello\"", nullptr), ExprException);
+        REQUIRE_THROWS_AS(Expression::Eval("\"hello\" in 5", nullptr), ExprException);
+        REQUIRE_THROWS_AS(Expression::Eval("true in \"hello\"", nullptr), ExprException);
     }
 }

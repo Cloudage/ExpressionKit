@@ -74,6 +74,7 @@ namespace ExpressionKit {
     enum class TokenType {
         NUMBER,       // Numeric literals: 42, 3.14, -2.5
         BOOLEAN,      // Boolean literals: true, false
+        STRING,       // String literals: "hello", "world"
         IDENTIFIER,   // Variables and function names: x, pos.x, sqrt
         OPERATOR,     // Operators: +, -, *, /, ==, !=, &&, ||, etc.
         PARENTHESIS,  // Parentheses: (, )
@@ -113,16 +114,20 @@ namespace ExpressionKit {
      * while providing C++ convenience methods and operators.
      */
     struct Value {
-        enum Type : int { NUMBER = 0, BOOLEAN = 1 } type;
+        enum Type : int { NUMBER = 0, BOOLEAN = 1, STRING = 2 } type;
         
         union Data {
             double number;
             bool boolean;
+            // Note: string is stored separately due to union limitations
             
             Data() : number(0.0) {}
             explicit Data(double n) : number(n) {}
             explicit Data(bool b) : boolean(b) {}
         } data;
+        
+        // String data stored separately from union
+        std::string stringValue;
 
         // Constructors
         Value() : type(NUMBER) { data.number = 0.0; }
@@ -130,33 +135,63 @@ namespace ExpressionKit {
         Value(float n) : type(NUMBER) { data.number = static_cast<double>(n); }
         Value(int n) : type(NUMBER) { data.number = static_cast<double>(n); }
         Value(bool b) : type(BOOLEAN) { data.boolean = b; }
+        Value(const std::string& s) : type(STRING), stringValue(s) {}
+        Value(const char* s) : type(STRING), stringValue(s) {}
 
         // Type checking
         bool isNumber() const { return type == NUMBER; }
         bool isBoolean() const { return type == BOOLEAN; }
+        bool isString() const { return type == STRING; }
 
         // Safe value extraction
         double asNumber() const {
-            if (!isNumber()) throw ExprException("Type error: expected number");
-            return data.number;
+            if (isNumber()) return data.number;
+            if (isString()) {
+                // Try to convert string to number
+                try {
+                    size_t pos;
+                    double result = std::stod(stringValue, &pos);
+                    // Check if entire string was consumed
+                    if (pos == stringValue.length()) return result;
+                } catch (...) {
+                    // Fall through to throw exception
+                }
+                throw ExprException("无法将字符串 '" + stringValue + "' 转换为数值");
+            }
+            if (isBoolean()) return data.boolean ? 1.0 : 0.0;
+            throw ExprException("类型错误：期望数值");
         }
 
         bool asBoolean() const {
-            if (!isBoolean()) throw ExprException("Type error: expected boolean");
-            return data.boolean;
+            if (isBoolean()) return data.boolean;
+            if (isNumber()) return data.number != 0.0;
+            if (isString()) {
+                // Convert string to boolean: non-empty strings are true
+                return !stringValue.empty();
+            }
+            throw ExprException("类型错误：期望布尔值");
+        }
+        
+        std::string asString() const {
+            if (isString()) return stringValue;
+            if (isNumber()) return std::to_string(data.number);
+            if (isBoolean()) return data.boolean ? "true" : "false";
+            throw ExprException("类型错误：期望字符串");
         }
 
         // String conversion
         std::string toString() const {
-            if (isNumber()) return std::to_string(data.number);
-            return data.boolean ? "true" : "false";
+            return asString();
         }
 
         // Equality
         bool operator==(const Value& other) const {
-            if (type != other.type) return false;
-            if (isNumber()) return data.number == other.data.number;
-            return data.boolean == other.data.boolean;
+            if (type == other.type) {
+                if (isNumber()) return data.number == other.data.number;
+                if (isBoolean()) return data.boolean == other.data.boolean;
+                if (isString()) return stringValue == other.stringValue;
+            }
+            return false;
         }
 
         bool operator!=(const Value& other) const {
@@ -246,6 +281,21 @@ namespace ExpressionKit {
         bool value;
     public:
         explicit BooleanNode(const bool v) : value(v) {}
+        Value evaluate(IEnvironment*) const override {
+            return Value(value);
+        }
+    };
+
+    /**
+     * @brief AST node representing a string literal
+     *
+     * This node holds a constant string value and returns it during evaluation.
+     * Examples: "hello", "world", "Hello, \"World\"!"
+     */
+    class StringNode final : public ASTNode {
+        std::string value;
+    public:
+        explicit StringNode(const std::string& v) : value(v) {}
         Value evaluate(IEnvironment*) const override {
             return Value(value);
         }
@@ -371,6 +421,7 @@ namespace ExpressionKit {
     enum class OperatorType {
         ADD, SUB, MUL, DIV,           // 算术运算符: +, -, *, /
         EQ, NE, GT, LT, GE, LE,       // 比较运算符: ==, !=, >, <, >=, <=
+        IN,                           // 包含运算符: in
         AND, OR, XOR, NOT             // 逻辑运算符: &&, ||, xor, !
     };
 
@@ -395,9 +446,65 @@ namespace ExpressionKit {
 
         Value evaluate(IEnvironment* environment) const override {
             const Value lhs = left->evaluate(environment);
+            const Value rhs = right->evaluate(environment);
+
+            // 字符串运算
+            if (lhs.isString() || rhs.isString()) {
+                switch (op) {
+                    case OperatorType::ADD: {
+                        // 字符串连接：将两个操作数都转换为字符串
+                        return Value(lhs.asString() + rhs.asString());
+                    }
+                    case OperatorType::EQ: {
+                        // 字符串相等比较
+                        if (lhs.isString() && rhs.isString()) {
+                            return Value(lhs.asString() == rhs.asString());
+                        }
+                        // 类型不同时为不相等
+                        return Value(false);
+                    }
+                    case OperatorType::NE: {
+                        // 字符串不等比较
+                        if (lhs.isString() && rhs.isString()) {
+                            return Value(lhs.asString() != rhs.asString());
+                        }
+                        // 类型不同时为不相等
+                        return Value(true);
+                    }
+                    case OperatorType::GT:
+                    case OperatorType::LT:
+                    case OperatorType::GE:
+                    case OperatorType::LE: {
+                        // 字符串比较：两个操作数都必须是字符串
+                        if (lhs.isString() && rhs.isString()) {
+                            const std::string& a = lhs.asString();
+                            const std::string& b = rhs.asString();
+                            switch (op) {
+                                case OperatorType::GT: return Value(a > b);
+                                case OperatorType::LT: return Value(a < b);
+                                case OperatorType::GE: return Value(a >= b);
+                                case OperatorType::LE: return Value(a <= b);
+                                default: break;
+                            }
+                        }
+                        throw ExprException("字符串比较运算符需要两个字符串操作数");
+                    }
+                    case OperatorType::IN: {
+                        // 字符串包含检查：检查左操作数是否包含在右操作数中
+                        if (lhs.isString() && rhs.isString()) {
+                            const std::string& needle = lhs.asString();
+                            const std::string& haystack = rhs.asString();
+                            return Value(haystack.find(needle) != std::string::npos);
+                        }
+                        throw ExprException("in 运算符需要两个字符串操作数");
+                    }
+                    default:
+                        throw ExprException("不支持的字符串运算符");
+                }
+            }
 
             // 数值运算
-            if (const Value rhs = right->evaluate(environment); lhs.isNumber() && rhs.isNumber()) {
+            if (lhs.isNumber() && rhs.isNumber()) {
                 const double a = lhs.asNumber();
                 const double b = rhs.asNumber();
                 switch (op) {
@@ -654,6 +761,9 @@ namespace ExpressionKit {
                 } else if (match("<")) {
                     auto right = parseAdditiveExpression();
                     left = std::make_shared<BinaryOpNode>(left, OperatorType::LT, right);
+                } else if (match("in")) {
+                    auto right = parseAdditiveExpression();
+                    left = std::make_shared<BinaryOpNode>(left, OperatorType::IN, right);
                 } else {
                     break;
                 }
@@ -716,6 +826,43 @@ namespace ExpressionKit {
                 }
                 addToken(TokenType::NUMBER, start, pos - start, num);
                 return std::make_shared<NumberNode>(std::stod(num));
+            }
+
+            // 解析字符串字面量
+            if (peek() == '"') {
+                size_t start = pos;
+                ++pos; // 跳过开始的引号
+                std::string str;
+                
+                while (pos < expr.size() && expr[pos] != '"') {
+                    if (expr[pos] == '\\' && pos + 1 < expr.size()) {
+                        // 处理转义序列
+                        ++pos; // 跳过反斜杠
+                        switch (expr[pos]) {
+                            case 'n': str += '\n'; break;
+                            case 't': str += '\t'; break;
+                            case 'r': str += '\r'; break;
+                            case '\\': str += '\\'; break;
+                            case '"': str += '"'; break;
+                            default:
+                                // 未知转义序列，保留原字符
+                                str += '\\';
+                                str += expr[pos];
+                                break;
+                        }
+                        ++pos;
+                    } else {
+                        str += expr[pos++];
+                    }
+                }
+                
+                if (pos >= expr.size()) {
+                    throw ExprException("未结束的字符串字面量");
+                }
+                
+                ++pos; // 跳过结束的引号
+                addToken(TokenType::STRING, start, pos - start, "\"" + str + "\"");
+                return std::make_shared<StringNode>(str);
             }
 
             if (std::isalpha(peek())) {

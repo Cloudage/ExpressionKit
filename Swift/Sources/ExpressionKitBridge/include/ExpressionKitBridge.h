@@ -20,10 +20,11 @@ extern "C" {
 typedef void* ExprASTHandle;
 typedef void* ExprEnvironmentHandle;
 
-// Value type for expression results - matches C++ Value exactly  
+// Value type for expression results
 typedef enum {
     ExprValueTypeNumber = 0,
-    ExprValueTypeBoolean = 1
+    ExprValueTypeBoolean = 1,
+    ExprValueTypeString = 2
 } ExprValueType;
 
 typedef struct {
@@ -32,6 +33,7 @@ typedef struct {
         double number;
         bool boolean;
     } data;
+    char* string;  // String data stored separately (null-terminated, memory managed by bridge)
 } ExprValue;
 
 // Error handling
@@ -58,12 +60,13 @@ typedef struct {
 typedef enum {
     ExprTokenTypeNumber = 0,
     ExprTokenTypeBoolean = 1,
-    ExprTokenTypeIdentifier = 2,
-    ExprTokenTypeOperator = 3,
-    ExprTokenTypeParenthesis = 4,
-    ExprTokenTypeComma = 5,
-    ExprTokenTypeWhitespace = 6,
-    ExprTokenTypeUnknown = 7
+    ExprTokenTypeString = 2,
+    ExprTokenTypeIdentifier = 3,
+    ExprTokenTypeOperator = 4,
+    ExprTokenTypeParenthesis = 5,
+    ExprTokenTypeComma = 6,
+    ExprTokenTypeWhitespace = 7,
+    ExprTokenTypeUnknown = 8
 } ExprTokenType;
 
 // Token structure for syntax highlighting
@@ -114,10 +117,14 @@ void expr_clear_error(void);
 // Utility functions
 ExprValue expr_make_number(double value);
 ExprValue expr_make_boolean(bool value);
+ExprValue expr_make_string(const char* value);
 bool expr_value_is_number(const ExprValue* value);
 bool expr_value_is_boolean(const ExprValue* value);
+bool expr_value_is_string(const ExprValue* value);
 double expr_value_as_number(const ExprValue* value);
 bool expr_value_as_boolean(const ExprValue* value);
+const char* expr_value_as_string(const ExprValue* value);
+void expr_value_destroy(ExprValue* value);  // Release string memory if needed
 
 // Token management functions
 ExprTokenArray* expr_token_array_create(void);

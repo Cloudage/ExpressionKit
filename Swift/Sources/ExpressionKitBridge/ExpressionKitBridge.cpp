@@ -18,19 +18,23 @@ using namespace ExpressionKit;
 thread_local ExprErrorCode g_lastError = ExprErrorNone;
 thread_local std::string g_lastErrorMessage;
 
-// Convert C++ Value to C ExprValue (should be binary compatible)
+// Convert C++ Value to C ExprValue
 static ExprValue convertToCValue(const Value& value) {
-    // Since Value and ExprValue have the same layout, we can cast directly
-    static_assert(sizeof(Value) == sizeof(ExprValue), "Value and ExprValue must have same size");
-    static_assert(offsetof(Value, type) == offsetof(ExprValue, type), "Type field must be at same offset");
-    static_assert(offsetof(Value, data) == offsetof(ExprValue, data), "Data field must be at same offset");
-    
     ExprValue result;
     result.type = static_cast<ExprValueType>(value.type);
+    result.string = nullptr;  // Initialize string pointer
+    
     if (value.isNumber()) {
         result.data.number = value.data.number;
-    } else {
+    } else if (value.isBoolean()) {
         result.data.boolean = value.data.boolean;
+    } else if (value.isString()) {
+        // Allocate memory for the string and copy it
+        const std::string& str = value.asString();
+        result.string = static_cast<char*>(malloc(str.size() + 1));
+        if (result.string) {
+            strcpy(result.string, str.c_str());
+        }
     }
     return result;
 }
@@ -39,9 +43,12 @@ static ExprValue convertToCValue(const Value& value) {
 static Value convertFromCValue(const ExprValue& cValue) {
     if (cValue.type == ExprValueTypeNumber) {
         return Value(cValue.data.number);
-    } else {
+    } else if (cValue.type == ExprValueTypeBoolean) {
         return Value(cValue.data.boolean);
+    } else if (cValue.type == ExprValueTypeString) {
+        return Value(cValue.string ? cValue.string : "");
     }
+    return Value(); // Default to number 0
 }
 
 // Wrapper for C++ IEnvironment to bridge to C callbacks
@@ -273,6 +280,7 @@ ExprValue expr_make_number(double value) {
     ExprValue result;
     result.type = ExprValueTypeNumber;
     result.data.number = value;
+    result.string = nullptr;
     return result;
 }
 
@@ -280,6 +288,20 @@ ExprValue expr_make_boolean(bool value) {
     ExprValue result;
     result.type = ExprValueTypeBoolean;
     result.data.boolean = value;
+    result.string = nullptr;
+    return result;
+}
+
+ExprValue expr_make_string(const char* value) {
+    ExprValue result;
+    result.type = ExprValueTypeString;
+    result.string = nullptr;
+    if (value) {
+        result.string = static_cast<char*>(malloc(strlen(value) + 1));
+        if (result.string) {
+            strcpy(result.string, value);
+        }
+    }
     return result;
 }
 
@@ -289,6 +311,10 @@ bool expr_value_is_number(const ExprValue* value) {
 
 bool expr_value_is_boolean(const ExprValue* value) {
     return value && value->type == ExprValueTypeBoolean;
+}
+
+bool expr_value_is_string(const ExprValue* value) {
+    return value && value->type == ExprValueTypeString;
 }
 
 double expr_value_as_number(const ExprValue* value) {
@@ -305,11 +331,26 @@ bool expr_value_as_boolean(const ExprValue* value) {
     return false;
 }
 
+const char* expr_value_as_string(const ExprValue* value) {
+    if (expr_value_is_string(value)) {
+        return value->string ? value->string : "";
+    }
+    return "";
+}
+
+void expr_value_destroy(ExprValue* value) {
+    if (value && value->string) {
+        free(value->string);
+        value->string = nullptr;
+    }
+}
+
 // Convert C++ TokenType to C ExprTokenType
 static ExprTokenType convertTokenType(TokenType type) {
     switch (type) {
         case TokenType::NUMBER: return ExprTokenTypeNumber;
         case TokenType::BOOLEAN: return ExprTokenTypeBoolean;
+        case TokenType::STRING: return ExprTokenTypeString;
         case TokenType::IDENTIFIER: return ExprTokenTypeIdentifier;
         case TokenType::OPERATOR: return ExprTokenTypeOperator;
         case TokenType::PARENTHESIS: return ExprTokenTypeParenthesis;
