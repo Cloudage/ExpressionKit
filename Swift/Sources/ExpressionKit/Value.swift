@@ -69,7 +69,15 @@ extension ExprValue {
     /// Get the string value, throwing an error if not a string
     public func asString() throws -> String {
         guard isString else {
-            throw ExpressionError.typeMismatch("Expected string, got \(isNumber ? "number" : "boolean")")
+            let actualType: String
+            if isNumber {
+                actualType = "number"
+            } else if isBoolean {
+                actualType = "boolean"
+            } else {
+                actualType = "unknown type"
+            }
+            throw ExpressionError.typeMismatch("Expected string, got \(actualType)")
         }
         var copy = self
         guard let cString = expr_value_as_string(&copy) else {
