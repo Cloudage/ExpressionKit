@@ -14,7 +14,7 @@ class TestEnvironment final : public IEnvironment {
 public:
     Value Get(const std::string& name) override {
         if (const auto it = variables.find(name); it != variables.end()) return it->second;
-        throw ExprException("变量未定义：" + name);
+        throw ExprException("Variable not defined: " + name);
     }
 
     void set(const std::string& name, const Value& value) {
@@ -24,10 +24,10 @@ public:
     Value Call(const std::string& name, const std::vector<Value>& args) override {
         if (name == "add") {
             if (args.size() != 2 || !args[0].isNumber() || !args[1].isNumber())
-                throw ExprException("add函数需要两个数值参数");
+                throw ExprException("add function requires two numeric parameters");
             return args[0].asNumber() + args[1].asNumber();
         }
-        throw ExprException("未定义的函数：" + name);
+        throw ExprException("Function not defined: " + name);
     }
 };
 
@@ -337,13 +337,13 @@ TEST_CASE("Environments", "[environment]") {
     public:
         Value Get(const std::string& name) override {
             if (const auto it = vars.find(name); it != vars.end()) return it->second;
-            throw ExprException("变量未定义：" + name);
+            throw ExprException("Variable not defined: " + name);
         }
 
         // 不重写set方法，使用默认实现
 
         Value Call(const std::string& name, const std::vector<Value>& args) override {
-            throw ExprException("未定义的函数：" + name);
+            throw ExprException("Function not defined: " + name);
         }
     };
 
@@ -360,10 +360,10 @@ TEST_CASE("Environments", "[environment]") {
         public:
             Value Get(const std::string& name) override {
                 if (name == "value") return 100;
-                throw ExprException("变量未定义：" + name);
+                throw ExprException("Variable not defined: " + name);
             }
             Value Call(const std::string& name, const std::vector<Value>& args) override {
-                throw ExprException("未定义的函数：" + name);
+                throw ExprException("Function not defined: " + name);
             }
         };
 
@@ -372,10 +372,10 @@ TEST_CASE("Environments", "[environment]") {
         public:
             Value Get(const std::string& name) override {
                 if (name == "value") return 200;
-                throw ExprException("变量未定义：" + name);
+                throw ExprException("Variable not defined: " + name);
             }
             Value Call(const std::string& name, const std::vector<Value>& args) override {
-                throw ExprException("未定义的函数：" + name);
+                throw ExprException("Function not defined: " + name);
             }
         };
 
@@ -396,7 +396,7 @@ TEST_CASE("Standard Mathematical Functions", "[standard_functions]") {
     class StandardMathEnvironment : public IEnvironment {
     public:
         Value Get(const std::string& name) override {
-            throw ExprException("变量未定义：" + name);
+            throw ExprException("Variable not defined: " + name);
         }
 
         Value Call(const std::string& name, const std::vector<Value>& args) override {
@@ -407,7 +407,7 @@ TEST_CASE("Standard Mathematical Functions", "[standard_functions]") {
                 return result;
             }
 
-            throw ExprException("未定义的函数：" + name);
+            throw ExprException("Function not defined: " + name);
         }
     };
 
@@ -837,8 +837,40 @@ TEST_CASE("Type Conversion", "[strings]") {
         auto value2 = Value("");
         REQUIRE(value2.asBoolean() == false); // Empty string is false
         
-        auto value3 = Value("0");
-        REQUIRE(value3.asBoolean() == true); // Even "0" string is true (non-empty)
+        // Test explicit false values
+        auto value3 = Value("false");
+        REQUIRE(value3.asBoolean() == false);
+        
+        auto value4 = Value("False");
+        REQUIRE(value4.asBoolean() == false);
+        
+        auto value5 = Value("FALSE");
+        REQUIRE(value5.asBoolean() == false);
+        
+        auto value6 = Value("no");
+        REQUIRE(value6.asBoolean() == false);
+        
+        auto value7 = Value("No");
+        REQUIRE(value7.asBoolean() == false);
+        
+        auto value8 = Value("NO");
+        REQUIRE(value8.asBoolean() == false);
+        
+        auto value9 = Value("0");
+        REQUIRE(value9.asBoolean() == false); // "0" string is now false
+        
+        // Test other strings that should be true
+        auto value10 = Value("true");
+        REQUIRE(value10.asBoolean() == true);
+        
+        auto value11 = Value("yes");
+        REQUIRE(value11.asBoolean() == true);
+        
+        auto value12 = Value("1");
+        REQUIRE(value12.asBoolean() == true);
+        
+        auto value13 = Value("anything");
+        REQUIRE(value13.asBoolean() == true);
     }
     
     SECTION("Number to string conversion") {
@@ -893,14 +925,14 @@ TEST_CASE("String Variables and Functions", "[strings]") {
         
         Value Get(const std::string& name) override {
             if (const auto it = variables.find(name); it != variables.end()) return it->second;
-            throw ExprException("变量未定义：" + name);
+            throw ExprException("Variable not defined: " + name);
         }
         
         Value Call(const std::string& name, const std::vector<Value>& args) override {
             if (name == "concat" && args.size() == 2) {
                 return Value(args[0].asString() + args[1].asString());
             }
-            throw ExprException("未定义的函数：" + name);
+            throw ExprException("Function not defined: " + name);
         }
     };
     
@@ -967,6 +999,60 @@ TEST_CASE("Complex String Expressions", "[strings]") {
         auto result = Expression::Eval("\"Line 1\\n\" + \"Line 2\\t\" + \"End\"", nullptr);
         REQUIRE(result.isString());
         REQUIRE(result.asString() == "Line 1\nLine 2\tEnd");
+    }
+}
+
+TEST_CASE("Improved String to Boolean Conversion", "[string_boolean]") {
+    
+    SECTION("Explicit false values") {
+        // Test case variations of "false"
+        REQUIRE(Value("false").asBoolean() == false);
+        REQUIRE(Value("False").asBoolean() == false);
+        REQUIRE(Value("FALSE").asBoolean() == false);
+        
+        // Test case variations of "no"
+        REQUIRE(Value("no").asBoolean() == false);
+        REQUIRE(Value("No").asBoolean() == false);
+        REQUIRE(Value("NO").asBoolean() == false);
+        
+        // Test "0" string
+        REQUIRE(Value("0").asBoolean() == false);
+        
+        // Test empty string
+        REQUIRE(Value("").asBoolean() == false);
+    }
+    
+    SECTION("Explicit true values") {
+        // Common true-like strings
+        REQUIRE(Value("true").asBoolean() == true);
+        REQUIRE(Value("True").asBoolean() == true);
+        REQUIRE(Value("TRUE").asBoolean() == true);
+        REQUIRE(Value("yes").asBoolean() == true);
+        REQUIRE(Value("Yes").asBoolean() == true);
+        REQUIRE(Value("YES").asBoolean() == true);
+        REQUIRE(Value("1").asBoolean() == true);
+        REQUIRE(Value("on").asBoolean() == true);
+        REQUIRE(Value("enabled").asBoolean() == true);
+        
+        // Any other non-empty string should be true
+        REQUIRE(Value("hello").asBoolean() == true);
+        REQUIRE(Value("world").asBoolean() == true);
+        REQUIRE(Value("123").asBoolean() == true);
+        REQUIRE(Value("anything").asBoolean() == true);
+    }
+    
+    SECTION("String boolean conversion in expressions") {
+        // Test string-to-boolean conversion in logical expressions
+        REQUIRE(Expression::Eval("\"true\" && true", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("\"false\" || false", nullptr).asBoolean() == false);
+        REQUIRE(Expression::Eval("\"no\" && true", nullptr).asBoolean() == false);
+        REQUIRE(Expression::Eval("\"0\" || true", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("\"yes\" && true", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("!\"false\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("!\"no\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("!\"0\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("!\"\"", nullptr).asBoolean() == true);
+        REQUIRE(Expression::Eval("!\"true\"", nullptr).asBoolean() == false);
     }
 }
 
