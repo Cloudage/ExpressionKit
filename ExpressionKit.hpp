@@ -421,6 +421,7 @@ namespace ExpressionKit {
     enum class OperatorType {
         ADD, SUB, MUL, DIV,           // 算术运算符: +, -, *, /
         EQ, NE, GT, LT, GE, LE,       // 比较运算符: ==, !=, >, <, >=, <=
+        IN,                           // 包含运算符: in
         AND, OR, XOR, NOT             // 逻辑运算符: &&, ||, xor, !
     };
 
@@ -487,6 +488,15 @@ namespace ExpressionKit {
                             }
                         }
                         throw ExprException("字符串比较运算符需要两个字符串操作数");
+                    }
+                    case OperatorType::IN: {
+                        // 字符串包含检查：检查左操作数是否包含在右操作数中
+                        if (lhs.isString() && rhs.isString()) {
+                            const std::string& needle = lhs.asString();
+                            const std::string& haystack = rhs.asString();
+                            return Value(haystack.find(needle) != std::string::npos);
+                        }
+                        throw ExprException("in 运算符需要两个字符串操作数");
                     }
                     default:
                         throw ExprException("不支持的字符串运算符");
@@ -751,6 +761,9 @@ namespace ExpressionKit {
                 } else if (match("<")) {
                     auto right = parseAdditiveExpression();
                     left = std::make_shared<BinaryOpNode>(left, OperatorType::LT, right);
+                } else if (match("in")) {
+                    auto right = parseAdditiveExpression();
+                    left = std::make_shared<BinaryOpNode>(left, OperatorType::IN, right);
                 } else {
                     break;
                 }

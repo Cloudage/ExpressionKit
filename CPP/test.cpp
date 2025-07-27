@@ -969,3 +969,100 @@ TEST_CASE("Complex String Expressions", "[strings]") {
         REQUIRE(result.asString() == "Line 1\nLine 2\tEnd");
     }
 }
+
+TEST_CASE("String In Operator", "[strings]") {
+    
+    SECTION("Basic string containment") {
+        auto result1 = Expression::Eval("\"abc\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result1.isBoolean());
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("\"xyz\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result2.isBoolean());
+        REQUIRE(result2.asBoolean() == false);
+    }
+    
+    SECTION("Case sensitive containment") {
+        auto result1 = Expression::Eval("\"ABC\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result1.asBoolean() == false);
+        
+        auto result2 = Expression::Eval("\"sing\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+    }
+    
+    SECTION("Empty string containment") {
+        auto result1 = Expression::Eval("\"\" in \"hello world\"", nullptr);
+        REQUIRE(result1.asBoolean() == true); // Empty string is contained in any string
+        
+        auto result2 = Expression::Eval("\"hello\" in \"\"", nullptr);
+        REQUIRE(result2.asBoolean() == false); // Non-empty string is not contained in empty string
+    }
+    
+    SECTION("Exact match containment") {
+        auto result1 = Expression::Eval("\"hello\" in \"hello\"", nullptr);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("\"hello world\" in \"hello world\"", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+    }
+    
+    SECTION("Partial word containment") {
+        auto result1 = Expression::Eval("\"can\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("\"sing\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+        
+        auto result3 = Expression::Eval("\"my\" in \"I can sing my abc\"", nullptr);
+        REQUIRE(result3.asBoolean() == true);
+    }
+    
+    SECTION("String in operator with variables") {
+        TestEnvironment environment;
+        environment.set("text", Value("The quick brown fox"));
+        environment.set("search", Value("brown"));
+        environment.set("missing", Value("zebra"));
+        
+        auto result1 = Expression::Eval("search in text", &environment);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("missing in text", &environment);
+        REQUIRE(result2.asBoolean() == false);
+        
+        auto result3 = Expression::Eval("\"quick\" in text", &environment);
+        REQUIRE(result3.asBoolean() == true);
+    }
+    
+    SECTION("String in operator with complex expressions") {
+        auto result1 = Expression::Eval("(\"a\" + \"b\") in \"abc\"", nullptr);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("\"test\" in (\"This is a \" + \"test string\")", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+    }
+    
+    SECTION("Boolean logic with in operator") {
+        auto result1 = Expression::Eval("(\"abc\" in \"abcdef\") && (\"xyz\" in \"xyz123\")", nullptr);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("(\"abc\" in \"abcdef\") || (\"xyz\" in \"123\")", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+        
+        auto result3 = Expression::Eval("!(\"xyz\" in \"abc\")", nullptr);
+        REQUIRE(result3.asBoolean() == true);
+    }
+    
+    SECTION("In operator with escape sequences") {
+        auto result1 = Expression::Eval("\"\\n\" in \"Hello\\nWorld\"", nullptr);
+        REQUIRE(result1.asBoolean() == true);
+        
+        auto result2 = Expression::Eval("\"\\t\" in \"Tab\\there\"", nullptr);
+        REQUIRE(result2.asBoolean() == true);
+    }
+    
+    SECTION("In operator should require string operands") {
+        REQUIRE_THROWS_AS(Expression::Eval("5 in \"hello\"", nullptr), ExprException);
+        REQUIRE_THROWS_AS(Expression::Eval("\"hello\" in 5", nullptr), ExprException);
+        REQUIRE_THROWS_AS(Expression::Eval("true in \"hello\"", nullptr), ExprException);
+    }
+}
