@@ -30,6 +30,10 @@ print(result) // .number(14.0)
 // Boolean expressions
 let boolResult = try Expression.eval("true && false")
 print(boolResult) // .boolean(false)
+
+// String expressions
+let stringResult = try Expression.eval("\"Hello, World!\"")
+print(stringResult) // "Hello, World!"
 ```
 
 ### Parse Once, Execute Many Times
@@ -63,12 +67,13 @@ The Swift API provides the following token types:
 public enum TokenType: Int {
     case number = 0        // Numeric literals: 42, 3.14, -2.5
     case boolean = 1       // Boolean literals: true, false
-    case identifier = 2    // Variables and functions: x, sqrt, player_health
-    case operator = 3      // Operators: +, -, *, /, ==, !=, &&, ||, !
-    case parenthesis = 4   // Grouping: (, )
-    case comma = 5         // Function separator: ,
-    case whitespace = 6    // Spaces and tabs
-    case unknown = 7       // Unrecognized tokens
+    case string = 2        // String literals: "hello", "world", ""
+    case identifier = 3    // Variables and functions: x, sqrt, player_health
+    case operator = 4      // Operators: +, -, *, /, ==, !=, &&, ||, !
+    case parenthesis = 5   // Grouping: (, )
+    case comma = 6         // Function separator: ,
+    case whitespace = 7    // Spaces and tabs
+    case unknown = 8       // Unrecognized tokens
 }
 ```
 
@@ -100,6 +105,16 @@ if let tokens = tokens {
     }
 }
 
+// String expression with tokens
+let (stringValue, stringTokens) = try Expression.eval("\"Hello, ExpressionKit!\"", collectTokens: true)
+print("String result: \(stringValue)")
+
+if let tokens = stringTokens {
+    for token in tokens {
+        print("String token: \(token.type) '\(token.text)' at \(token.start):\(token.length)")
+    }
+}
+
 // Output example:
 // Result: .number(17.0)
 // Token: number '2' at 0:1
@@ -112,6 +127,8 @@ if let tokens = tokens {
 // Token: comma ',' at 13:1
 // Token: number '5' at 15:1
 // Token: parenthesis ')' at 16:1
+// String result: "Hello, ExpressionKit!"
+// String token: string '"Hello, ExpressionKit!"' at 0:23
 ```
 
 ### Collecting Tokens During Parsing
@@ -145,6 +162,7 @@ if let tokens = tokens {
       case .operator: applyColor(.red, to: token)
       case .identifier: applyColor(.green, to: token)
       case .boolean: applyColor(.purple, to: token)
+      case .string: applyColor(.orange, to: token)
       default: break
       }
   }
@@ -190,6 +208,7 @@ if let tokens = tokens {
 ### Data Types
 - **Numbers**: `42`, `3.14`, `-2.5`
 - **Booleans**: `true`, `false`
+- **Strings**: `"hello"`, `"world"`, `""`
 
 ### Operators (by precedence)
 
@@ -213,22 +232,27 @@ ExpressionKit uses a `Value` enum that can represent either numbers or booleans:
 // Creating values
 let num: Value = .number(42.0)
 let bool: Value = .boolean(true)
+let str: Value = .string("hello")
 
 // Or using literals
 let num2: Value = 42.0
 let bool2: Value = true
+let str2: Value = "hello"
 
 // Checking types
 print(num.isNumber)   // true
 print(num.isBoolean)  // false
+print(str.isString)   // true
 
 // Accessing values safely
 let numberValue = try num.asNumber()  // 42.0
 let boolValue = try bool.asBoolean()  // true
+let stringValue = try str.asString()  // "hello"
 
 // Or accessing optionally
 let maybeNumber = num.numberValue     // Optional(42.0)
 let maybeBool = num.booleanValue      // nil
+let maybeString = str.stringValue     // Optional("hello")
 ```
 
 ## Error Handling
@@ -262,6 +286,9 @@ let result1 = try Expression.eval("2 + 3 * 4 - 1")  // 13.0
 
 // Boolean logic
 let result2 = try Expression.eval("true && (false || true)")  // true
+
+// String expressions
+let result2_5 = try Expression.eval("\"Hello, World!\"")  // "Hello, World!"
 
 // Comparisons
 let result3 = try Expression.eval("(5 + 3) > (2 * 3)")  // true (8 > 6)
@@ -310,6 +337,7 @@ The current Swift implementation provides the core "parse once, execute many tim
 Future versions may add:
 - 🔄 Variable and function support via environments
 - 🔄 Built-in mathematical functions (sin, cos, sqrt, etc.)
+- 🔄 String operations and concatenation functions
 - 🔄 Custom function registration
 
 ## C++ Compatibility
@@ -327,3 +355,4 @@ If you're migrating from the C++ version:
 | `ast->evaluate(environment)` | `try expression.eval()` |
 | `Value(42.0)` | `Value.number(42.0)` or `42.0` |
 | `Value(true)` | `Value.boolean(true)` or `true` |
+| `Value("hello")` | `Value.string("hello")` or `"hello"` |

@@ -7,7 +7,7 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 - **Interface-based variable read/write**: Flexible access to variables and functions via the IEnvironment interface  
 - **Pre-parsed AST execution**: Supports expression pre-compilation for efficient repeated execution
 - **Token sequence analysis**: Optional token collection for syntax highlighting and advanced features
-- **Type safety**: Strongly-typed Value system supporting numeric and boolean types
+- **Type safety**: Strongly-typed Value system supporting numeric, boolean, and string types
 - **Complete operator support**: Full coverage of arithmetic, comparison, and logical operators
 - **Exception-based error handling**: Clear error messages and robust exception mechanism
 - **Zero dependencies**: Depends only on the C++ standard library
@@ -139,6 +139,7 @@ The library identifies the following token types during parsing:
 |------------|-------------|----------|
 | `NUMBER` | Numeric literals | `42`, `3.14`, `-2.5` |
 | `BOOLEAN` | Boolean literals | `true`, `false` |
+| `STRING` | String literals | `"hello"`, `"world"`, `""` |
 | `IDENTIFIER` | Variables and function names | `x`, `pos.x`, `sqrt`, `player_health` |
 | `OPERATOR` | All operators | `+`, `-`, `*`, `/`, `==`, `!=`, `&&`, `\|\|`, `!` |
 | `PARENTHESIS` | Grouping symbols | `(`, `)` |
@@ -229,6 +230,9 @@ let result1 = try Expression.eval("2 + 3 * 4")  // 14.0
 // Boolean logic
 let result2 = try Expression.eval("true && (5 > 3)")  // true
 
+// String expressions
+let result2_5 = try Expression.eval("\"Hello, World!\"")  // "Hello, World!"
+
 // Complex expressions
 let result3 = try Expression.eval("(2 + 3) * 4 - 1")  // 19.0
 
@@ -244,6 +248,15 @@ print("Result: \(value)")
 if let tokens = tokens {
     for token in tokens {
         print("Token: \(token.type) '\(token.text)' at \(token.start):\(token.length)")
+    }
+}
+
+// String token collection
+let (stringValue, stringTokens) = try Expression.eval("\"Hello, ExpressionKit!\"", collectTokens: true)
+print("String result: \(stringValue)")
+if let tokens = stringTokens {
+    for token in tokens {
+        print("String token: \(token.type) '\(token.text)' at \(token.start):\(token.length)")
     }
 }
 
@@ -380,6 +393,7 @@ This project is licensed under the MIT License – see the license notice in the
 ### Data Types
 - **Numbers**: `42`, `3.14`, `-2.5`
 - **Booleans**: `true`, `false`
+- **Strings**: `"hello"`, `"world"`, `""`
 
 ### Operators (by precedence)
 
