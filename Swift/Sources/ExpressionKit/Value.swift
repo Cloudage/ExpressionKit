@@ -53,7 +53,15 @@ extension ExprValue {
     /// Get the boolean value, throwing an error if not a boolean
     public func asBoolean() throws -> Bool {
         guard isBoolean else {
-            throw ExpressionError.typeMismatch("Expected boolean, got \(isNumber ? "number" : "string")")
+            let actualType: String
+            if isNumber {
+                actualType = "number"
+            } else if isString {
+                actualType = "string"
+            } else {
+                actualType = "unknown type"
+            }
+            throw ExpressionError.typeMismatch("Expected boolean, got \(actualType)")
         }
         return data.boolean
     }
