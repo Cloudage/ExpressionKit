@@ -470,7 +470,7 @@ namespace ExpressionKit {
                 }
             }
 
-            // 字符串运算
+            // String operations
             if (lhs.isString() || rhs.isString()) {
                 switch (op) {
                     case OperatorType::ADD: {
