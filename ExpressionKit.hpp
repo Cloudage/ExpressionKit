@@ -879,7 +879,7 @@ namespace ExpressionKit {
                     throw ExprException("Unterminated string literal");
                 }
                 
-                ++pos; // 跳过结束的引号
+                ++pos; // Skip the closing quote
                 addToken(TokenType::STRING, start, pos - start, "\"" + str + "\"");
                 return std::make_shared<StringNode>(str);
             }
