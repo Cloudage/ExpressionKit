@@ -7,7 +7,7 @@
 - **基于接口的变量读写**：通过 IEnvironment 接口灵活访问变量和函数
 - **预解析 AST 执行**：支持表达式预编译，实现高效重复执行
 - **词法序列分析**：可选的词法单元收集，用于语法高亮和高级功能
-- **类型安全**：强类型的 Value 系统，支持数值和布尔类型
+- **类型安全**：强类型的 Value 系统，支持数值、布尔和字符串类型
 - **完整的运算符支持**：全面覆盖算术、比较和逻辑运算符
 - **基于异常的错误处理**：清晰的错误信息和健壮的异常机制
 - **零依赖**：仅依赖 C++ 标准库
@@ -140,6 +140,7 @@ ExpressionKit 提供强大的词法序列分析功能，用于语法高亮、IDE
 |----------|------|------|
 | `NUMBER` | 数字字面量 | `42`, `3.14`, `-2.5` |
 | `BOOLEAN` | 布尔字面量 | `true`, `false` |
+| `STRING` | 字符串字面量 | `"hello"`, `"world"`, `""` |
 | `IDENTIFIER` | 变量和函数名 | `x`, `pos.x`, `sqrt`, `player_health` |
 | `OPERATOR` | 所有运算符 | `+`, `-`, `*`, `/`, `==`, `!=`, `&&`, `\|\|`, `!` |
 | `PARENTHESIS` | 分组符号 | `(`, `)` |
@@ -230,6 +231,9 @@ let result1 = try Expression.eval("2 + 3 * 4")  // 14.0
 // 布尔逻辑
 let result2 = try Expression.eval("true && (5 > 3)")  // true
 
+// 字符串表达式
+let result2_5 = try Expression.eval("\"你好，世界！\"")  // "你好，世界！"
+
 // 复杂表达式
 let result3 = try Expression.eval("(2 + 3) * 4 - 1")  // 19.0
 
@@ -245,6 +249,15 @@ print("结果: \(value)")
 if let tokens = tokens {
     for token in tokens {
         print("词法: \(token.type) '\(token.text)' 位置 \(token.start):\(token.length)")
+    }
+}
+
+// 字符串词法收集
+let (stringValue, stringTokens) = try Expression.eval("\"你好，ExpressionKit！\"", collectTokens: true)
+print("字符串结果: \(stringValue)")
+if let tokens = stringTokens {
+    for token in tokens {
+        print("字符串词法: \(token.type) '\(token.text)' 位置 \(token.start):\(token.length)")
     }
 }
 
@@ -381,6 +394,7 @@ public:
 ### 数据类型
 - **数字**：`42`、`3.14`、`-2.5`
 - **布尔值**：`true`、`false`
+- **字符串**：`"hello"`、`"world"`、`""`
 
 ### 运算符（按优先级）
 

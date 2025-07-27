@@ -16,6 +16,11 @@ extension ExprValue {
         return expr_make_boolean(value)
     }
     
+    /// Create a Value from a string
+    public static func string(_ value: String) -> ExprValue {
+        return expr_make_string(value)
+    }
+    
     /// Get the number value if this is a number
     public var numberValue: Double? {
         return isNumber ? data.number : nil
@@ -24,6 +29,17 @@ extension ExprValue {
     /// Get the boolean value if this is a boolean
     public var booleanValue: Bool? {
         return isBoolean ? data.boolean : nil
+    }
+    
+    /// Get the string value if this is a string
+    public var stringValue: String? {
+        if isString {
+            var copy = self
+            if let cString = expr_value_as_string(&copy) {
+                return String(cString: cString)
+            }
+        }
+        return nil
     }
     
     /// Get the number value, throwing an error if not a number
@@ -37,9 +53,37 @@ extension ExprValue {
     /// Get the boolean value, throwing an error if not a boolean
     public func asBoolean() throws -> Bool {
         guard isBoolean else {
-            throw ExpressionError.typeMismatch("Expected boolean, got number")
+            let actualType: String
+            if isNumber {
+                actualType = "number"
+            } else if isString {
+                actualType = "string"
+            } else {
+                actualType = "unknown type"
+            }
+            throw ExpressionError.typeMismatch("Expected boolean, got \(actualType)")
         }
         return data.boolean
+    }
+    
+    /// Get the string value, throwing an error if not a string
+    public func asString() throws -> String {
+        guard isString else {
+            let actualType: String
+            if isNumber {
+                actualType = "number"
+            } else if isBoolean {
+                actualType = "boolean"
+            } else {
+                actualType = "unknown type"
+            }
+            throw ExpressionError.typeMismatch("Expected string, got \(actualType)")
+        }
+        var copy = self
+        guard let cString = expr_value_as_string(&copy) else {
+            throw ExpressionError.evaluationFailed("Failed to get string value")
+        }
+        return String(cString: cString)
     }
     
     /// Check if this value is a number
@@ -53,10 +97,16 @@ extension ExprValue {
         var copy = self
         return expr_value_is_boolean(&copy)
     }
+    
+    /// Check if this value is a string
+    public var isString: Bool {
+        var copy = self
+        return expr_value_is_string(&copy)
+    }
 }
 
 // MARK: - ExpressibleBy literals
-extension ExprValue: @retroactive ExpressibleByFloatLiteral, @retroactive ExpressibleByIntegerLiteral, @retroactive ExpressibleByBooleanLiteral {
+extension ExprValue: @retroactive ExpressibleByFloatLiteral, @retroactive ExpressibleByIntegerLiteral, @retroactive ExpressibleByBooleanLiteral, @retroactive ExpressibleByStringLiteral {
     public init(floatLiteral value: Double) {
         self = expr_make_number(value)
     }
@@ -67,6 +117,10 @@ extension ExprValue: @retroactive ExpressibleByFloatLiteral, @retroactive Expres
     
     public init(booleanLiteral value: Bool) {
         self = expr_make_boolean(value)
+    }
+    
+    public init(stringLiteral value: String) {
+        self = expr_make_string(value)
     }
 }
 
@@ -82,6 +136,12 @@ extension ExprValue: @retroactive Equatable {
             return lhs.data.number == rhs.data.number
         case ExprValueTypeBoolean:
             return lhs.data.boolean == rhs.data.boolean
+        case ExprValueTypeString:
+            guard let lhsString = lhs.stringValue,
+                  let rhsString = rhs.stringValue else {
+                return false
+            }
+            return lhsString == rhsString
         default:
             return false
         }
@@ -96,6 +156,8 @@ extension ExprValue: @retroactive CustomStringConvertible {
             return String(data.number)
         case ExprValueTypeBoolean:
             return String(data.boolean)
+        case ExprValueTypeString:
+            return stringValue ?? "nil"
         default:
             return "unknown"
         }

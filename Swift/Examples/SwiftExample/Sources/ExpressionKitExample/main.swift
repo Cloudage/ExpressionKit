@@ -34,6 +34,10 @@ print("2 + 3 * 4 = \(result1)") // Should print: 14.0
 let result2 = try! Expression.eval("true && false || true")
 print("true && false || true = \(result2)") // Should print: true
 
+// Test string operations
+let result2_5 = try! Expression.eval("\"hello world\"")
+print("\"hello world\" = \(result2_5)") // Should print: hello world
+
 // Test parse once, execute many times
 let expression = try! Expression.parse("(5 + 3) * 2 - 1")
 let result3 = try! expression.eval()
@@ -52,8 +56,9 @@ print("boolValue.isBoolean = \(boolValue.isBoolean)") // Should print: true
 let intLiteral: Value = 42
 let floatLiteral: Value = 3.14
 let boolLiteral: Value = false
+let stringLiteral: Value = "hello"
 
-print("Literals work: \(intLiteral), \(floatLiteral), \(boolLiteral)")
+print("Literals work: \(intLiteral), \(floatLiteral), \(boolLiteral), \(stringLiteral)")
 
 print("\n🎯 Now demonstrating TOKEN SEQUENCE functionality...")
 
@@ -96,6 +101,17 @@ do {
     print("Result: \(value)")
     if let tokens = tokens {
         printTokens(tokens, for: "max(10, 5) + sqrt(16)")
+    }
+} catch {
+    print("Error: \(error)")
+}
+
+// String literals with tokens
+do {
+    let (value, tokens) = try Expression.eval("\"Hello, ExpressionKit!\"", collectTokens: true)
+    print("Result: \(value)")
+    if let tokens = tokens {
+        printTokens(tokens, for: "\"Hello, ExpressionKit!\"")
     }
 } catch {
     print("Error: \(error)")
