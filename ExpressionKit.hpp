@@ -465,7 +465,7 @@ namespace ExpressionKit {
                 switch (op) {
                     case OperatorType::AND: return Value(a && b);
                     case OperatorType::OR: return Value(a || b);
-                    case OperatorType::XOR: return Value(a != b); // XOR 是异或
+                    case OperatorType::XOR: return Value(a != b);
                     default: break; // Should not reach here
                 }
             }
