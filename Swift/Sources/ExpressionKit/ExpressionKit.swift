@@ -5,12 +5,13 @@ import ExpressionKitBridge
 public enum TokenType: Int {
     case number = 0
     case boolean = 1
-    case identifier = 2
-    case `operator` = 3
-    case parenthesis = 4
-    case comma = 5
-    case whitespace = 6
-    case unknown = 7
+    case string = 2
+    case identifier = 3
+    case `operator` = 4
+    case parenthesis = 5
+    case comma = 6
+    case whitespace = 7
+    case unknown = 8
 }
 
 /// Token structure for syntax highlighting and analysis

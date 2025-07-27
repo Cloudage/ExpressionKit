@@ -556,6 +556,95 @@ final class ExpressionKitTests: XCTestCase {
         XCTAssertEqual(maxHealthValue, .number(80.0))
     }
     
+    // MARK: - String Support Tests
+    
+    func testStringLiterals() throws {
+        // Basic string literal evaluation
+        let result1 = try Expression.eval("\"hello\"")
+        XCTAssertTrue(result1.isString)
+        XCTAssertEqual(try result1.asString(), "hello")
+        
+        // Empty string
+        let result2 = try Expression.eval("\"\"")
+        XCTAssertTrue(result2.isString)
+        XCTAssertEqual(try result2.asString(), "")
+        
+        // String with spaces
+        let result3 = try Expression.eval("\"hello world\"")
+        XCTAssertTrue(result3.isString)
+        XCTAssertEqual(try result3.asString(), "hello world")
+    }
+    
+    func testStringValueCreation() throws {
+        // Test creating string values using the API
+        let stringValue: Value = "test"
+        XCTAssertTrue(stringValue.isString)
+        XCTAssertEqual(try stringValue.asString(), "test")
+        XCTAssertEqual(stringValue.stringValue, "test")
+        
+        // Test Value.string() factory method
+        let stringValue2 = Value.string("factory")
+        XCTAssertTrue(stringValue2.isString)
+        XCTAssertEqual(try stringValue2.asString(), "factory")
+    }
+    
+    func testStringTokenCollection() throws {
+        // Test that string literals are properly tokenized
+        let (value, tokens) = try Expression.eval("\"hello world\"", collectTokens: true)
+        
+        XCTAssertTrue(value.isString)
+        XCTAssertEqual(try value.asString(), "hello world")
+        
+        guard let tokens = tokens else {
+            XCTFail("Expected tokens to be collected")
+            return
+        }
+        
+        XCTAssertEqual(tokens.count, 1)
+        XCTAssertEqual(tokens[0].type, .string)
+        XCTAssertEqual(tokens[0].text, "\"hello world\"")
+    }
+    
+    func testStringEquality() throws {
+        let str1: Value = "hello"
+        let str2: Value = "hello"
+        let str3: Value = "world"
+        let num: Value = 42.0
+        
+        XCTAssertEqual(str1, str2)
+        XCTAssertNotEqual(str1, str3)
+        XCTAssertNotEqual(str1, num)
+    }
+    
+    func testStringDescription() throws {
+        let stringValue: Value = "test string"
+        XCTAssertEqual(stringValue.description, "test string")
+        
+        let emptyString: Value = ""
+        XCTAssertEqual(emptyString.description, "")
+    }
+    
+    func testStringTypeChecking() throws {
+        let stringValue: Value = "test"
+        let numberValue: Value = 42.0
+        let boolValue: Value = true
+        
+        // Positive cases
+        XCTAssertTrue(stringValue.isString)
+        XCTAssertFalse(stringValue.isNumber)
+        XCTAssertFalse(stringValue.isBoolean)
+        
+        // Negative cases
+        XCTAssertFalse(numberValue.isString)
+        XCTAssertFalse(boolValue.isString)
+        
+        // Type mismatch errors
+        XCTAssertThrowsError(try stringValue.asNumber())
+        XCTAssertThrowsError(try stringValue.asBoolean())
+        XCTAssertThrowsError(try numberValue.asString())
+        XCTAssertThrowsError(try boolValue.asString())
+    }
+    
     // MARK: - Helper Methods
     
     private func measureTime<T>(_ operation: () throws -> T) rethrows -> TimeInterval {
