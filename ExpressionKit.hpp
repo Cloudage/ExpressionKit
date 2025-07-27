@@ -585,7 +585,7 @@ namespace ExpressionKit {
                 case OperatorType::NOT:
                     // NOT operator can work with any type - convert to boolean first
                     return Value(!val.asBoolean());
-                case OperatorType::SUB: // 负号
+                case OperatorType::SUB: // Negation
                     if (!val.isNumber()) throw ExprException("Negation can only be used with numbers");
                     return Value(-val.asNumber());
                 default:
