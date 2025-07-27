@@ -156,27 +156,37 @@ namespace ExpressionKit {
                 } catch (...) {
                     // Fall through to throw exception
                 }
-                throw ExprException("无法将字符串 '" + stringValue + "' 转换为数值");
+                throw ExprException("Cannot convert string '" + stringValue + "' to number");
             }
             if (isBoolean()) return data.boolean ? 1.0 : 0.0;
-            throw ExprException("类型错误：期望数值");
+            throw ExprException("Type error: expected number");
         }
 
         bool asBoolean() const {
             if (isBoolean()) return data.boolean;
             if (isNumber()) return data.number != 0.0;
             if (isString()) {
-                // Convert string to boolean: non-empty strings are true
-                return !stringValue.empty();
+                // Convert string to boolean with more intuitive rules
+                if (stringValue.empty()) return false;
+                
+                // Check for explicit false values (case-insensitive)
+                if (stringValue == "false" || stringValue == "False" || stringValue == "FALSE" ||
+                    stringValue == "no" || stringValue == "No" || stringValue == "NO" ||
+                    stringValue == "0") {
+                    return false;
+                }
+                
+                // All other non-empty strings are true
+                return true;
             }
-            throw ExprException("类型错误：期望布尔值");
+            throw ExprException("Type error: expected boolean");
         }
         
         std::string asString() const {
             if (isString()) return stringValue;
             if (isNumber()) return std::to_string(data.number);
             if (isBoolean()) return data.boolean ? "true" : "false";
-            throw ExprException("类型错误：期望字符串");
+            throw ExprException("Type error: expected string");
         }
 
         // String conversion
@@ -313,7 +323,7 @@ namespace ExpressionKit {
     public:
         explicit VariableNode(const std::string& n) : name(n) {}
         Value evaluate(IEnvironment* environment) const override {
-            if (!environment) throw ExprException("变量访问需要 IEnvironment");
+            if (!environment) throw ExprException("Variable access requires IEnvironment");
             return environment->Get(name);
         }
     };
@@ -448,6 +458,18 @@ namespace ExpressionKit {
             const Value lhs = left->evaluate(environment);
             const Value rhs = right->evaluate(environment);
 
+            // 布尔逻辑运算 - for logical operations, allow any types and convert to boolean
+            if (op == OperatorType::AND || op == OperatorType::OR || op == OperatorType::XOR) {
+                const bool a = lhs.asBoolean();
+                const bool b = rhs.asBoolean();
+                switch (op) {
+                    case OperatorType::AND: return Value(a && b);
+                    case OperatorType::OR: return Value(a || b);
+                    case OperatorType::XOR: return Value(a != b); // XOR 是异或
+                    default: break; // Should not reach here
+                }
+            }
+
             // 字符串运算
             if (lhs.isString() || rhs.isString()) {
                 switch (op) {
@@ -487,7 +509,7 @@ namespace ExpressionKit {
                                 default: break;
                             }
                         }
-                        throw ExprException("字符串比较运算符需要两个字符串操作数");
+                        throw ExprException("String comparison operators require two string operands");
                     }
                     case OperatorType::IN: {
                         // 字符串包含检查：检查左操作数是否包含在右操作数中
@@ -496,10 +518,10 @@ namespace ExpressionKit {
                             const std::string& haystack = rhs.asString();
                             return Value(haystack.find(needle) != std::string::npos);
                         }
-                        throw ExprException("in 运算符需要两个字符串操作数");
+                        throw ExprException("in operator requires two string operands");
                     }
                     default:
-                        throw ExprException("不支持的字符串运算符");
+                        throw ExprException("Unsupported string operator");
                 }
             }
 
@@ -512,7 +534,7 @@ namespace ExpressionKit {
                     case OperatorType::SUB: return Value(a - b);
                     case OperatorType::MUL: return Value(a * b);
                     case OperatorType::DIV:
-                        if (b == 0) throw ExprException("除零错误");
+                        if (b == 0) throw ExprException("Division by zero");
                         return Value(a / b);
                     case OperatorType::GT: return Value(a > b);
                     case OperatorType::LT: return Value(a < b);
@@ -521,25 +543,22 @@ namespace ExpressionKit {
                     case OperatorType::EQ: return Value(a == b);
                     case OperatorType::NE: return Value(a != b);
                     default:
-                        throw ExprException("不支持的数值运算符");
+                        throw ExprException("Unsupported numeric operator");
                 }
             }
-            // 布尔运算
+            // Strict boolean operations (equality/inequality) require both to be boolean
             else if (lhs.isBoolean() && rhs.isBoolean()) {
                 const bool a = lhs.asBoolean();
                 const bool b = rhs.asBoolean();
                 switch (op) {
-                    case OperatorType::AND: return Value(a && b);
-                    case OperatorType::OR: return Value(a || b);
-                    case OperatorType::XOR: return Value(a != b); // XOR 是异或
                     case OperatorType::EQ: return Value(a == b);
                     case OperatorType::NE: return Value(a != b);
                     default:
-                        throw ExprException("不支持的布尔运算符");
+                        throw ExprException("Unsupported boolean operator");
                 }
             }
 
-            throw ExprException("不支持的操作数类型");
+            throw ExprException("Unsupported operand types");
         }
     };
 
@@ -564,13 +583,13 @@ namespace ExpressionKit {
 
             switch (op) {
                 case OperatorType::NOT:
-                    if (!val.isBoolean()) throw ExprException("NOT 运算符只能用于布尔值");
+                    // NOT operator can work with any type - convert to boolean first
                     return Value(!val.asBoolean());
                 case OperatorType::SUB: // 负号
-                    if (!val.isNumber()) throw ExprException("负号只能用于数值");
+                    if (!val.isNumber()) throw ExprException("Negation can only be used with numbers");
                     return Value(-val.asNumber());
                 default:
-                    throw ExprException("不支持的一元运算符");
+                    throw ExprException("Unsupported unary operator");
             }
         }
     };
@@ -604,7 +623,7 @@ namespace ExpressionKit {
             }
             
             // If not a standard function, require environment
-            if (!environment) throw ExprException("函数调用需要 IEnvironment");
+            if (!environment) throw ExprException("Function call requires IEnvironment");
             return environment->Call(name, evaluatedArgs);
         }
     };
@@ -692,7 +711,7 @@ namespace ExpressionKit {
 
         char consume() {
             skipWhitespace();
-            if (pos >= expr.size()) throw ExprException("意外的表达式结尾");
+            if (pos >= expr.size()) throw ExprException("Unexpected end of expression");
             char c = expr[pos];
             addToken(TokenType::OPERATOR, pos, 1, std::string(1, c));
             return expr[pos++];
@@ -814,7 +833,7 @@ namespace ExpressionKit {
         ASTNodePtr parsePrimaryExpression() {
             if (match('(')) {
                 auto expr = parseOrExpression();
-                if (!match(')')) throw ExprException("缺少右括号");
+                if (!match(')')) throw ExprException("Missing closing parenthesis");
                 return expr;
             }
 
@@ -857,7 +876,7 @@ namespace ExpressionKit {
                 }
                 
                 if (pos >= expr.size()) {
-                    throw ExprException("未结束的字符串字面量");
+                    throw ExprException("Unterminated string literal");
                 }
                 
                 ++pos; // 跳过结束的引号
@@ -878,7 +897,7 @@ namespace ExpressionKit {
                         do {
                             args.push_back(parseOrExpression());
                         } while (match(','));
-                        if (!match(')')) throw ExprException("函数调用缺少右括号");
+                        if (!match(')')) throw ExprException("Missing closing parenthesis in function call");
                     }
                     addToken(TokenType::IDENTIFIER, start, ident.length(), ident);
                     return std::make_shared<FunctionCallNode>(ident, args);
@@ -897,7 +916,7 @@ namespace ExpressionKit {
                 return std::make_shared<VariableNode>(ident);
             }
 
-            throw ExprException("无法识别的表达式");
+            throw ExprException("Unrecognized expression");
         }
 
     public:
@@ -909,7 +928,7 @@ namespace ExpressionKit {
             pos = 0;
             auto result = parseOrExpression();
             skipWhitespace();
-            if (pos < expr.size()) throw ExprException("表达式解析不完整");
+            if (pos < expr.size()) throw ExprException("Incomplete expression parsing");
             return result;
         }
     };
