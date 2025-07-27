@@ -458,7 +458,7 @@ namespace ExpressionKit {
             const Value lhs = left->evaluate(environment);
             const Value rhs = right->evaluate(environment);
 
-            // 布尔逻辑运算 - for logical operations, allow any types and convert to boolean
+            // Boolean logical operations - allow any types and convert to boolean
             if (op == OperatorType::AND || op == OperatorType::OR || op == OperatorType::XOR) {
                 const bool a = lhs.asBoolean();
                 const bool b = rhs.asBoolean();
