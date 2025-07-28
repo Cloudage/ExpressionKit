@@ -346,7 +346,7 @@ namespace ExpressionKit {
      * - ceil(x): Returns the smallest integer greater than or equal to x
      * - round(x): Returns x rounded to the nearest integer
      */
-    bool CallStandardFunctions(const std::string& functionName,
+    inline bool CallStandardFunctions(const std::string& functionName,
                               const std::vector<Value>& args,
                               Value& outResult) {
         try {
@@ -1047,7 +1047,7 @@ namespace ExpressionKit {
          *
          * This function delegates to the standalone CallStandardFunctions for consistency.
          */
-        static bool CallStandardFunctions(const std::string& functionName,
+        inline static bool CallStandardFunctions(const std::string& functionName,
                                         const std::vector<Value>& args,
                                         Value& outResult) {
             return ::ExpressionKit::CallStandardFunctions(functionName, args, outResult);
