@@ -645,6 +645,192 @@ final class ExpressionKitTests: XCTestCase {
         XCTAssertThrowsError(try boolValue.asString())
     }
     
+    // MARK: - Enhanced Edge Case Tests
+    
+    func testNumericalLimits() throws {
+        // Test scientific notation - these might not be supported by the parser
+        // so we'll test more basic large/small numbers
+        let largeResult = try Expression.eval("10000000000")  // 1e10 written out
+        XCTAssertEqual(largeResult, .number(10000000000))
+        
+        // Test decimal numbers
+        let smallResult = try Expression.eval("0.0000000001")  // 1e-10 written out
+        XCTAssertEqual(smallResult, .number(0.0000000001))
+        
+        // Test zero handling in different contexts
+        XCTAssertEqual(try Expression.eval("0.0"), .number(0.0))
+        XCTAssertEqual(try Expression.eval("-0.0"), .number(-0.0))
+        
+        // Test large integer
+        XCTAssertNoThrow(try Expression.eval("999999999"))
+    }
+    
+    func testMalformedExpressionEdgeCases() {
+        let malformedExpressions = [
+            "1 + + 2",           // Double operators
+            "1 2 3",             // Numbers without operators
+            "* / +",             // Only operators
+            "(((",               // Only opening parentheses
+            ")))",               // Only closing parentheses
+            "1 + (2 * (3 + 4)",  // Unmatched nested parentheses
+            "1 + 2) * 3",        // Extra closing parenthesis
+            ".",                 // Single dot
+            "..",                // Double dots
+            "+-",                // Conflicting unary operators
+            "",                  // Empty expression
+            "   ",               // Whitespace only
+        ]
+        
+        for expr in malformedExpressions {
+            XCTAssertThrowsError(try Expression.parse(expr), "Should fail for: '\(expr)'") { error in
+                XCTAssertTrue(error is ExpressionError, "Expected ExpressionError for: '\(expr)', got: \(type(of: error))")
+                
+                // Verify error messages are meaningful
+                let errorMessage = error.localizedDescription
+                XCTAssertFalse(errorMessage.isEmpty, "Error message should not be empty for: '\(expr)'")
+            }
+        }
+        
+        // Test some expressions that might work but we want to verify behavior
+        let potentiallyValidExpressions = [
+            ".1",                // Leading decimal point might be valid
+            "1.",                // Trailing decimal point might be valid
+            "1..2",              // Double decimal might be parsed as "1. .2" or similar
+        ]
+        
+        for expr in potentiallyValidExpressions {
+            // These might be valid depending on implementation, so don't assert they fail
+            do {
+                _ = try Expression.parse(expr)
+                // If it parses successfully, that's fine
+            } catch {
+                // If it fails, that's also acceptable for edge cases
+                XCTAssertTrue(error is ExpressionError, "If '\(expr)' fails, it should be an ExpressionError")
+            }
+        }
+    }
+    
+    func testBoundaryValueArithmetic() throws {
+        // Test operations near zero
+        XCTAssertEqual(try Expression.eval("0 + 0"), .number(0.0))
+        XCTAssertEqual(try Expression.eval("0 - 0"), .number(0.0))
+        XCTAssertEqual(try Expression.eval("0 * 1000"), .number(0.0))
+        
+        // Test operations with 1
+        XCTAssertEqual(try Expression.eval("1 * 1"), .number(1.0))
+        XCTAssertEqual(try Expression.eval("5 / 1"), .number(5.0))
+        XCTAssertEqual(try Expression.eval("1 + 0"), .number(1.0))
+        
+        // Test very precise decimal operations
+        let result = try Expression.eval("0.1 + 0.2")
+        XCTAssertTrue(result.isNumber)
+        XCTAssertEqual(result.numberValue!, 0.3, accuracy: 0.000001)
+    }
+    
+    func testComplexBooleanLogicEdgeCases() throws {
+        // Test short-circuit evaluation patterns
+        // Note: The underlying C++ implementation may not support short-circuit evaluation
+        // so we'll test the basic boolean logic instead
+        XCTAssertEqual(try Expression.eval("false && false"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("true || false"), .boolean(true))
+        
+        // Test complex nested boolean expressions
+        XCTAssertEqual(try Expression.eval("(true && false) || (false || true)"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("!(true && false) && !(false || false)"), .boolean(true))
+        
+        // Test XOR truth table completely
+        XCTAssertEqual(try Expression.eval("true xor true"), .boolean(false))
+        XCTAssertEqual(try Expression.eval("true xor false"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("false xor true"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("false xor false"), .boolean(false))
+    }
+    
+    func testStringEdgeCases() throws {
+        // Test strings with special characters
+        let specialStringResult = try Expression.eval("\"Hello\\tWorld\\n\"")
+        XCTAssertTrue(specialStringResult.isString)
+        
+        // Test empty string
+        let emptyResult = try Expression.eval("\"\"")
+        XCTAssertTrue(emptyResult.isString)
+        XCTAssertEqual(try emptyResult.asString(), "")
+        
+        // Test string with quotes (if supported)
+        // This might not be supported depending on the parser implementation
+        XCTAssertNoThrow(try Expression.eval("\"simple string\""))
+    }
+    
+    func testMemoryManagementStress() throws {
+        // Test creating and destroying many expressions rapidly
+        for i in 0..<1000 {
+            let expr = try Expression.parse("\(i % 100) + \(i % 50)")
+            let result = try expr.eval()
+            XCTAssertTrue(result.isNumber)
+            // Don't store expressions to ensure they're deallocated
+        }
+        
+        // Test creating many expressions with tokens
+        for i in 0..<100 {
+            let (value, tokens) = try Expression.eval("\(i) * 2", collectTokens: true)
+            XCTAssertTrue(value.isNumber)
+            XCTAssertNotNil(tokens)
+            XCTAssertFalse(tokens?.isEmpty ?? true)
+        }
+    }
+    
+    func testTokenCollectionEdgeCases() throws {
+        // Test token collection with complex expressions
+        let (_, tokens) = try Expression.eval("max(abs(-5), sqrt(pow(2, 3)))", collectTokens: true)
+        guard let tokens = tokens else {
+            XCTFail("Expected tokens to be collected")
+            return
+        }
+        
+        // Verify we have meaningful tokens
+        XCTAssertTrue(tokens.count > 10, "Should have multiple tokens for complex expression")
+        
+        // Check that all token types are represented appropriately
+        let tokenTypes = Set(tokens.map { $0.type })
+        XCTAssertTrue(tokenTypes.contains(.identifier), "Should have identifier tokens for function names")
+        XCTAssertTrue(tokenTypes.contains(.number), "Should have number tokens")
+        XCTAssertTrue(tokenTypes.contains(.parenthesis), "Should have parenthesis tokens")
+        XCTAssertTrue(tokenTypes.contains(.comma), "Should have comma tokens")
+        
+        // Test token collection with different expression types
+        let (_, boolTokens) = try Expression.eval("true && false", collectTokens: true)
+        XCTAssertNotNil(boolTokens)
+        XCTAssertTrue(boolTokens?.contains { $0.type == .boolean } ?? false)
+        
+        let (_, stringTokens) = try Expression.eval("\"test\"", collectTokens: true)
+        XCTAssertNotNil(stringTokens)
+        XCTAssertTrue(stringTokens?.contains { $0.type == .string } ?? false)
+    }
+    
+    func testErrorMessageQuality() {
+        // Test that error messages are helpful and specific
+        do {
+            _ = try Expression.parse("1 +")
+            XCTFail("Should have thrown an error")
+        } catch let error as ExpressionError {
+            let message = error.localizedDescription
+            XCTAssertTrue(message.contains("Parse failed") || message.contains("failed"), 
+                         "Error message should indicate parse failure: \(message)")
+        } catch {
+            XCTFail("Expected ExpressionError, got: \(type(of: error))")
+        }
+        
+        // Test evaluation error messages
+        do {
+            _ = try Expression.eval("1 / 0")
+            XCTFail("Should have thrown an error for division by zero")
+        } catch let error as ExpressionError {
+            let message = error.localizedDescription
+            XCTAssertFalse(message.isEmpty, "Error message should not be empty")
+        } catch {
+            XCTFail("Expected ExpressionError, got: \(type(of: error))")
+        }
+    }
+    
     // MARK: - Helper Methods
     
     private func measureTime<T>(_ operation: () throws -> T) rethrows -> TimeInterval {

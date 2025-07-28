@@ -34,7 +34,25 @@ public struct Token {
 }
 
 /// Swift wrapper for ExpressionKit library
-/// Provides a clean Swift API while maintaining the "parse once, execute many times" capability
+/// 
+/// Provides a clean Swift API while maintaining the "parse once, execute many times" capability.
+/// This class offers both direct evaluation for simple cases and compiled expressions for
+/// high-performance scenarios where the same expression is evaluated multiple times.
+///
+/// ## Usage Examples:
+/// ```swift
+/// // Direct evaluation (simple cases)
+/// let result = try Expression.eval("2 + 3 * 4")  // Returns Value.number(14.0)
+///
+/// // Parse once, execute many times (high performance)
+/// let expression = try Expression.parse("(a + b) * c")
+/// for _ in 0..<10000 {
+///     let result = try expression.eval()  // Very fast repeated execution
+/// }
+///
+/// // Token collection for syntax highlighting
+/// let (value, tokens) = try Expression.eval("max(5, 3)", collectTokens: true)
+/// ```
 public final class Expression {
     
     /// Evaluate an expression string directly (without environment support for now)

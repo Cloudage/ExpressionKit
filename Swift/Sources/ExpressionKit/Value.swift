@@ -43,40 +43,33 @@ extension ExprValue {
     }
     
     /// Get the number value, throwing an error if not a number
+    /// - Returns: The number value as Double
+    /// - Throws: ExpressionError.typeMismatch if this value is not a number
     public func asNumber() throws -> Double {
         guard isNumber else {
-            throw ExpressionError.typeMismatch("Expected number, got boolean")
+            let actualType = typeDescription
+            throw ExpressionError.typeMismatch("Expected number, got \(actualType)")
         }
         return data.number
     }
     
     /// Get the boolean value, throwing an error if not a boolean
+    /// - Returns: The boolean value as Bool
+    /// - Throws: ExpressionError.typeMismatch if this value is not a boolean
     public func asBoolean() throws -> Bool {
         guard isBoolean else {
-            let actualType: String
-            if isNumber {
-                actualType = "number"
-            } else if isString {
-                actualType = "string"
-            } else {
-                actualType = "unknown type"
-            }
+            let actualType = typeDescription
             throw ExpressionError.typeMismatch("Expected boolean, got \(actualType)")
         }
         return data.boolean
     }
     
     /// Get the string value, throwing an error if not a string
+    /// - Returns: The string value as String
+    /// - Throws: ExpressionError.typeMismatch if this value is not a string
     public func asString() throws -> String {
         guard isString else {
-            let actualType: String
-            if isNumber {
-                actualType = "number"
-            } else if isBoolean {
-                actualType = "boolean"
-            } else {
-                actualType = "unknown type"
-            }
+            let actualType = typeDescription
             throw ExpressionError.typeMismatch("Expected string, got \(actualType)")
         }
         var copy = self
@@ -84,6 +77,20 @@ extension ExprValue {
             throw ExpressionError.evaluationFailed("Failed to get string value")
         }
         return String(cString: cString)
+    }
+    
+    /// Human-readable description of the value's type
+    /// - Returns: A string describing the type ("number", "boolean", "string", or "unknown")
+    public var typeDescription: String {
+        if isNumber {
+            return "number"
+        } else if isBoolean {
+            return "boolean"
+        } else if isString {
+            return "string"
+        } else {
+            return "unknown"
+        }
     }
     
     /// Check if this value is a number
