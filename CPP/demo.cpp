@@ -12,8 +12,119 @@
 #include <map>
 #include <string>
 #include <iomanip>
+#include <algorithm>
 
 using namespace ExpressionKit;
+
+// ANSI Color codes for syntax highlighting
+namespace Colors {
+    const std::string RESET = "\033[0m";
+    const std::string NUMBER = "\033[36m";      // Cyan for numbers
+    const std::string STRING = "\033[32m";      // Green for strings
+    const std::string IDENTIFIER = "\033[33m";  // Yellow for variables
+    const std::string OPERATOR = "\033[31m";    // Red for operators
+    const std::string PARENTHESIS = "\033[37m"; // White for parentheses
+    const std::string COMMA = "\033[37m";       // White for commas
+    const std::string BOOLEAN = "\033[35m";     // Magenta for booleans
+    const std::string UNKNOWN = "\033[91m";     // Bright red for unknown tokens
+}
+
+/**
+ * @brief Apply syntax highlighting to an expression using token parsing
+ * @param expression The expression to highlight
+ * @param environment Optional environment for token parsing context
+ * @return Highlighted expression with ANSI color codes
+ */
+std::string highlightExpression(const std::string& expression, IEnvironment* environment = nullptr) {
+    if (expression.empty()) {
+        return expression;
+    }
+    
+    try {
+        // Parse the expression to collect tokens
+        std::vector<Token> tokens;
+        
+        // Try to parse - if it fails, we'll still get partial tokens
+        try {
+            Expression::Parse(expression, &tokens);
+        } catch (const ExprException&) {
+            // Even if parsing fails, we might have collected some tokens
+            // This allows highlighting even for incomplete expressions
+        }
+        
+        if (tokens.empty()) {
+            return expression; // Fallback to original if no tokens
+        }
+        
+        // Sort tokens by their start position to ensure proper reconstruction
+        std::sort(tokens.begin(), tokens.end(), [](const Token& a, const Token& b) {
+            return a.start < b.start;
+        });
+        
+        std::string highlighted;
+        size_t lastPos = 0;
+        
+        for (const auto& token : tokens) {
+            // Add any unprocessed text before this token
+            if (token.start > lastPos) {
+                highlighted += expression.substr(lastPos, token.start - lastPos);
+            }
+            
+            // Apply color based on token type
+            std::string color;
+            switch (token.type) {
+                case TokenType::NUMBER:
+                    color = Colors::NUMBER;
+                    break;
+                case TokenType::STRING:
+                    color = Colors::STRING;
+                    break;
+                case TokenType::IDENTIFIER:
+                    color = Colors::IDENTIFIER;
+                    break;
+                case TokenType::OPERATOR:
+                    color = Colors::OPERATOR;
+                    break;
+                case TokenType::PARENTHESIS:
+                    color = Colors::PARENTHESIS;
+                    break;
+                case TokenType::COMMA:
+                    color = Colors::COMMA;
+                    break;
+                case TokenType::BOOLEAN:
+                    color = Colors::BOOLEAN;
+                    break;
+                case TokenType::WHITESPACE:
+                    // Don't color whitespace
+                    color = "";
+                    break;
+                case TokenType::UNKNOWN:
+                    color = Colors::UNKNOWN;
+                    break;
+            }
+            
+            // Add the colored token
+            if (!color.empty()) {
+                highlighted += color + token.text + Colors::RESET;
+            } else {
+                highlighted += token.text;
+            }
+            
+            lastPos = token.start + token.length;
+        }
+        
+        // Add any remaining text after the last token
+        if (lastPos < expression.length()) {
+            highlighted += expression.substr(lastPos);
+        }
+        
+        return highlighted;
+        
+    } catch (const ExprException&) {
+        // If token parsing completely fails, return original expression
+        return expression;
+    }
+}
 
 /**
  * @brief Environment implementation for the CLI demo
@@ -146,6 +257,8 @@ void showWelcome() {
 
 Welcome to the ExpressionKit expression evaluator! You can use the following commands:
 
+✨ Features syntax highlighting with colors for better visualization!
+
 Commands:
   set <name> <expression>  - Set a variable to the result of an expression
   del <name>              - Delete a variable
@@ -220,6 +333,9 @@ bool processCommand(const std::string& command, DemoEnvironment& env) {
                 return true;
             }
             
+            // Show highlighted expression
+            std::cout << "Evaluating: " << highlightExpression(expression, &env) << std::endl;
+            
             // Evaluate expression and set variable
             Value result = Expression::Eval(expression, &env);
             env.setVariable(varName, result);
@@ -252,7 +368,11 @@ bool processCommand(const std::string& command, DemoEnvironment& env) {
                 return true;
             }
             
+            // Show highlighted expression
+            std::cout << "Evaluating: " << highlightExpression(expression, &env) << std::endl;
+            
             Value result = Expression::Eval(expression, &env);
+            std::cout << "Result: ";
             printValue(result);
             std::cout << std::endl;
         }
