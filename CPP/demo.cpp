@@ -45,12 +45,7 @@ std::string highlightExpression(const std::string& expression, IEnvironment* env
         std::vector<Token> tokens;
         
         // Try to parse - if it fails, we'll still get partial tokens
-        try {
-            Expression::Parse(expression, &tokens);
-        } catch (const ExprException&) {
-            // Even if parsing fails, we might have collected some tokens
-            // This allows highlighting even for incomplete expressions
-        }
+        Expression::Parse(expression, &tokens);
         
         if (tokens.empty()) {
             return expression; // Fallback to original if no tokens
