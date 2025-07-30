@@ -28,11 +28,17 @@ add_executable(ExprTKTest test.cpp)
 # Add token demo executable
 add_executable(TokenDemo token_demo.cpp)
 
+# Add interactive demo executable
+add_executable(ExpressionDemo demo.cpp)
+
 # Link ExpressionKit and Catch2
 target_link_libraries(ExprTKTest PRIVATE ${EXPRESSIONKIT_TARGET} Catch2::Catch2WithMain)
 
 # Link ExpressionKit for token demo
 target_link_libraries(TokenDemo PRIVATE ${EXPRESSIONKIT_TARGET})
+
+# Link ExpressionKit for interactive demo
+target_link_libraries(ExpressionDemo PRIVATE ${EXPRESSIONKIT_TARGET})
 
 # Enable testing and register tests
 enable_testing()
