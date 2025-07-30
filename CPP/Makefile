@@ -153,6 +153,19 @@ TokenDemo/fast:
 .PHONY : TokenDemo/fast
 
 #=============================================================================
+# Target rules for targets named ExpressionDemo
+
+# Build rule for target.
+ExpressionDemo: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 ExpressionDemo
+.PHONY : ExpressionDemo
+
+# fast build rule for target.
+ExpressionDemo/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ExpressionDemo.dir/build.make CMakeFiles/ExpressionDemo.dir/build
+.PHONY : ExpressionDemo/fast
+
+#=============================================================================
 # Target rules for targets named Experimental
 
 # Build rule for target.
@@ -542,6 +555,30 @@ Catch2WithMain/fast:
 	$(MAKE) $(MAKESILENT) -f _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/build.make _deps/catch2-build/src/CMakeFiles/Catch2WithMain.dir/build
 .PHONY : Catch2WithMain/fast
 
+demo.o: demo.cpp.o
+.PHONY : demo.o
+
+# target to build an object file
+demo.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ExpressionDemo.dir/build.make CMakeFiles/ExpressionDemo.dir/demo.cpp.o
+.PHONY : demo.cpp.o
+
+demo.i: demo.cpp.i
+.PHONY : demo.i
+
+# target to preprocess a source file
+demo.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ExpressionDemo.dir/build.make CMakeFiles/ExpressionDemo.dir/demo.cpp.i
+.PHONY : demo.cpp.i
+
+demo.s: demo.cpp.s
+.PHONY : demo.s
+
+# target to generate assembly for a file
+demo.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/ExpressionDemo.dir/build.make CMakeFiles/ExpressionDemo.dir/demo.cpp.s
+.PHONY : demo.cpp.s
+
 test.o: test.cpp.o
 .PHONY : test.o
 
@@ -630,7 +667,11 @@ help:
 	@echo "... Catch2"
 	@echo "... Catch2WithMain"
 	@echo "... ExprTKTest"
+	@echo "... ExpressionDemo"
 	@echo "... TokenDemo"
+	@echo "... demo.o"
+	@echo "... demo.i"
+	@echo "... demo.s"
 	@echo "... test.o"
 	@echo "... test.i"
 	@echo "... test.s"
