@@ -24,7 +24,7 @@
 | 🎨 **TokenDemo** | 用于语法高亮的词法分析演示 | `cd CPP && cmake . && make TokenDemo && ./TokenDemo` |
 | 🍎 **Swift 示例** | Swift API 演示 | `cd Swift/Examples/SwiftExample && swift run` |
 
-➡️ **[查看详细说明](#-实时体验---演示和测试目标)**
+➡️ **[查看详细说明](#quick-start-demo-and-testing)**
 
 ## 🧪 测试状态
 
