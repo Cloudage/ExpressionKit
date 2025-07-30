@@ -13,6 +13,19 @@
 - **零依赖**：仅依赖 C++ 标准库
 - **Swift 支持**：提供简洁的 Swift API，支持 Swift Package Manager 集成
 
+### 🎯 快速开始 - 试用演示程序！
+
+**想要立即体验 ExpressionKit？** 直接运行我们的交互式示例：
+
+| 目标程序 | 描述 | 命令 |
+|--------|-------------|---------|
+| 🖥️ **ExpressionDemo** | 带语法高亮的交互式命令行界面 | `cd CPP && cmake . && make ExpressionDemo && ./ExpressionDemo` |
+| 🧪 **ExprTKTest** | 全面的单元测试套件 | `cd CPP && cmake . && make ExprTKTest && ./ExprTKTest` |
+| 🎨 **TokenDemo** | 用于语法高亮的词法分析演示 | `cd CPP && cmake . && make TokenDemo && ./TokenDemo` |
+| 🍎 **Swift 示例** | Swift API 演示 | `cd Swift/Examples/SwiftExample && swift run` |
+
+➡️ **[查看详细说明](#quick-start-demo-and-testing)**
+
 ## 🧪 测试状态
 
 [![测试状态检查](https://github.com/Cloudage/ExpressionKit/actions/workflows/test-status-check.yml/badge.svg)](https://github.com/Cloudage/ExpressionKit/actions/workflows/test-status-check.yml)
@@ -28,14 +41,18 @@
 
 ### 本地运行测试
 
+ExpressionKit 包含 C++ 和 Swift 的全面测试套件和交互式演示：
+
 ```bash
-# 运行所有测试
+# 运行所有测试（C++ 和 Swift）
 ./scripts/run_all_tests.sh
 
 # 运行单个测试套件
 ./scripts/run_cpp_tests.sh      # 仅 C++ 测试
 ./scripts/run_swift_tests.sh    # 仅 Swift 测试
 ```
+
+**💡 想要试用交互式演示？** 请查看下方的 [演示和测试目标部分](#-实时体验---演示和测试目标) 获取实际操作示例！
 
 ## 🤖 AI 生成代码说明
 
@@ -217,6 +234,87 @@ let result = try expression.eval()
 ```
 
 开销主要来自为词法文本分配字符串。对于性能关键的应用，只在需要时收集词法（例如，在开发期间或面向用户的编辑器中）。
+
+## 🎮 实时体验 - 演示和测试目标
+
+ExpressionKit 提供了多个交互式示例和全面的测试程序来展示其功能。以下是运行方法：
+
+### 🖥️ 交互式 C++ 演示
+
+**ExpressionDemo** - 功能丰富的交互式命令行界面，支持语法高亮：
+
+```bash
+# 构建并运行交互式演示
+cd CPP
+cmake .
+make ExpressionDemo
+./ExpressionDemo
+```
+
+**特性：**
+- 带颜色语法高亮的交互式表达式求值
+- 变量管理（设置、删除、列表）
+- 支持所有数学函数
+- 实时表达式解析和错误报告
+
+**示例会话：**
+```
+> set x 5 + 3           # 设置 x 为 8
+> set y x * 2           # 设置 y 为 16 
+> eval sin(pi/2)        # 计算 sin(π/2) ≈ 1
+> ls                    # 显示所有变量
+```
+
+### 🧪 C++ 单元测试  
+
+**ExprTKTest** - 由 Catch2 驱动的全面测试套件：
+
+```bash
+# 构建并运行所有测试
+cd CPP
+cmake .
+make ExprTKTest
+./ExprTKTest
+
+# 运行特定测试类别
+./ExprTKTest [tag]           # 运行带特定标签的测试
+./ExprTKTest --list-tags     # 查看可用标签
+```
+
+### 🎨 词法分析演示
+
+**TokenDemo** - 用于语法高亮的高级词法序列分析：
+
+```bash
+# 构建并运行词法演示
+cd CPP
+cmake .
+make TokenDemo
+./TokenDemo
+```
+
+展示如何收集和分析词法序列，用于：
+- 编辑器中的语法高亮
+- 表达式验证
+- 自动补全系统
+
+### 🍎 Swift 示例
+
+**ExpressionKitExample** - Swift 词法演示和功能展示：
+
+```bash
+# 运行带完整词法分析的 Swift 示例
+cd Swift/Examples/SwiftExample
+swift run
+```
+
+**特性：**
+- 演示 Swift API 用法
+- 词法序列收集示例
+- 性能基准测试
+- 类型安全演示
+
+---
 
 ## 🚀 示例
 
@@ -568,35 +666,25 @@ try {
 
 ## 📚 更多示例
 
-### 运行词法演示
+### 运行实时演示
 
-查看全面的词法功能演示：
+获取全面的交互式示例，请查看上方的 **[演示和测试目标部分](#-实时体验---演示和测试目标)**，包括：
 
-#### C++ 词法演示
-```bash
-# 编译并运行 C++ 词法演示
-cd CPP
-g++ -std=c++17 -I.. -o token_demo token_demo.cpp
-./token_demo
+- **ExpressionDemo**：带语法高亮的交互式命令行界面
+- **TokenDemo**：词法序列分析演示  
+- **ExprTKTest**：完整的单元测试套件
+- **Swift 示例**：完整的 Swift API 展示
 
-# 或使用 CMake
-mkdir build && cd build
-cmake .. && make
-./TokenDemo
-```
+### 代码示例
 
-#### Swift 词法演示
-```bash
-# 运行带词法功能的 Swift 示例
-cd Swift/Examples/SwiftExample
-swift run
-```
+查看专用演示文件获取完整的工作示例：
 
-查看 `CPP/token_demo.cpp` 和 `Swift/Examples/SwiftExample/Sources/ExpressionKitExample/main.swift` 文件，了解词法收集和分析的完整工作示例。
+- **`CPP/demo.cpp`**：具有完整 ExpressionKit 功能的交互式命令行演示
+- **`CPP/token_demo.cpp`**：高级词法序列收集和分析  
+- **`CPP/test.cpp`**：全面的单元测试和使用示例
+- **`Swift/Examples/SwiftExample/`**：完整的 Swift API 演示
 
-### 其他示例
-
-查看 `test.cpp` 文件了解更多使用示例和测试用例。
+查看上述文件了解更多使用示例和测试用例。
 
 ## 🤝 贡献
 
