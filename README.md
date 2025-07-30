@@ -24,7 +24,7 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 | 🎨 **TokenDemo** | Token analysis for syntax highlighting | `cd CPP && cmake . && make TokenDemo && ./TokenDemo` |
 | 🍎 **Swift Example** | Swift API demonstration | `cd Swift/Examples/SwiftExample && swift run` |
 
-➡️ **[See detailed instructions below](#-try-it-live---demo--test-targets)**
+➡️ **[See detailed instructions below](#quick-start---try-the-demos)**
 
 ## 🧪 Test Status
 
