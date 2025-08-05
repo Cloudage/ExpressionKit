@@ -831,6 +831,75 @@ final class ExpressionKitTests: XCTestCase {
         }
     }
     
+    // MARK: - Ternary Operator Tests
+    
+    func testBasicTernaryOperator() throws {
+        // Basic ternary with boolean condition
+        XCTAssertEqual(try Expression.eval("true ? 1 : 2"), .number(1.0))
+        XCTAssertEqual(try Expression.eval("false ? 1 : 2"), .number(2.0))
+        
+        // Ternary with numeric condition (non-zero = true, zero = false)
+        XCTAssertEqual(try Expression.eval("1 ? 10 : 20"), .number(10.0))
+        XCTAssertEqual(try Expression.eval("0 ? 10 : 20"), .number(20.0))
+        XCTAssertEqual(try Expression.eval("5.5 ? 10 : 20"), .number(10.0))
+        
+        // Ternary with string condition (non-empty = true, empty = false)
+        XCTAssertEqual(try Expression.eval("\"hello\" ? 10 : 20"), .number(10.0))
+        XCTAssertEqual(try Expression.eval("\"\" ? 10 : 20"), .number(20.0))
+        XCTAssertEqual(try Expression.eval("\"false\" ? 10 : 20"), .number(20.0)) // "false" string is false
+        XCTAssertEqual(try Expression.eval("\"true\" ? 10 : 20"), .number(10.0))
+    }
+    
+    func testTernaryWithExpressions() throws {
+        // Ternary with complex conditions
+        XCTAssertEqual(try Expression.eval("2 > 1 ? 100 : 200"), .number(100.0))
+        XCTAssertEqual(try Expression.eval("2 < 1 ? 100 : 200"), .number(200.0))
+        
+        // Ternary with complex expressions in branches
+        XCTAssertEqual(try Expression.eval("true ? 2 + 3 : 4 * 5"), .number(5.0))
+        XCTAssertEqual(try Expression.eval("false ? 2 + 3 : 4 * 5"), .number(20.0))
+        
+        // Nested ternary operators (right associative)
+        XCTAssertEqual(try Expression.eval("true ? 1 : false ? 2 : 3"), .number(1.0))
+        XCTAssertEqual(try Expression.eval("false ? 1 : true ? 2 : 3"), .number(2.0))
+        XCTAssertEqual(try Expression.eval("false ? 1 : false ? 2 : 3"), .number(3.0))
+    }
+    
+    func testTernaryWithDifferentTypes() throws {
+        // Mixed types in branches
+        XCTAssertEqual(try Expression.eval("true ? \"yes\" : \"no\""), .string("yes"))
+        XCTAssertEqual(try Expression.eval("false ? \"yes\" : \"no\""), .string("no"))
+        
+        XCTAssertEqual(try Expression.eval("1 ? true : false"), .boolean(true))
+        XCTAssertEqual(try Expression.eval("0 ? true : false"), .boolean(false))
+        
+        // String and number mix
+        XCTAssertEqual(try Expression.eval("true ? \"hello\" : 42"), .string("hello"))
+        XCTAssertEqual(try Expression.eval("false ? \"hello\" : 42"), .number(42.0))
+    }
+    
+
+    func testTernaryOperatorPrecedence() throws {
+        // Ternary should have lower precedence than logical operators
+        XCTAssertEqual(try Expression.eval("true && false ? 1 : 2"), .number(2.0))
+        XCTAssertEqual(try Expression.eval("true || false ? 1 : 2"), .number(1.0))
+        
+        // But higher precedence than assignment (not applicable here)
+        // Test with parentheses to verify grouping
+        XCTAssertEqual(try Expression.eval("(true ? 1 : 2) + 3"), .number(4.0))
+        XCTAssertEqual(try Expression.eval("true ? (1 + 3) : (2 + 3)"), .number(4.0))
+    }
+    
+    func testComplexTernaryExpressions() throws {
+        // Complex nested expressions
+        XCTAssertEqual(try Expression.eval("(2 > 1 && 3 < 5) ? (10 * 2) : (5 + 3)"), .number(20.0))
+        XCTAssertEqual(try Expression.eval("(2 < 1 || 3 > 5) ? (10 * 2) : (5 + 3)"), .number(8.0))
+        
+        // Nested ternary expressions
+        XCTAssertEqual(try Expression.eval("true ? false ? 1 : 2 : 3"), .number(2.0))
+        XCTAssertEqual(try Expression.eval("false ? 1 : true ? 2 : 3"), .number(2.0))
+    }
+    
     // MARK: - Helper Methods
     
     private func measureTime<T>(_ operation: () throws -> T) rethrows -> TimeInterval {

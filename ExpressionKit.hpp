@@ -432,7 +432,8 @@ namespace ExpressionKit {
         ADD, SUB, MUL, DIV,           // 算术运算符: +, -, *, /
         EQ, NE, GT, LT, GE, LE,       // 比较运算符: ==, !=, >, <, >=, <=
         IN,                           // 包含运算符: in
-        AND, OR, XOR, NOT             // 逻辑运算符: &&, ||, xor, !
+        AND, OR, XOR, NOT,            // 逻辑运算符: &&, ||, xor, !
+        TERNARY                       // 三元运算符: ? :
     };
 
     /**
@@ -595,6 +596,41 @@ namespace ExpressionKit {
     };
 
     /**
+     * @brief AST node representing ternary operations (condition ? true_expr : false_expr)
+     *
+     * This node handles the ternary conditional operator (? :).
+     * The condition is evaluated using asBoolean() to support any value type.
+     *
+     * Example: 
+     * - condition ? value1 : value2
+     */
+    class TernaryOpNode final : public ASTNode {
+        ASTNodePtr condition;
+        ASTNodePtr trueExpr;
+        ASTNodePtr falseExpr;
+        OperatorType op;
+    public:
+        TernaryOpNode(ASTNodePtr cond, ASTNodePtr trueExpr, ASTNodePtr falseExpr, OperatorType op)
+            : condition(std::move(cond)), trueExpr(std::move(trueExpr)), falseExpr(std::move(falseExpr)), op(op) {}
+
+        Value evaluate(IEnvironment* environment) const override {
+            switch (op) {
+                case OperatorType::TERNARY: {
+                    // Standard ternary: condition ? trueExpr : falseExpr
+                    const Value condValue = condition->evaluate(environment);
+                    if (condValue.asBoolean()) {
+                        return trueExpr->evaluate(environment);
+                    } else {
+                        return falseExpr->evaluate(environment);
+                    }
+                }
+                default:
+                    throw ExprException("Unsupported ternary operator");
+            }
+        }
+    };
+
+    /**
      * @brief AST node representing function calls
      *
      * This node stores a function name and a list of argument expressions.
@@ -645,6 +681,7 @@ namespace ExpressionKit {
      * - Logical XOR: xor
      * - Logical AND: &&, and
      * - Logical OR: ||, or
+     * - Ternary conditional: ? :
      *
      * The parser is designed to be used once per expression string and
      * produces an AST that can be evaluated multiple times efficiently.
@@ -715,6 +752,20 @@ namespace ExpressionKit {
             char c = expr[pos];
             addToken(TokenType::OPERATOR, pos, 1, std::string(1, c));
             return expr[pos++];
+        }
+
+        // 解析三元表达式（最低优先级）
+        ASTNodePtr parseTernaryExpression() {
+            auto condition = parseOrExpression();
+            if (match("?")) {
+                auto trueExpr = parseTernaryExpression(); // Right associative
+                if (!match(":")) {
+                    throw ExprException("Expected ':' in ternary expression");
+                }
+                auto falseExpr = parseTernaryExpression(); // Right associative
+                return std::make_shared<TernaryOpNode>(condition, trueExpr, falseExpr, OperatorType::TERNARY);
+            }
+            return condition;
         }
 
         // 解析逻辑表达式（最低优先级）
@@ -832,7 +883,7 @@ namespace ExpressionKit {
         // 解析基本表达式
         ASTNodePtr parsePrimaryExpression() {
             if (match('(')) {
-                auto expr = parseOrExpression();
+                auto expr = parseTernaryExpression();
                 if (!match(')')) throw ExprException("Missing closing parenthesis");
                 return expr;
             }
@@ -895,7 +946,7 @@ namespace ExpressionKit {
                     std::vector<ASTNodePtr> args;
                     if (!match(')')) {
                         do {
-                            args.push_back(parseOrExpression());
+                            args.push_back(parseTernaryExpression());
                         } while (match(','));
                         if (!match(')')) throw ExprException("Missing closing parenthesis in function call");
                     }
@@ -926,7 +977,7 @@ namespace ExpressionKit {
 
         ASTNodePtr parse() {
             pos = 0;
-            auto result = parseOrExpression();
+            auto result = parseTernaryExpression();
             skipWhitespace();
             if (pos < expr.size()) throw ExprException("Incomplete expression parsing");
             return result;
