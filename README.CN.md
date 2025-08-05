@@ -686,6 +686,21 @@ try {
 
 查看上述文件了解更多使用示例和测试用例。
 
+## 🚀 未来发展
+
+### 数组和字典支持
+我们正在探索为 ExpressionKit 添加原生数组和字典支持。请查看我们的综合分析：
+
+- **📋 [数组字典支持实现方案](ARRAY_DICTIONARY_SUPPORT.md)** - 三种实现方案的详细技术分析
+- **📋 [Array/Dictionary Implementation Plans (English)](ARRAY_DICTIONARY_SUPPORT_EN.md)** - 英文版实现细节
+
+分析涵盖：
+- **方案一**：扩展 Union 系统（长期推荐）
+- **方案二**：多态 Value 系统与类型擦除
+- **方案三**：插件式集成支持（短期验证推荐）
+
+每个方案都从最小化更改、Swift 集成、跨语言兼容性和性能影响等角度进行评估。
+
 ## 🤝 贡献
 
 由于这个项目主要是 AI 生成的，对于建议的更改：

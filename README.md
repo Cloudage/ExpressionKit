@@ -684,6 +684,21 @@ See the dedicated demo files for complete working examples:
 
 See the files above for additional usage examples and test cases.
 
+## 🚀 Future Development
+
+### Array and Dictionary Support
+We are exploring adding native array and dictionary support to ExpressionKit. See our comprehensive analysis:
+
+- **📋 [Array/Dictionary Implementation Plans](ARRAY_DICTIONARY_SUPPORT_EN.md)** - Detailed technical analysis of three implementation approaches
+- **📋 [数组字典支持实现方案 (中文)](ARRAY_DICTIONARY_SUPPORT.md)** - Chinese version with implementation details
+
+The analysis covers:
+- **Approach 1**: Union system extension (recommended for long-term)
+- **Approach 2**: Polymorphic value system with type erasure
+- **Approach 3**: Plugin-style collection support (recommended for short-term validation)
+
+Each approach is evaluated for minimal changes, Swift integration, cross-language compatibility, and performance impact.
+
 ## 🤝 Contributing
 
 As this project is primarily AI-generated, for suggested changes:
