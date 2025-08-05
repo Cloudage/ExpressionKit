@@ -1,5 +1,4 @@
 import Foundation
-import ExpressionKitBridge
 
 /// Simple implementation of EnvironmentProtocol that stores variables in a dictionary
 /// 
@@ -17,13 +16,13 @@ import ExpressionKitBridge
 /// ## Usage:
 /// ```swift
 /// let env = SimpleEnvironment()
-/// env.setValue(.number(42), for: "x")
-/// env.setValue(.boolean(true), for: "enabled")
+/// env.setValue(42, for: "x")
+/// env.setValue(true, for: "enabled")
 /// 
 /// // Variables can be used in expressions
 /// let result = try Expression.eval("x * 2 + sqrt(16)", environment: env)
 /// ```
-public final class SimpleEnvironment: EnvironmentProtocol {
+public final class SimpleEnvironment: EnvironmentProtocol, IEnvironment {
     private var variables: [String: Value] = [:]
     
     /// Initialize with optional initial variables
@@ -53,19 +52,32 @@ public final class SimpleEnvironment: EnvironmentProtocol {
         return variables.keys.contains(name)
     }
     
+    // MARK: - EnvironmentProtocol implementation
+    
     public func getValue(for name: String) throws -> Value {
         guard let value = variables[name] else {
-            throw ExpressionError.environmentError("Variable not found: \(name)")
+            throw ExpressionError.unknownVariable(name)
         }
         return value
     }
     
     public func callFunction(name: String, arguments: [Value]) throws -> Value {
-        // All standard mathematical functions (min, max, abs, sqrt, pow, sin, cos, tan, log, exp, floor, ceil, round)
-        // are automatically handled by the C++ bridge layer via ExpressionKit::CallStandardFunctions()
-        // Only custom/domain-specific functions need to be implemented here
+        // Try standard mathematical functions first
+        if let result = try callStandardFunctions(name, args: arguments) {
+            return result
+        }
         
-        // Provide a more specific error message
-        throw ExpressionError.environmentError("Unknown function '\(name)' with \(arguments.count) argument(s). Standard mathematical functions are handled automatically.")
+        // If not a standard function, throw an error
+        throw ExpressionError.unknownFunction(name)
+    }
+    
+    // MARK: - IEnvironment implementation
+    
+    public func get(_ name: String) throws -> Value {
+        return try getValue(for: name)
+    }
+    
+    public func call(_ name: String, args: [Value]) throws -> Value {
+        return try callFunction(name: name, arguments: args)
     }
 }

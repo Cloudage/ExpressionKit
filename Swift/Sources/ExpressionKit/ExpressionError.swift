@@ -1,25 +1,33 @@
-import Foundation
+// This file provides backward compatibility for the old ExpressionError enum
+// The actual ExpressionError implementation is now in ExpressionKit.swift
 
-/// Errors that can occur during expression parsing and evaluation
-public enum ExpressionError: Error, LocalizedError {
-    case parseFailed(String)
-    case evaluationFailed(String)
-    case typeMismatch(String)
-    case environmentError(String)
-    case unknownError(String)
+// Re-export ExpressionError from ExpressionKit.swift - it's already defined there
+// No additional code needed as ExpressionError is already public in ExpressionKit.swift
+
+// For backward compatibility, add aliases for the old error case names
+extension ExpressionError {
+    /// Create a parseFailed error (backward compatibility)
+    public static func parseFailed(_ message: String) -> ExpressionError {
+        return .parseError(message)
+    }
     
-    public var errorDescription: String? {
-        switch self {
-        case .parseFailed(let message):
-            return "Parse failed: \(message)"
-        case .evaluationFailed(let message):
-            return "Evaluation failed: \(message)"
-        case .typeMismatch(let message):
-            return "Type mismatch: \(message)"
-        case .environmentError(let message):
-            return "Environment error: \(message)"
-        case .unknownError(let message):
-            return "Unknown error: \(message)"
-        }
+    /// Create an evaluationFailed error (backward compatibility)
+    public static func evaluationFailed(_ message: String) -> ExpressionError {
+        return .evaluationError(message)
+    }
+    
+    /// Create a typeMismatch error (backward compatibility)
+    public static func typeMismatch(_ message: String) -> ExpressionError {
+        return .typeError(message)
+    }
+    
+    /// Create an environmentError error (backward compatibility)
+    public static func environmentError(_ message: String) -> ExpressionError {
+        return .evaluationError(message)
+    }
+    
+    /// Create an unknownError error (backward compatibility)
+    public static func unknownError(_ message: String) -> ExpressionError {
+        return .evaluationError(message)
     }
 }
