@@ -433,7 +433,7 @@ namespace ExpressionKit {
         EQ, NE, GT, LT, GE, LE,       // 比较运算符: ==, !=, >, <, >=, <=
         IN,                           // 包含运算符: in
         AND, OR, XOR, NOT,            // 逻辑运算符: &&, ||, xor, !
-        TERNARY, NULL_COALESCING      // 三元运算符: ? :, ??
+        TERNARY                       // 三元运算符: ? :
     };
 
     /**
@@ -598,12 +598,11 @@ namespace ExpressionKit {
     /**
      * @brief AST node representing ternary operations (condition ? true_expr : false_expr)
      *
-     * This node handles both ternary conditional operator (? :) and null coalescing
-     * operator (??). The condition is evaluated using asBoolean() to support any value type.
+     * This node handles the ternary conditional operator (? :).
+     * The condition is evaluated using asBoolean() to support any value type.
      *
-     * Examples: 
+     * Example: 
      * - condition ? value1 : value2
-     * - value ?? fallback (equivalent to value ? value : fallback)
      */
     class TernaryOpNode final : public ASTNode {
         ASTNodePtr condition;
@@ -623,16 +622,6 @@ namespace ExpressionKit {
                         return trueExpr->evaluate(environment);
                     } else {
                         return falseExpr->evaluate(environment);
-                    }
-                }
-                case OperatorType::NULL_COALESCING: {
-                    // Null coalescing: value ?? fallback
-                    // Equivalent to: value ? value : fallback
-                    const Value value = condition->evaluate(environment);
-                    if (value.asBoolean()) {
-                        return value;
-                    } else {
-                        return trueExpr->evaluate(environment); // trueExpr is the fallback for ??
                     }
                 }
                 default:
@@ -692,7 +681,6 @@ namespace ExpressionKit {
      * - Logical XOR: xor
      * - Logical AND: &&, and
      * - Logical OR: ||, or
-     * - Null coalescing: ??
      * - Ternary conditional: ? :
      *
      * The parser is designed to be used once per expression string and
@@ -768,7 +756,7 @@ namespace ExpressionKit {
 
         // 解析三元表达式（最低优先级）
         ASTNodePtr parseTernaryExpression() {
-            auto condition = parseNullCoalescingExpression();
+            auto condition = parseOrExpression();
             if (match("?")) {
                 auto trueExpr = parseTernaryExpression(); // Right associative
                 if (!match(":")) {
@@ -778,18 +766,6 @@ namespace ExpressionKit {
                 return std::make_shared<TernaryOpNode>(condition, trueExpr, falseExpr, OperatorType::TERNARY);
             }
             return condition;
-        }
-
-        // 解析空值合并表达式
-        ASTNodePtr parseNullCoalescingExpression() {
-            auto left = parseOrExpression();
-            while (match("??")) {
-                auto right = parseOrExpression();
-                // For null coalescing A ?? B, we store A as condition and B as trueExpr
-                // The TernaryOpNode will handle this specially for NULL_COALESCING
-                left = std::make_shared<TernaryOpNode>(left, right, nullptr, OperatorType::NULL_COALESCING);
-            }
-            return left;
         }
 
         // 解析逻辑表达式（最低优先级）

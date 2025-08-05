@@ -21,29 +21,19 @@ struct TernaryTest {
             let result4 = try Expression.eval("2 < 1 ? \"yes\" : \"no\"")
             print("2 < 1 ? \"yes\" : \"no\" = \(result4)")
 
-            // Test null coalescing
-            let result5 = try Expression.eval("true ?? \"fallback\"")
-            print("true ?? \"fallback\" = \(result5)")
+            // Test nested ternary
+            let result5 = try Expression.eval("true ? false ? 1 : 2 : 3")
+            print("true ? false ? 1 : 2 : 3 = \(result5)")
 
-            let result6 = try Expression.eval("false ?? \"fallback\"")
-            print("false ?? \"fallback\" = \(result6)")
+            let result6 = try Expression.eval("false ? 1 : true ? 2 : 3")
+            print("false ? 1 : true ? 2 : 3 = \(result6)")
 
-            let result7 = try Expression.eval("0 ?? 99")
-            print("0 ?? 99 = \(result7)")
+            // Test with complex expressions
+            let result7 = try Expression.eval("(5 > 3) ? (2 * 10) : (1 + 1)")
+            print("(5 > 3) ? (2 * 10) : (1 + 1) = \(result7)")
 
-            let result8 = try Expression.eval("5 ?? 99")
-            print("5 ?? 99 = \(result8)")
-
-            // Test nested
-            let result9 = try Expression.eval("true ? false ? 1 : 2 : 3")
-            print("true ? false ? 1 : 2 : 3 = \(result9)")
-
-            let result10 = try Expression.eval("false ? 1 : true ? 2 : 3")
-            print("false ? 1 : true ? 2 : 3 = \(result10)")
-
-            // Test precedence
-            let result11 = try Expression.eval("false ?? true ? 100 : 200")
-            print("false ?? true ? 100 : 200 = \(result11)")
+            let result8 = try Expression.eval("(1 > 3) ? (2 * 10) : (1 + 1)")
+            print("(1 > 3) ? (2 * 10) : (1 + 1) = \(result8)")
 
             print("=== All tests completed successfully! ===")
         } catch {

@@ -878,27 +878,7 @@ final class ExpressionKitTests: XCTestCase {
         XCTAssertEqual(try Expression.eval("false ? \"hello\" : 42"), .number(42.0))
     }
     
-    func testNullCoalescingOperator() throws {
-        // Basic null coalescing with boolean values
-        XCTAssertEqual(try Expression.eval("true ?? 42"), .boolean(true))
-        XCTAssertEqual(try Expression.eval("false ?? 42"), .number(42.0))
-        
-        // Null coalescing with numeric values
-        XCTAssertEqual(try Expression.eval("5 ?? 10"), .number(5.0))
-        XCTAssertEqual(try Expression.eval("0 ?? 10"), .number(10.0))
-        
-        // Null coalescing with string values
-        XCTAssertEqual(try Expression.eval("\"hello\" ?? \"world\""), .string("hello"))
-        XCTAssertEqual(try Expression.eval("\"\" ?? \"world\""), .string("world"))
-        XCTAssertEqual(try Expression.eval("\"false\" ?? \"world\""), .string("world"))
-        XCTAssertEqual(try Expression.eval("\"0\" ?? \"world\""), .string("world"))
-        
-        // Chain of null coalescing operators
-        XCTAssertEqual(try Expression.eval("false ?? 0 ?? \"fallback\""), .string("fallback"))
-        XCTAssertEqual(try Expression.eval("true ?? 0 ?? \"fallback\""), .boolean(true))
-        XCTAssertEqual(try Expression.eval("false ?? 5 ?? \"fallback\""), .number(5.0))
-    }
-    
+
     func testTernaryOperatorPrecedence() throws {
         // Ternary should have lower precedence than logical operators
         XCTAssertEqual(try Expression.eval("true && false ? 1 : 2"), .number(2.0))
@@ -910,25 +890,14 @@ final class ExpressionKitTests: XCTestCase {
         XCTAssertEqual(try Expression.eval("true ? (1 + 3) : (2 + 3)"), .number(4.0))
     }
     
-    func testNullCoalescingPrecedence() throws {
-        // Null coalescing should have higher precedence than ternary
-        XCTAssertEqual(try Expression.eval("false ?? true ? 10 : 20"), .number(10.0))
-        XCTAssertEqual(try Expression.eval("false ?? false ? 10 : 20"), .number(20.0))
-        
-        // But lower precedence than logical OR
-        XCTAssertEqual(try Expression.eval("false || true ?? false"), .boolean(true))
-        XCTAssertEqual(try Expression.eval("false || false ?? true"), .boolean(true))
-    }
-    
     func testComplexTernaryExpressions() throws {
         // Complex nested expressions
         XCTAssertEqual(try Expression.eval("(2 > 1 && 3 < 5) ? (10 * 2) : (5 + 3)"), .number(20.0))
         XCTAssertEqual(try Expression.eval("(2 < 1 || 3 > 5) ? (10 * 2) : (5 + 3)"), .number(8.0))
         
-        // Mixing ternary and null coalescing
-        XCTAssertEqual(try Expression.eval("false ?? true ? \"yes\" : \"no\""), .string("yes"))
-        XCTAssertEqual(try Expression.eval("true ? false ?? true : \"no\""), .boolean(true))
-        XCTAssertEqual(try Expression.eval("false ? \"yes\" : false ?? \"maybe\""), .string("maybe"))
+        // Nested ternary expressions
+        XCTAssertEqual(try Expression.eval("true ? false ? 1 : 2 : 3"), .number(2.0))
+        XCTAssertEqual(try Expression.eval("false ? 1 : true ? 2 : 3"), .number(2.0))
     }
     
     // MARK: - Helper Methods
