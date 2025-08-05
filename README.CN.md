@@ -692,10 +692,10 @@ try {
 我们正在探索为 ExpressionKit 添加原生数组和字典支持。请查看我们的综合分析：
 
 - **📋 [数组字典支持实现方案](ARRAY_DICTIONARY_SUPPORT.md)** - 三种实现方案的详细技术分析
-- **📋 [Array/Dictionary Implementation Plans (English)](ARRAY_DICTIONARY_SUPPORT_EN.md)** - 英文版实现细节
+- **📋 [执行总结](ARRAY_DICTIONARY_SUMMARY.md)** - 决策者的简要概述
 
 分析涵盖：
-- **方案一**：扩展 Union 系统（长期推荐）
+- **方案一**：扩展 Union 系统（长期推荐）  
 - **方案二**：多态 Value 系统与类型擦除
 - **方案三**：插件式集成支持（短期验证推荐）
 

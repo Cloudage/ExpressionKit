@@ -339,7 +339,7 @@ Future versions may add:
 - 🔄 Built-in mathematical functions (sin, cos, sqrt, etc.)
 - 🔄 String operations and concatenation functions
 - 🔄 Custom function registration
-- 🔄 **Array and Dictionary support** - See [implementation analysis](ARRAY_DICTIONARY_SUPPORT_EN.md) for detailed technical plans
+- 🔄 **数组和字典支持** - 查看 [实现分析](ARRAY_DICTIONARY_SUPPORT.md) 了解详细技术方案
 
 ## C++ Compatibility
 

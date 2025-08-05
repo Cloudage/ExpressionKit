@@ -1,114 +1,114 @@
-# ExpressionKit Array/Dictionary Support - Executive Summary
+# ExpressionKit 数组/字典支持 - 执行摘要
 
-## Request Analysis
-The issue (#30) requests an implementation plan for array and dictionary support in ExpressionKit with the following constraints:
+## 需求分析
+问题 (#30) 要求为 ExpressionKit 提供数组和字典支持的实现方案，具有以下约束条件：
 
-- **Minimal disruption** to existing codebase
-- **Swift integration** and future language compatibility
-- **Documentation-only** solution with at least 3 approaches
-- **No code implementation** at this stage
+- **最小化影响** 现有代码库
+- **Swift 集成** 和未来语言兼容性
+- **仅文档** 解决方案，至少提供 3 种方案
+- **此阶段不进行** 代码实现
 
-## Solution Overview
+## 解决方案概述
 
-We have analyzed **3 distinct implementation approaches**, each optimized for different priorities:
+我们分析了 **3 种不同的实现方案**，每种方案都针对不同的优先级进行了优化：
 
-### 🎯 Short-term Recommendation: **Approach 3 - Plugin-style Collection Support**
-- **Risk**: ⭐ Minimal (zero core changes)
-- **Effort**: ⭐⭐ Low-Medium
-- **Timeline**: 1-2 weeks
-- **Strategy**: Validate collection needs through function-based API
+### 🎯 短期推荐：**方案三 - 插件式集合支持**
+- **风险**：⭐ 最小（零核心更改）
+- **工作量**：⭐⭐ 中低
+- **时间线**：1-2 周
+- **策略**：通过基于函数的 API 验证集合需求
 
-### 🏆 Long-term Recommendation: **Approach 1 - Union System Extension**  
-- **Risk**: ⭐⭐ Low-Medium
-- **Effort**: ⭐⭐⭐ Medium
-- **Timeline**: 4-6 weeks
-- **Strategy**: Natural syntax with direct Swift mapping
+### 🏆 长期推荐：**方案一 - Union 系统扩展**  
+- **风险**：⭐⭐ 中低
+- **工作量**：⭐⭐⭐ 中等
+- **时间线**：4-6 周
+- **策略**：自然语法与直接 Swift 映射
 
-### ❌ Not Recommended: **Approach 2 - Polymorphic Value System**
-- **Risk**: ⭐⭐⭐⭐ High (major refactoring)
-- **Effort**: ⭐⭐⭐⭐⭐ Very High
-- **Reason**: Conflicts with "minimal changes" requirement
+### ❌ 不推荐：**方案二 - 多态 Value 系统**
+- **风险**：⭐⭐⭐⭐ 高（主要重构）
+- **工作量**：⭐⭐⭐⭐⭐ 极高
+- **原因**：与"最小化更改"要求冲突
 
-## Key Technical Insights
+## 关键技术洞察
 
-### Current Architecture Constraints
-- **Header-only C++ library** limits dynamic memory patterns
-- **Swift Package Manager integration** through C bridge requires compatibility
-- **Zero dependencies** constraint affects container choices
-- **Union-based Value system** optimized for simple types
+### 当前架构约束
+- **仅头文件 C++ 库** 限制了动态内存模式
+- **Swift Package Manager 集成** 通过 C 桥接要求兼容性
+- **零依赖** 约束影响容器选择
+- **基于 Union 的 Value 系统** 针对简单类型进行了优化
 
-### Cross-Language Compatibility Matrix
-| Language | Approach 1 | Approach 2 | Approach 3 |
-|----------|------------|------------|------------|
-| Swift | ✅ Direct mapping | ⚠️ Requires redesign | ✅ No changes needed |
-| JavaScript | ✅ Easy binding | ❌ Complex | ✅ Function-based |
-| Python | ✅ Native support | ❌ Difficult | ✅ Native support |
-| Java | ✅ JNI friendly | ❌ Complex JNI | ✅ JNI friendly |
+### 跨语言兼容性矩阵
+| 语言 | 方案一 | 方案二 | 方案三 |
+|------|-------|-------|-------|
+| Swift | ✅ 直接映射 | ⚠️ 需要重新设计 | ✅ 无需更改 |
+| JavaScript | ✅ 易于绑定 | ❌ 复杂 | ✅ 基于函数 |
+| Python | ✅ 原生支持 | ❌ 困难 | ✅ 原生支持 |
+| Java | ✅ JNI 友好 | ❌ 复杂 JNI | ✅ JNI 友好 |
 
-## Implementation Strategy
+## 实施策略
 
-### Phase 1: Validation (Approach 3)
+### 第一阶段：验证（方案三）
 ```
-Timeline: 1-2 weeks
-- Implement collection functions (array_get, dict_get, etc.)
-- Create proof-of-concept examples
-- Gather user feedback on syntax preferences
-```
-
-### Phase 2: Production (Approach 1)
-```
-Timeline: 4-6 weeks  
-- Extend Value struct with collection members
-- Add parser support for [] and {} syntax
-- Implement Swift bridge extensions
-- Comprehensive testing across platforms
+时间线：1-2 周
+- 实现集合函数（array_get, dict_get 等）
+- 创建概念验证示例
+- 收集用户对语法偏好的反馈
 ```
 
-### Phase 3: Optimization
+### 第二阶段：生产（方案一）
 ```
-Timeline: 2-3 weeks
-- Performance tuning for large collections
-- Memory usage optimization
-- Advanced features (nested collections, etc.)
+时间线：4-6 周  
+- 使用集合成员扩展 Value 结构体
+- 添加对 [] 和 {} 语法的解析器支持
+- 实现 Swift 桥接扩展
+- 跨平台综合测试
 ```
 
-## Risk Assessment
+### 第三阶段：优化
+```
+时间线：2-3 周
+- 大型集合的性能调优
+- 内存使用优化
+- 高级功能（嵌套集合等）
+```
 
-### Low Risk ✅
-- **Backward compatibility**: All approaches maintain existing API
-- **Swift integration**: Approaches 1 & 3 require minimal Swift changes
-- **Testing**: Existing test infrastructure can validate changes
+## 风险评估
 
-### Medium Risk ⚠️
-- **Memory overhead**: Approach 1 adds ~32 bytes per Value instance
-- **Performance**: Collection operations may be slower than primitives
-- **Complexity**: Parser extensions require careful implementation
+### 低风险 ✅
+- **向后兼容性**：所有方案都保持现有 API
+- **Swift 集成**：方案一和三需要最少的 Swift 更改
+- **测试**：现有测试基础设施可以验证更改
 
-### High Risk ❌
-- **Approach 2 adoption**: Would require major refactoring across ecosystem
+### 中等风险 ⚠️
+- **内存开销**：方案一每个 Value 实例增加约 32 字节
+- **性能**：集合操作可能比原始类型慢
+- **复杂性**：解析器扩展需要仔细实现
 
-## Success Metrics
+### 高风险 ❌
+- **方案二采用**：需要在整个生态系统中进行重大重构
 
-### Technical Metrics
-- **Zero regression** in existing test suite (56 Swift + 28 C++ tests)
-- **Memory overhead** < 50% for typical use cases
-- **Performance degradation** < 20% for basic operations
+## 成功指标
 
-### User Experience Metrics
-- **Natural syntax** for collection operations (`array[0]`, `dict["key"]`)
-- **Type safety** maintained across Swift boundary
-- **Documentation clarity** for new features
+### 技术指标
+- **零回归** 在现有测试套件中（56 个 Swift + 28 个 C++ 测试）
+- **内存开销** 在典型用例中 < 50%
+- **性能下降** 在基本操作中 < 20%
 
-## Conclusion
+### 用户体验指标
+- **自然语法** 用于集合操作（`array[0]`、`dict["key"]`）
+- **类型安全** 在 Swift 边界保持
+- **文档清晰度** 用于新功能
 
-The proposed **two-phase approach** (validation with Approach 3, followed by production implementation of Approach 1) provides:
+## 结论
 
-1. **Risk mitigation** through incremental development
-2. **User validation** before major architectural changes  
-3. **Clear migration path** from proof-of-concept to production
-4. **Minimal disruption** to existing users and integrations
+提议的 **两阶段方法**（使用方案三进行验证，然后进行方案一的生产实现）提供：
 
-This strategy satisfies all stated requirements while providing a robust foundation for future language integrations.
+1. **风险缓解** 通过增量开发
+2. **用户验证** 在主要架构更改之前  
+3. **清晰的迁移路径** 从概念验证到生产
+4. **最小化干扰** 对现有用户和集成
+
+这一策略满足所有既定要求，同时为未来的语言集成提供坚实的基础。
 
 ---
 
