@@ -808,12 +808,14 @@ class FunctionCallNode: ASTNode {
 class Parser {
     private let expr: String
     private var pos: String.Index
-    private var tokens: [Token]?
+    private var tokens: [Token]
+    private var collectTokens: Bool
     
     init(_ expression: String, tokens: inout [Token]?) {
         self.expr = expression
         self.pos = expression.startIndex
-        self.tokens = tokens
+        self.tokens = []
+        self.collectTokens = tokens != nil
     }
     
     convenience init(_ expression: String) {
@@ -822,7 +824,9 @@ class Parser {
     }
     
     private func addToken(_ type: TokenType, start: Int, length: Int, text: String) {
-        tokens?.append(Token(type: type, start: start, length: length, text: text))
+        if collectTokens {
+            tokens.append(Token(type: type, start: start, length: length, text: text))
+        }
     }
     
     private func addToken(_ type: TokenType, start: Int, length: Int) {
@@ -1136,6 +1140,10 @@ class Parser {
         }
         return result
     }
+    
+    func getTokens() -> [Token] {
+        return tokens
+    }
 }
 
 /// Main expression toolkit class for parsing and evaluating expressions
@@ -1259,6 +1267,10 @@ public class Expression {
     public static func parse(_ expression: String, tokens: inout [Token]?) throws -> CompiledExpression {
         let parser = Parser(expression, tokens: &tokens)
         let ast = try parser.parse()
+        // Copy tokens back from parser
+        if tokens != nil {
+            tokens = parser.getTokens()
+        }
         return CompiledExpression(ast: ast)
     }
     
