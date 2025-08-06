@@ -1,6 +1,6 @@
 # ExpressionKit
 
-A lightweight, interface-driven C++ expression parsing and evaluation library with Swift support and token sequence analysis
+A lightweight, interface-driven C++ expression parsing and evaluation library with Swift and TypeScript support and token sequence analysis
 
 ## 🚀 Key Features
 
@@ -11,7 +11,7 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 - **Complete operator support**: Full coverage of arithmetic, comparison, and logical operators
 - **Exception-based error handling**: Clear error messages and robust exception mechanism
 - **Zero dependencies**: Depends only on the C++ standard library
-- **Swift Support**: Clean Swift API with Swift Package Manager integration
+- **Multi-language Support**: Clean APIs for Swift and TypeScript with Package Manager integration
 
 ### 🎯 Quick Start - Try the Demos!
 
@@ -23,6 +23,7 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 | 🧪 **ExprTKTest** | Comprehensive unit test suite | `cd CPP && cmake . && make ExprTKTest && ./ExprTKTest` |
 | 🎨 **TokenDemo** | Token analysis for syntax highlighting | `cd CPP && cmake . && make TokenDemo && ./TokenDemo` |
 | 🍎 **Swift Example** | Swift API demonstration | `cd Swift/Examples/SwiftExample && swift run` |
+| 🔷 **TypeScript Example** | TypeScript API demonstration | `cd TypeScript && npx ts-node examples/basic-usage.ts` |
 
 ➡️ **[See detailed instructions below](#quick-start---try-the-demos)**
 
@@ -36,22 +37,24 @@ This repository uses automated testing with GitHub Actions to ensure code qualit
 
 - **C++ Core Library**: Comprehensive testing using Catch2 framework (28 test cases, 332 assertions)
 - **Swift Wrapper**: Testing via XCTest framework with Swift Package Manager (60 test methods)
+- **TypeScript Implementation**: Testing via Jest framework (41 test cases, comprehensive coverage)
 
-**Testing Parity Principle**: Both C++ and Swift implementations maintain equivalent comprehensive test coverage to ensure behavioral consistency. See [TESTING_PARITY.md](TESTING_PARITY.md) for detailed coverage analysis and parity standards.
+**Testing Parity Principle**: All C++, Swift, and TypeScript implementations maintain equivalent comprehensive test coverage to ensure behavioral consistency. See [TESTING_PARITY.md](TESTING_PARITY.md) for detailed coverage analysis and parity standards.
 
 **View Latest Test Results**: Click the badge above or visit the [Actions tab](https://github.com/Cloudage/ExpressionKit/actions/workflows/test-status-check.yml) to see detailed test results, including test counts, assertions, and execution summaries.
 
 ### Running Tests Locally
 
-ExpressionKit includes comprehensive test suites and interactive demos for both C++ and Swift:
+ExpressionKit includes comprehensive test suites and interactive demos for C++, Swift, and TypeScript:
 
 ```bash
-# Run all tests (C++ and Swift)
+# Run all tests (C++, Swift, and TypeScript)
 ./scripts/run_all_tests.sh
 
 # Run individual test suites
-./scripts/run_cpp_tests.sh      # C++ tests only
-./scripts/run_swift_tests.sh    # Swift tests only
+./scripts/run_cpp_tests.sh         # C++ tests only
+./scripts/run_swift_tests.sh       # Swift tests only
+./scripts/run_typescript_tests.sh  # TypeScript tests only
 ```
 
 **💡 Want to try the interactive demos?** See the [Demo & Test Targets section](#-try-it-live---demo--test-targets) below for hands-on examples!
@@ -160,6 +163,56 @@ for _ in 0..<10000 {
 
 **📖 For complete Swift documentation, see [SWIFT_USAGE.md](SWIFT_USAGE.md)**
 
+### For TypeScript/Node.js Projects
+
+ExpressionKit can be easily integrated into TypeScript and Node.js projects with installation as simple as Swift Package Manager:
+
+#### Installation (Choose one method)
+
+**Option 1: One-line installer (After this PR is merged)**
+```bash
+curl -sSL https://raw.githubusercontent.com/Cloudage/ExpressionKit/main/scripts/install-typescript.sh | bash
+```
+
+**Option 2: Manual GitHub clone**
+```bash
+git clone https://github.com/Cloudage/ExpressionKit.git
+cd ExpressionKit/TypeScript
+npm install && npm run build
+cp -r dist/* your-project/node_modules/expressionkit-typescript/
+```
+
+**Option 3: From npm registry (when published)**
+```bash
+npm install expressionkit-typescript
+```
+
+#### Usage
+
+```typescript
+import { Expression, SimpleEnvironment, Value } from 'expressionkit-typescript';
+
+// Direct evaluation
+const result = Expression.evalSimple('2 + 3 * 4'); // 14
+console.log(result.asNumber()); // 14
+
+// Using environment for variables
+const env = new SimpleEnvironment();
+env.setVariable('health', new Value(75));
+env.setVariable('maxHealth', new Value(100));
+
+const healthPercent = Expression.evalSimple('health / maxHealth * 100', env);
+console.log(healthPercent.asNumber()); // 75
+
+// Parse once, execute many times (high performance)
+const compiled = Expression.parse('(a + b) * c - 1');
+for (let i = 0; i < 10000; i++) {
+    const result = compiled.evaluate(); // Very fast!
+}
+```
+
+**📖 For complete TypeScript documentation, see [TYPESCRIPT_USAGE.md](TYPESCRIPT_USAGE.md)**
+
 ### For C++ Projects
 
 For C++ projects, simply **copy the single header file** `ExpressionKit.hpp` to your project:
@@ -192,20 +245,21 @@ for (const auto& token : tokens) {
 
 ## 📊 Quick Comparison
 
-| Feature | Swift | C++ |
-|---------|-------|-----|
-| **Setup** | Swift Package Manager | Copy single .hpp file |
-| **Dependencies** | None (handled by SPM) | None (header-only) |
-| **Integration** | `import ExpressionKit` | `#include "ExpressionKit.hpp"` |
-| **API** | `Expression.eval()` | `Expression::Eval()` |
-| **Performance** | ✅ Full performance | ✅ Full performance |
-| **Features** | ✅ All core features | ✅ All features + Environment |
+| Feature | Swift | TypeScript | C++ |
+|---------|-------|------------|-----|
+| **Setup** | Swift Package Manager | One-line installer | Copy single .hpp file |
+| **Dependencies** | None (handled by SPM) | None (handled by installer) | None (header-only) |
+| **Integration** | `import ExpressionKit` | `import { Expression }` | `#include "ExpressionKit.hpp"` |
+| **API** | `Expression.eval()` | `Expression.evalSimple()` | `Expression::Eval()` |
+| **Performance** | ✅ Full performance | ✅ Full performance | ✅ Full performance |
+| **Features** | ✅ All core features | ✅ All core features | ✅ All features + Environment |
 
 ### Which Version Should I Use?
 
 - **🎯 Swift Projects**: Use Swift Package Manager integration for clean, type-safe API
+- **🔷 TypeScript/Node.js Projects**: Use npm package for modern JavaScript/TypeScript development
 - **🔧 C++ Projects**: Copy `ExpressionKit.hpp` for zero-dependency, header-only solution  
-- **🏗️ Mixed Projects**: Both can coexist - same expression syntax and behavior
+- **🏗️ Mixed Projects**: All can coexist - same expression syntax and behavior
 
 ## 🎨 Token Sequence Analysis
 

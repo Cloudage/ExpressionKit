@@ -1,0 +1,29 @@
+# Development files
+__tests__/
+examples/
+jest.config.js
+tsconfig.json
+
+# Build artifacts (we want to include dist/ but exclude these)
+node_modules/
+*.tsbuildinfo
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Optional npm cache directory
+.npm
+
+# Coverage directory used by tools like istanbul
+coverage/
