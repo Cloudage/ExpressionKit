@@ -35,63 +35,59 @@ echo ""
 echo -e "${BLUE}📋 Test Count Analysis${NC}"
 echo ""
 
-# Known test structure (from analysis)
-CPP_TEST_CASES=28
-CPP_SECTIONS=63
-CPP_FUNCTIONAL_TESTS=91
-SWIFT_TEST_METHODS=60
-
 echo "Framework Reporting Differences:"
-echo "  C++ (Catch2): $CPP_CASES test cases reported (ignores $CPP_SECTIONS sections)"
+echo "  C++ (Catch2): $CPP_CASES test cases reported"
 echo "  Swift (XCTest): $SWIFT_CASES test methods reported"
 echo ""
-echo "Functional Test Coverage:"
-echo "  C++ Functional Units: $CPP_FUNCTIONAL_TESTS (TEST_CASE + SECTION)"
-echo "  Swift Test Methods: $SWIFT_TEST_METHODS"
-echo ""
-
-# Coverage analysis
-if [ "$SWIFT_TEST_METHODS" -ge "$CPP_FUNCTIONAL_TESTS" ]; then
-    echo -e "✅ ${GREEN}Test Coverage: EXCELLENT${NC}"
-    if [ "$SWIFT_TEST_METHODS" -gt "$CPP_FUNCTIONAL_TESTS" ]; then
-        EXTRA=$(($SWIFT_TEST_METHODS - $CPP_FUNCTIONAL_TESTS))
-        echo "  Swift has $EXTRA additional tests beyond C++ coverage"
-    else
-        echo "  Perfect 1:1 coverage of all C++ functional tests"
-    fi
+echo "Analysis:"
+if [ "$CPP_CASES" -eq "$SWIFT_CASES" ]; then
+    echo -e "✅ ${GREEN}Test counts match perfectly!${NC}"
+elif [ "$SWIFT_CASES" -gt "$CPP_CASES" ]; then
+    DIFFERENCE=$(($SWIFT_CASES - $CPP_CASES))
+    echo -e "📊 ${BLUE}Swift has $DIFFERENCE more test methods than C++ test cases${NC}"
+    echo "   This is normal - different frameworks count tests differently:"
+    echo "   • C++ Catch2 counts TEST_CASE declarations"
+    echo "   • Swift XCTest counts individual test methods"
+    echo "   • C++ may have multiple SECTION blocks within each TEST_CASE"
 else
-    MISSING=$(($CPP_FUNCTIONAL_TESTS - $SWIFT_TEST_METHODS))
-    echo -e "⚠️ ${YELLOW}Test Coverage: $MISSING tests may be missing${NC}"
+    DIFFERENCE=$(($CPP_CASES - $SWIFT_CASES))
+    echo -e "📊 ${BLUE}C++ has $DIFFERENCE more test cases than Swift test methods${NC}"
+    echo "   This could indicate missing Swift test coverage"
 fi
 
 echo ""
 
 # Generate GitHub Actions summary
-cat >> $GITHUB_STEP_SUMMARY << 'EOF'
-# 🧪 Enhanced Test Status Report
-
-## Test Results
-| Test Suite | Status | Reported Count | Details |
-|------------|--------|----------------|---------|
-| **C++ (Catch2)** | **$([ "$CPP_STATUS" = "PASSED" ] && echo "✅ PASSED" || echo "❌ FAILED")** | $CPP_CASES test cases | $CPP_ASSERTIONS assertions |
-| **Swift (XCTest)** | **$([ "$SWIFT_STATUS" = "PASSED" ] && echo "✅ PASSED" || echo "❌ FAILED")** | $SWIFT_CASES test methods | $SWIFT_FAILURES failures |
-
-## Framework Counting Explanation
-
-The difference in reported test counts is **expected and normal**:
-
-- **C++ Catch2**: Reports only TEST_CASE declarations ($CPP_CASES), ignoring SECTION subdivisions
-- **Swift XCTest**: Reports each test function individually ($SWIFT_CASES)
-
-## Functional Test Coverage
-
-| Metric | C++ | Swift | Status |
-|--------|-----|-------|--------|
-| Functional Test Units | $CPP_FUNCTIONAL_TESTS | $SWIFT_TEST_METHODS | $([ "$SWIFT_TEST_METHODS" -ge "$CPP_FUNCTIONAL_TESTS" ] && echo "✅ Complete" || echo "⚠️ Incomplete") |
-| Framework Reports | $CPP_CASES | $SWIFT_CASES | Different counting methods |
-
-*Last updated: $(date -u "+%Y-%m-%d %H:%M:%S UTC")*
-EOF
+{
+  echo "# 🧪 Enhanced Test Status Report"
+  echo ""
+  echo "## Test Results"
+  echo "| Test Suite | Status | Reported Count | Details |"
+  echo "|------------|--------|----------------|---------|"
+  echo "| **C++ (Catch2)** | **$([ "$CPP_STATUS" = "PASSED" ] && echo "✅ PASSED" || echo "❌ FAILED")** | $CPP_CASES test cases | $CPP_ASSERTIONS assertions |"
+  echo "| **Swift (XCTest)** | **$([ "$SWIFT_STATUS" = "PASSED" ] && echo "✅ PASSED" || echo "❌ FAILED")** | $SWIFT_CASES test methods | $SWIFT_FAILURES failures |"
+  echo ""
+  echo "## Test Count Analysis"
+  echo ""
+  if [ "$CPP_CASES" -eq "$SWIFT_CASES" ]; then
+    echo "✅ **Test counts match perfectly!** Both frameworks report the same number."
+  elif [ "$SWIFT_CASES" -gt "$CPP_CASES" ]; then
+    DIFF=$(($SWIFT_CASES - $CPP_CASES))
+    echo "📊 **Different counting methods detected:**"
+    echo "- Swift reports $DIFF more test methods than C++ test cases"
+    echo "- This is normal - frameworks count tests differently"
+    echo "- C++ Catch2 counts TEST_CASE declarations"  
+    echo "- Swift XCTest counts individual test methods"
+    echo "- C++ may have multiple SECTION blocks within each TEST_CASE"
+  else
+    DIFF=$(($CPP_CASES - $SWIFT_CASES))
+    echo "⚠️ **Potential test coverage gap:**"
+    echo "- C++ has $DIFF more test cases than Swift test methods"
+    echo "- This could indicate missing Swift test coverage"
+  fi
+  echo ""
+  echo "*Last updated: $(date -u "+%Y-%m-%d %H:%M:%S UTC")*"
+} >> $GITHUB_STEP_SUMMARY
 
 echo -e "${GREEN}✅ Enhanced test analysis complete!${NC}"
 
