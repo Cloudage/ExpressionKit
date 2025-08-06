@@ -23,7 +23,12 @@ echo -e "\n${YELLOW}📝 Running C++ (Catch2) Tests...${NC}"
 echo -e "\n${YELLOW}📝 Running Swift (XCTest) Tests...${NC}"
 ./scripts/run_swift_tests.sh
 
+# Run Kotlin tests
+echo -e "\n${YELLOW}📝 Running Kotlin (JUnit) Tests...${NC}"
+./scripts/run_kotlin_tests.sh
+
 echo -e "\n${GREEN}🎉 All tests completed successfully!${NC}"
 echo -e "${BLUE}Summary:${NC}"
 echo -e "  ✅ C++ Tests: PASSED"
 echo -e "  ✅ Swift Tests: PASSED"
+echo -e "  ✅ Kotlin Tests: PASSED"
