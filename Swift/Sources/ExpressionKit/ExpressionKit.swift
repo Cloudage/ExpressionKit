@@ -247,10 +247,42 @@ public struct Value {
         return isString ? (try? asString()) : nil
     }
     
-    // MARK: - Safe value extraction (matching C++ behavior)
+    // MARK: - Safe value extraction (strict type checking)
     
-    /// Extract number value with automatic type conversion
+    /// Extract number value with strict type checking (no automatic conversions)
     public func asNumber() throws -> Double {
+        switch data {
+        case .number(let value):
+            return value
+        default:
+            throw ExpressionError.typeError("Cannot convert \(type) to number")
+        }
+    }
+    
+    /// Extract boolean value with strict type checking (no automatic conversions)
+    public func asBoolean() throws -> Bool {
+        switch data {
+        case .boolean(let value):
+            return value
+        default:
+            throw ExpressionError.typeError("Cannot convert \(type) to boolean")
+        }
+    }
+    
+    /// Extract string value with strict type checking (no automatic conversions)
+    public func asString() throws -> String {
+        switch data {
+        case .string(let value):
+            return value
+        default:
+            throw ExpressionError.typeError("Cannot convert \(type) to string")
+        }
+    }
+    
+    // MARK: - Internal conversion methods (for expression evaluation)
+    
+    /// Convert to number with automatic type conversion (internal use)
+    internal func toNumber() throws -> Double {
         switch data {
         case .number(let value):
             return value
@@ -265,8 +297,8 @@ public struct Value {
         }
     }
     
-    /// Extract boolean value with automatic type conversion
-    public func asBoolean() throws -> Bool {
+    /// Convert to boolean with automatic type conversion (internal use)
+    internal func toBoolean() throws -> Bool {
         switch data {
         case .boolean(let value):
             return value
@@ -287,8 +319,8 @@ public struct Value {
         }
     }
     
-    /// Extract string value with automatic type conversion
-    public func asString() throws -> String {
+    /// Convert to string with automatic type conversion (internal use)
+    internal func toStringValue() throws -> String {
         switch data {
         case .string(let value):
             return value
@@ -301,7 +333,7 @@ public struct Value {
     
     /// String conversion for display
     public func toString() throws -> String {
-        return try asString()
+        return try toStringValue()
     }
 }
 
@@ -483,24 +515,24 @@ class VariableNode: ASTNode {
 public func callStandardFunctions(_ functionName: String, args: [Value]) throws -> Value? {
     // Two-argument functions
     if functionName == "min" && args.count == 2 {
-        let a = try args[0].asNumber()
-        let b = try args[1].asNumber()
+        let a = try args[0].toNumber()
+        let b = try args[1].toNumber()
         return Value(Swift.min(a, b))
     }
     if functionName == "max" && args.count == 2 {
-        let a = try args[0].asNumber()
-        let b = try args[1].asNumber()
+        let a = try args[0].toNumber()
+        let b = try args[1].toNumber()
         return Value(Swift.max(a, b))
     }
     if functionName == "pow" && args.count == 2 {
-        let x = try args[0].asNumber()
-        let y = try args[1].asNumber()
+        let x = try args[0].toNumber()
+        let y = try args[1].toNumber()
         return Value(pow(x, y))
     }
     
     // Single-argument functions
     if args.count == 1 && args[0].isNumber {
-        let x = try args[0].asNumber()
+        let x = try args[0].toNumber()
         
         switch functionName {
         case "sqrt":
@@ -577,8 +609,8 @@ class BinaryOpNode: ASTNode {
         
         // Boolean logical operations - allow any types and convert to boolean
         if op == .and || op == .or || op == .xor {
-            let a = try lhs.asBoolean()
-            let b = try rhs.asBoolean()
+            let a = try lhs.toBoolean()
+            let b = try rhs.toBoolean()
             switch op {
             case .and: return Value(a && b)
             case .or: return Value(a || b)
@@ -592,14 +624,14 @@ class BinaryOpNode: ASTNode {
             switch op {
             case .add:
                 // String concatenation: convert both operands to strings
-                let lhsStr = try lhs.asString()
-                let rhsStr = try rhs.asString()
+                let lhsStr = try lhs.toStringValue()
+                let rhsStr = try rhs.toStringValue()
                 return Value(lhsStr + rhsStr)
             case .eq:
                 // String equality comparison
                 if lhs.isString && rhs.isString {
-                    let lhsStr = try lhs.asString()
-                    let rhsStr = try rhs.asString()
+                    let lhsStr = try lhs.toStringValue()
+                    let rhsStr = try rhs.toStringValue()
                     return Value(lhsStr == rhsStr)
                 }
                 // Different types are not equal
@@ -607,8 +639,8 @@ class BinaryOpNode: ASTNode {
             case .ne:
                 // String inequality comparison
                 if lhs.isString && rhs.isString {
-                    let lhsStr = try lhs.asString()
-                    let rhsStr = try rhs.asString()
+                    let lhsStr = try lhs.toStringValue()
+                    let rhsStr = try rhs.toStringValue()
                     return Value(lhsStr != rhsStr)
                 }
                 // Different types are not equal
@@ -616,8 +648,8 @@ class BinaryOpNode: ASTNode {
             case .gt, .lt, .ge, .le:
                 // String comparison: both operands must be strings
                 if lhs.isString && rhs.isString {
-                    let lhsStr = try lhs.asString()
-                    let rhsStr = try rhs.asString()
+                    let lhsStr = try lhs.toStringValue()
+                    let rhsStr = try rhs.toStringValue()
                     switch op {
                     case .gt: return Value(lhsStr > rhsStr)
                     case .lt: return Value(lhsStr < rhsStr)
@@ -630,8 +662,8 @@ class BinaryOpNode: ASTNode {
             case .in:
                 // String contains check: check if left operand is contained in right operand
                 if lhs.isString && rhs.isString {
-                    let needle = try lhs.asString()
-                    let haystack = try rhs.asString()
+                    let needle = try lhs.toStringValue()
+                    let haystack = try rhs.toStringValue()
                     return Value(haystack.contains(needle))
                 }
                 throw ExpressionError.typeError("in operator requires two string operands")
@@ -642,8 +674,8 @@ class BinaryOpNode: ASTNode {
         
         // Numeric operations
         if lhs.isNumber && rhs.isNumber {
-            let a = try lhs.asNumber()
-            let b = try rhs.asNumber()
+            let a = try lhs.toNumber()
+            let b = try rhs.toNumber()
             switch op {
             case .add: return Value(a + b)
             case .sub: return Value(a - b)
@@ -663,8 +695,8 @@ class BinaryOpNode: ASTNode {
         }
         // Strict boolean operations (equality/inequality) require both to be boolean
         else if lhs.isBoolean && rhs.isBoolean {
-            let a = try lhs.asBoolean()
-            let b = try rhs.asBoolean()
+            let a = try lhs.toBoolean()
+            let b = try rhs.toBoolean()
             switch op {
             case .eq: return Value(a == b)
             case .ne: return Value(a != b)
@@ -699,13 +731,13 @@ class UnaryOpNode: ASTNode {
         switch op {
         case .not:
             // NOT operator can work with any type - convert to boolean first
-            let boolVal = try val.asBoolean()
+            let boolVal = try val.toBoolean()
             return Value(!boolVal)
         case .sub: // Negation
             if !val.isNumber {
                 throw ExpressionError.typeError("Negation can only be used with numbers")
             }
-            let numVal = try val.asNumber()
+            let numVal = try val.toNumber()
             return Value(-numVal)
         default:
             throw ExpressionError.typeError("Unsupported unary operator")
@@ -738,7 +770,7 @@ class TernaryOpNode: ASTNode {
         case .ternary:
             // Standard ternary: condition ? trueExpr : falseExpr
             let condValue = try condition.evaluate(environment)
-            let condBool = try condValue.asBoolean()
+            let condBool = try condValue.toBoolean()
             if condBool {
                 return try trueExpr.evaluate(environment)
             } else {
@@ -854,7 +886,16 @@ class Parser {
         let remaining = String(expr[pos...])
         if remaining.hasPrefix(str) {
             let start = expr.distance(from: expr.startIndex, to: pos)
-            addToken(.operator, start: start, length: str.count, text: str)
+            // Determine correct token type for special characters
+            let type: TokenType
+            if str == "(" || str == ")" {
+                type = .parenthesis
+            } else if str == "," {
+                type = .comma
+            } else {
+                type = .operator
+            }
+            addToken(type, start: start, length: str.count, text: str)
             pos = expr.index(pos, offsetBy: str.count)
             return true
         }
