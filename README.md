@@ -165,14 +165,54 @@ for _ in 0..<10000 {
 
 ### For Kotlin/JVM Projects
 
-For Kotlin projects, add ExpressionKit to your Gradle dependencies:
+ExpressionKit can be easily integrated into Kotlin projects using **Gradle**:
+
+#### Option 1: GitHub Packages (Recommended)
+Add the GitHub Packages repository and dependency to your `build.gradle.kts`:
 
 ```kotlin
 // build.gradle.kts
+repositories {
+    mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/Cloudage/ExpressionKit")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+}
+
 dependencies {
-    implementation("com.expressionkit:expressionkit:1.0.0")
+    implementation("com.expressionkit:ExpressionKit:1.0.0")
 }
 ```
+
+#### Option 2: Local Build
+Clone and install locally for development:
+
+```bash
+git clone https://github.com/Cloudage/ExpressionKit.git
+cd ExpressionKit/Kotlin
+./gradlew publishToMavenLocal
+```
+
+Then add to your project:
+
+```kotlin
+// build.gradle.kts
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation("com.expressionkit:ExpressionKit:1.0.0")
+}
+```
+
+#### Usage
 
 ```kotlin
 import com.expressionkit.*

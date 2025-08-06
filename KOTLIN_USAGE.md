@@ -6,12 +6,56 @@ ExpressionKit provides a comprehensive Kotlin implementation that maintains 1:1 
 
 ### Setting up Gradle Dependencies
 
-Add the ExpressionKit Kotlin implementation to your project:
+#### Option 1: GitHub Packages (Recommended)
+
+Add the GitHub Packages repository and dependency to your `build.gradle.kts`:
 
 ```kotlin
 // build.gradle.kts
+repositories {
+    mavenCentral()
+    maven {
+        name = "GitHubPackages"
+        url = uri("https://maven.pkg.github.com/Cloudage/ExpressionKit")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
+}
+
 dependencies {
-    implementation("com.expressionkit:expressionkit:1.0.0")
+    implementation("com.expressionkit:ExpressionKit:1.0.0")
+}
+```
+
+Create a `gradle.properties` file in your project root or user home directory:
+
+```properties
+gpr.user=your_github_username
+gpr.key=your_github_token
+```
+
+#### Option 2: Local Installation
+
+For development or if you don't have GitHub packages access:
+
+```bash
+git clone https://github.com/Cloudage/ExpressionKit.git
+cd ExpressionKit/Kotlin
+./gradlew publishToMavenLocal
+```
+
+Then add to your `build.gradle.kts`:
+
+```kotlin
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation("com.expressionkit:ExpressionKit:1.0.0")
 }
 ```
 
