@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>ExpressionKit</id>
+    <version>1.0.0</version>
+    <authors>ExpressionKit Contributors</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <projectUrl>https://github.com/Cloudage/ExpressionKit</projectUrl>
+    <description>A lightweight, interface-driven expression parser and evaluator for C#. 1:1 translation from C++ reference implementation.</description>
+    <tags>expression parser evaluator math formula calculator</tags>
+    <repository type="git" url="https://github.com/Cloudage/ExpressionKit" commit="5e0f7c6f53c9290bcc16c9d375f5c82de9529ff4" />
+    <dependencies>
+      <group targetFramework="net8.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/bin/Debug/net8.0/ExpressionKit.dll" target="lib/net8.0/ExpressionKit.dll" />
+    <file src="/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/bin/Debug/net8.0/ExpressionKit.xml" target="lib/net8.0/ExpressionKit.xml" />
+  </files>
+</package>

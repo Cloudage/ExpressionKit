@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <PackageId>ExpressionKit</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>ExpressionKit Contributors</Authors>
+    <Description>A lightweight, interface-driven expression parser and evaluator for C#. 1:1 translation from C++ reference implementation.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Cloudage/ExpressionKit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Cloudage/ExpressionKit</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>expression;parser;evaluator;math;formula;calculator</PackageTags>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+  </PropertyGroup>
+
+</Project>

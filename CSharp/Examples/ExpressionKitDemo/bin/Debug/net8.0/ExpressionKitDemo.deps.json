@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "ExpressionKitDemo/1.0.0": {
+        "dependencies": {
+          "ExpressionKit": "1.0.0"
+        },
+        "runtime": {
+          "ExpressionKitDemo.dll": {}
+        }
+      },
+      "ExpressionKit/1.0.0": {
+        "runtime": {
+          "ExpressionKit.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ExpressionKitDemo/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ExpressionKit/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

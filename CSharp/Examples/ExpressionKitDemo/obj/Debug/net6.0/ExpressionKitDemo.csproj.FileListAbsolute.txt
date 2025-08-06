@@ -1,0 +1,6 @@
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/Examples/ExpressionKitDemo/obj/Debug/net6.0/ExpressionKitDemo.csproj.AssemblyReference.cache
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/Examples/ExpressionKitDemo/obj/Debug/net6.0/ExpressionKitDemo.GeneratedMSBuildEditorConfig.editorconfig
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/Examples/ExpressionKitDemo/obj/Debug/net6.0/ExpressionKitDemo.AssemblyInfoInputs.cache
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/Examples/ExpressionKitDemo/obj/Debug/net6.0/ExpressionKitDemo.AssemblyInfo.cs
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/Examples/ExpressionKitDemo/obj/Debug/net6.0/ExpressionKitDemo.csproj.CoreCompileInputs.cache
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/Examples/ExpressionKitDemo/obj/Debug/net6.0/ExpressionKitDemo.sourcelink.json

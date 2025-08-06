@@ -1,0 +1,13 @@
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/bin/Debug/net8.0/ExpressionKit.xml
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/bin/Debug/net8.0/ExpressionKit.deps.json
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/bin/Debug/net8.0/ExpressionKit.dll
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/bin/Debug/net8.0/ExpressionKit.pdb
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/ExpressionKit.GeneratedMSBuildEditorConfig.editorconfig
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/ExpressionKit.AssemblyInfoInputs.cache
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/ExpressionKit.AssemblyInfo.cs
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/ExpressionKit.csproj.CoreCompileInputs.cache
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/ExpressionKit.sourcelink.json
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/ExpressionKit.dll
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/refint/ExpressionKit.dll
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/ExpressionKit.pdb
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/ref/ExpressionKit.dll
