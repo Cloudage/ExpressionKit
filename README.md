@@ -23,6 +23,7 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 | 🧪 **ExprTKTest** | Comprehensive unit test suite | `cd CPP && cmake . && make ExprTKTest && ./ExprTKTest` |
 | 🎨 **TokenDemo** | Token analysis for syntax highlighting | `cd CPP && cmake . && make TokenDemo && ./TokenDemo` |
 | 🍎 **Swift Example** | Swift API demonstration | `cd Swift/Examples/SwiftExample && swift run` |
+| 🔷 **C# Demo** | Interactive .NET CLI demo | `cd CSharp/Examples/ExpressionKitDemo && dotnet run` |
 
 ➡️ **[See detailed instructions below](#quick-start---try-the-demos)**
 
@@ -36,22 +37,24 @@ This repository uses automated testing with GitHub Actions to ensure code qualit
 
 - **C++ Core Library**: Comprehensive testing using Catch2 framework (28 test cases, 332 assertions)
 - **Swift Wrapper**: Testing via XCTest framework with Swift Package Manager (60 test methods)
+- **C# Port**: Testing via XUnit framework with .NET 8.0 (18 test methods, equivalent to core C++ tests)
 
-**Testing Parity Principle**: Both C++ and Swift implementations maintain equivalent comprehensive test coverage to ensure behavioral consistency. See [TESTING_PARITY.md](TESTING_PARITY.md) for detailed coverage analysis and parity standards.
+**Testing Parity Principle**: All C++, Swift, and C# implementations maintain equivalent comprehensive test coverage to ensure behavioral consistency. See [TESTING_PARITY.md](TESTING_PARITY.md) for detailed coverage analysis and parity standards.
 
 **View Latest Test Results**: Click the badge above or visit the [Actions tab](https://github.com/Cloudage/ExpressionKit/actions/workflows/test-status-check.yml) to see detailed test results, including test counts, assertions, and execution summaries.
 
 ### Running Tests Locally
 
-ExpressionKit includes comprehensive test suites and interactive demos for both C++ and Swift:
+ExpressionKit includes comprehensive test suites and interactive demos for C++, Swift, and C#:
 
 ```bash
-# Run all tests (C++ and Swift)
+# Run all tests (C++, Swift, and C#)
 ./scripts/run_all_tests.sh
 
 # Run individual test suites
 ./scripts/run_cpp_tests.sh      # C++ tests only
 ./scripts/run_swift_tests.sh    # Swift tests only
+./scripts/run_csharp_tests.sh   # C# tests only
 ```
 
 **💡 Want to try the interactive demos?** See the [Demo & Test Targets section](#-try-it-live---demo--test-targets) below for hands-on examples!
@@ -92,19 +95,29 @@ When adding support for new languages, follow this structured approach:
    - Verify identical behavior for edge cases
    - Test performance characteristics match expectations
 
-### Example: Swift Implementation
-The Swift implementation demonstrates this approach:
+### Example: Swift and C# Implementations
+Both Swift and C# implementations demonstrate this approach:
 
 ```swift
-// Pure Swift implementation translated 1:1 from C++ ExpressionKit.hpp
+// Swift: Pure implementation translated 1:1 from C++ ExpressionKit.hpp
 // - Same AST structure and evaluation algorithms
 // - Identical operator precedence and parsing rules  
 // - Equivalent Value type system and conversion behavior
 // - All built-in mathematical functions included
-// - Complete backward compatibility with previous Swift API
 
 let result = try Expression.eval("2 + 3 * 4")  // Same behavior as C++
 let compiled = try Expression.parse("x + sqrt(y)")  // Same performance benefits
+```
+
+```csharp
+// C#: Complete .NET port translated 1:1 from C++ ExpressionKit.hpp
+// - Same AST structure and evaluation algorithms
+// - Identical operator precedence and parsing rules
+// - Equivalent Value type system and conversion behavior
+// - Full .NET integration with IntelliSense support
+
+var result = Expression.Eval("2 + 3 * 4");  // Same behavior as C++
+var compiled = Expression.Parse("x + sqrt(y)");  // Same performance benefits
 ```
 
 ### Benefits of This Approach
@@ -160,6 +173,64 @@ for _ in 0..<10000 {
 
 **📖 For complete Swift documentation, see [SWIFT_USAGE.md](SWIFT_USAGE.md)**
 
+### For C# Projects (.NET 8.0+)
+
+ExpressionKit C# provides a complete 1:1 translation with full .NET integration:
+
+#### Option 1: NuGet Package (Coming Soon)
+```bash
+dotnet add package ExpressionKit
+```
+
+#### Option 2: Local Project Reference
+1. **Clone**: Copy the `CSharp/ExpressionKit/` directory to your solution
+2. **Reference**: Add project reference or copy source files
+3. **Build**: Requires .NET 8.0 or later
+
+```csharp
+using ExpressionKit;
+
+// Simple expression evaluation
+var result = Expression.Eval("2 + 3 * 4");  // Returns 14.0
+Console.WriteLine($"Result: {result.AsNumber()}");
+
+// Boolean expressions
+var boolResult = Expression.Eval("true && false");  // Returns false
+Console.WriteLine($"Boolean result: {boolResult.AsBoolean()}");
+
+// With variables and custom functions
+var environment = new SimpleEnvironment();
+environment.SetVariable("x", 10.0);
+environment.SetVariable("y", 5.0);
+environment.SetFunction("double", args => new Value(args[0].AsNumber() * 2));
+
+var customResult = Expression.Eval("double(x) + y", environment);
+Console.WriteLine($"Custom result: {customResult.AsNumber()}"); // 25.0
+
+// Token collection for syntax highlighting
+var tokens = new List<Token>();
+var resultWithTokens = Expression.Eval("sqrt(x) + max(y, 3)", environment, tokens);
+Console.WriteLine($"Result: {resultWithTokens.AsNumber()}");
+foreach (var token in tokens)
+{
+    Console.WriteLine($"Token: {token.Type} '{token.Text}' at {token.Start}:{token.Length}");
+}
+
+// Pre-compilation for performance
+var compiled = Expression.Parse("x * 2 + y");
+for (int i = 0; i < 1000; i++)
+{
+    var fastResult = compiled.Evaluate(environment); // Very fast!
+}
+```
+
+#### C# Interactive Demo
+```bash
+cd CSharp/Examples/ExpressionKitDemo && dotnet run
+```
+
+**📖 For complete C# documentation, see [CSharp/README.md](CSharp/README.md)** (Coming Soon)
+
 ### For C++ Projects
 
 For C++ projects, simply **copy the single header file** `ExpressionKit.hpp` to your project:
@@ -192,20 +263,21 @@ for (const auto& token : tokens) {
 
 ## 📊 Quick Comparison
 
-| Feature | Swift | C++ |
-|---------|-------|-----|
-| **Setup** | Swift Package Manager | Copy single .hpp file |
-| **Dependencies** | None (handled by SPM) | None (header-only) |
-| **Integration** | `import ExpressionKit` | `#include "ExpressionKit.hpp"` |
-| **API** | `Expression.eval()` | `Expression::Eval()` |
-| **Performance** | ✅ Full performance | ✅ Full performance |
-| **Features** | ✅ All core features | ✅ All features + Environment |
+| Feature | Swift | C++ | C# |
+|---------|-------|-----|-----|
+| **Setup** | Swift Package Manager | Copy single .hpp file | NuGet Package/.NET Project |
+| **Dependencies** | None (handled by SPM) | None (header-only) | None (.NET 8.0+) |
+| **Integration** | `import ExpressionKit` | `#include "ExpressionKit.hpp"` | `using ExpressionKit;` |
+| **API** | `Expression.eval()` | `Expression::Eval()` | `Expression.Eval()` |
+| **Performance** | ✅ Full performance | ✅ Full performance | ✅ Full performance |
+| **Features** | ✅ All core features | ✅ All features + Environment | ✅ All features + Environment |
 
 ### Which Version Should I Use?
 
 - **🎯 Swift Projects**: Use Swift Package Manager integration for clean, type-safe API
 - **🔧 C++ Projects**: Copy `ExpressionKit.hpp` for zero-dependency, header-only solution  
-- **🏗️ Mixed Projects**: Both can coexist - same expression syntax and behavior
+- **🏗️ .NET Projects**: Use C# implementation for full .NET integration and IntelliSense support
+- **🚀 Mixed Projects**: All versions coexist - same expression syntax and behavior
 
 ## 🎨 Token Sequence Analysis
 
@@ -271,6 +343,28 @@ if let tokens = tokens {
 let (expression, parseTokens) = try Expression.parse("complex_expression", collectTokens: true)
 // parseTokens contains all tokens for analysis
 let result = try expression.eval()
+```
+
+### C# Token Collection
+
+```csharp
+using ExpressionKit;
+
+// Evaluate with token collection
+var tokens = new List<Token>();
+var result = Expression.Eval("max(x + 5, y * 2)", environment, tokens);
+Console.WriteLine($"Result: {result}");
+
+foreach (var token in tokens)
+{
+    Console.WriteLine($"Type: {token.Type}, Text: '{token.Text}', Position: {token.Start}-{token.Start + token.Length}");
+}
+
+// Parse with token collection for pre-compilation
+var parseTokens = new List<Token>();
+var compiled = Expression.Parse("complex_expression", parseTokens);
+// parseTokens contains all tokens for analysis
+var compiledResult = compiled.Evaluate(environment);
 ```
 
 ### Use Cases for Token Sequences
