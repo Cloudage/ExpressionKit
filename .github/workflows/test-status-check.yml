@@ -28,57 +28,8 @@ jobs:
     - name: Run Swift Tests  
       run: ./scripts/run_swift_tests.sh
     
-    - name: Generate Test Summary
-      run: |
-        # Read test results
-        CPP_STATUS=$(cat cpp_test_status.txt)
-        CPP_CASES=$(cat cpp_test_cases.txt)  
-        CPP_ASSERTIONS=$(cat cpp_test_assertions.txt)
-        
-        SWIFT_STATUS=$(cat swift_test_status.txt)
-        SWIFT_CASES=$(cat swift_test_cases.txt)
-        SWIFT_FAILURES=$(cat swift_test_failures.txt)
-        
-        # Generate timestamp
-        TIMESTAMP=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-        
-        # Create status badges for summary
-        if [ "$CPP_STATUS" = "PASSED" ]; then
-            CPP_BADGE="✅ PASSED"
-        else
-            CPP_BADGE="❌ FAILED"  
-        fi
-        
-        if [ "$SWIFT_STATUS" = "PASSED" ]; then
-            SWIFT_BADGE="✅ PASSED"
-        else
-            SWIFT_BADGE="❌ FAILED"
-        fi
-        
-        # Create GitHub Actions job summary
-        cat >> $GITHUB_STEP_SUMMARY << EOF
-        # 🧪 Test Status Summary
-        
-        | Test Suite | Status | Test Cases | Details |
-        |------------|--------|------------|---------|
-        | **C++ (Catch2)** | **${CPP_BADGE}** | ${CPP_CASES} test cases | ${CPP_ASSERTIONS} assertions |
-        | **Swift (XCTest)** | **${SWIFT_BADGE}** | ${SWIFT_CASES} test cases | ${SWIFT_FAILURES} failures |
-        
-        *Last updated: ${TIMESTAMP}*
-        
-        ## Test Coverage
-        
-        - **C++ Core Library**: Comprehensive testing of the ExpressionKit.hpp functionality
-        - **Swift Pure Implementation**: Testing of the pure Swift 1:1 translation including type safety and error handling
-        
-        Both test suites validate the correctness and reliability of the ExpressionKit library across different implementations.
-        EOF
-        
-        # Set outputs for badge generation
-        echo "cpp_status=${CPP_STATUS}" >> $GITHUB_OUTPUT
-        echo "swift_status=${SWIFT_STATUS}" >> $GITHUB_OUTPUT
-        echo "cpp_cases=${CPP_CASES}" >> $GITHUB_OUTPUT  
-        echo "swift_cases=${SWIFT_CASES}" >> $GITHUB_OUTPUT
+    - name: Enhanced Test Analysis
+      run: ./scripts/enhanced_test_check.sh
       id: test_summary
     
     - name: Clean up temporary files
