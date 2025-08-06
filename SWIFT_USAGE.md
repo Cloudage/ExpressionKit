@@ -340,13 +340,22 @@ Future versions may add:
 - 🔄 String operations and concatenation functions
 - 🔄 Custom function registration
 
+## Pure Swift Implementation
+
+This Swift implementation is a **1:1 translation from the C++ ExpressionKit.hpp**, maintaining identical algorithms and behavior while using Swift-native patterns. The implementation provides:
+
+- **Complete Algorithm Translation**: All parsing, evaluation, and AST algorithms translated directly from C++
+- **Same Behavior**: Identical expression evaluation results across both implementations  
+- **Native Swift**: No C++ dependencies or bridging - pure Swift implementation
+- **Performance**: Optimized Swift code with native memory management and type safety
+
 ## C++ Compatibility
 
-This Swift API is built on top of the existing C++ ExpressionKit library, so it maintains full compatibility with the C++ implementation while providing a clean, Swift-native interface.
+While this is a pure Swift implementation, it maintains full API and behavioral compatibility with the C++ version, ensuring consistent results across platforms.
 
 ## Migration from C++
 
-If you're migrating from the C++ version:
+The Swift API provides equivalent functionality with Swift-idiomatic naming:
 
 | C++ | Swift |
 |-----|-------|

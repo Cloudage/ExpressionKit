@@ -34,8 +34,10 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 
 This repository uses automated testing with GitHub Actions to ensure code quality and reliability:
 
-- **C++ Core Library**: Comprehensive testing using Catch2 framework
-- **Swift Wrapper**: Testing via XCTest framework with Swift Package Manager
+- **C++ Core Library**: Comprehensive testing using Catch2 framework (28 test cases, 332 assertions)
+- **Swift Wrapper**: Testing via XCTest framework with Swift Package Manager (60 test methods)
+
+**Testing Parity Principle**: Both C++ and Swift implementations maintain equivalent comprehensive test coverage to ensure behavioral consistency. See [TESTING_PARITY.md](TESTING_PARITY.md) for detailed coverage analysis and parity standards.
 
 **View Latest Test Results**: Click the badge above or visit the [Actions tab](https://github.com/Cloudage/ExpressionKit/actions/workflows/test-status-check.yml) to see detailed test results, including test counts, assertions, and execution summaries.
 
@@ -625,11 +627,11 @@ public:
 
 ### Swift Pure Implementation Architecture
 
-ExpressionKit now uses a **pure Swift implementation** that directly translates the C++ algorithms:
+ExpressionKit uses a **pure Swift implementation** that directly translates the C++ algorithms:
 
 1. **ExpressionKit.hpp** - Reference C++ header-only library
 2. **ExpressionKit.swift** - Pure Swift 1:1 translation of the C++ implementation
-3. **Compatibility Layer** - Adapters for backward compatibility with existing APIs
+3. **Native Swift Implementation** - Complete reimplementation using Swift-idiomatic patterns
 
 ```
 Swift Code
@@ -637,13 +639,6 @@ Swift Code
 ExpressionKit.swift (Pure Swift Implementation)
     ↓
 Native Swift AST & Parser (Translated from C++)
-```
-
-### Previous Architecture (Legacy)
-The previous version used a C++ bridge architecture (now removed):
-
-```
-Swift Code → ExpressionKitBridge (C Interface) → ExpressionKit.hpp (C++ Core)
 ```
 
 ### Benefits of Pure Swift Architecture
