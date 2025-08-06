@@ -46,3 +46,13 @@ tasks.register("testDetailed") {
         println("   📊 Test Results: ${testResults.testLogging}")
     }
 }
+
+// Task to run the example
+tasks.register<JavaExec>("runExample") {
+    group = "application"
+    description = "Runs the Kotlin example application"
+    dependsOn("compileKotlin")
+    mainClass.set("KotlinExampleKt")
+    classpath = sourceSets["main"].runtimeClasspath + files("examples")
+    workingDir = file("examples")
+}

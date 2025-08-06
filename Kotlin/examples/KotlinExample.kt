@@ -6,8 +6,6 @@
  * Simple example demonstrating Kotlin ExpressionKit usage
  */
 
-package com.expressionkit.examples
-
 import com.expressionkit.*
 
 fun main() {

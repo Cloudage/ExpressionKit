@@ -23,7 +23,7 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 | 🧪 **ExprTKTest** | Comprehensive unit test suite | `cd CPP && cmake . && make ExprTKTest && ./ExprTKTest` |
 | 🎨 **TokenDemo** | Token analysis for syntax highlighting | `cd CPP && cmake . && make TokenDemo && ./TokenDemo` |
 | 🍎 **Swift Example** | Swift API demonstration | `cd Swift/Examples/SwiftExample && swift run` |
-| ☕ **Kotlin Example** | Kotlin/JVM demonstration | `cd Kotlin && kotlin examples/KotlinExample.kt -cp build/classes/kotlin/main` |
+| ☕ **Kotlin Tests** | Kotlin JUnit test suite | `cd Kotlin && gradle test` |
 
 ➡️ **[See detailed instructions below](#quick-start---try-the-demos)**
 
