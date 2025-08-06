@@ -69,9 +69,9 @@ jobs:
         ## Test Coverage
         
         - **C++ Core Library**: Comprehensive testing of the ExpressionKit.hpp functionality
-        - **Swift Wrapper**: Testing of the Swift API wrapper including type safety and error handling
+        - **Swift Pure Implementation**: Testing of the pure Swift 1:1 translation including type safety and error handling
         
-        Both test suites validate the correctness and reliability of the ExpressionKit library.
+        Both test suites validate the correctness and reliability of the ExpressionKit library across different implementations.
         EOF
         
         # Set outputs for badge generation

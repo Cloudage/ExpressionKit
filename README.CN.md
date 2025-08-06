@@ -557,36 +557,37 @@ public:
 
 ### 核心组件
 
-1. **Value** - 统一的值类型，支持数字和布尔值
+1. **Value** - 统一的值类型，支持数字、布尔值和字符串
 2. **IEnvironment** - 变量和函数访问接口
 3. **ASTNode** - 抽象语法树节点基类
 4. **Parser** - 递归下降解析器
-5. **ExpressionKit** - 主要的表达式工具类
-6. **ExpressionKitBridge** - Swift 集成的 C 桥接（位于 `Sources/ExpressionKitBridge/`）
+5. **Expression** - 主要的表达式工具类
+6. **CompiledExpression** - 预解析 AST，用于高效重复执行
 
-### Swift 集成架构
+### Swift 纯实现架构
 
-ExpressionKit 通过分层架构提供无缝的 Swift 集成：
+ExpressionKit 使用**纯 Swift 实现**，直接转译 C++ 算法：
 
-1. **ExpressionKit.hpp** - 核心 C++ 头文件库
-2. **ExpressionKitBridge** - C 接口桥接，为 Swift 兼容性包装 C++ 代码
-3. **ExpressionKit (Swift)** - Swift 包装器，提供符合 Swift 习惯的 API
+1. **ExpressionKit.hpp** - 参考 C++ 头文件库
+2. **ExpressionKit.swift** - C++ 实现的 1:1 Swift 转译
+3. **原生 Swift 实现** - 使用 Swift 习惯模式的完整重新实现
 
 ```
 Swift 代码
     ↓
-ExpressionKit (Swift 包)
+ExpressionKit.swift（纯 Swift 实现）
     ↓
-ExpressionKitBridge (C 接口)
-    ↓
-ExpressionKit.hpp (C++ 核心)
+原生 Swift AST 和解析器（从 C++ 转译）
 ```
 
-这种设计确保：
-- **清晰分离**：每层都有明确的职责
-- **Swift 安全**：桥接处理 C++/Swift 互操作的复杂性
-- **高性能**：层之间的开销最小
-- **可维护性**：C++ 核心的更改不会影响 Swift API
+### 纯 Swift 架构的优势
+
+- **性能**：无桥接开销，原生 Swift 执行
+- **可维护性**：单一代码库更易维护和调试
+- **平台支持**：在所有 Swift 平台上工作，无需 C++ 依赖
+- **内存管理**：原生 Swift ARC 而非手动 C++ 内存管理
+- **调试**：完整的 Swift 调试能力和堆栈跟踪
+- **发布**：更简单的包发布，无混合语言复杂性
 
 ### IEnvironment 接口
 

@@ -625,11 +625,11 @@ public:
 
 ### Swift Pure Implementation Architecture
 
-ExpressionKit now uses a **pure Swift implementation** that directly translates the C++ algorithms:
+ExpressionKit uses a **pure Swift implementation** that directly translates the C++ algorithms:
 
 1. **ExpressionKit.hpp** - Reference C++ header-only library
 2. **ExpressionKit.swift** - Pure Swift 1:1 translation of the C++ implementation
-3. **Compatibility Layer** - Adapters for backward compatibility with existing APIs
+3. **Native Swift Implementation** - Complete reimplementation using Swift-idiomatic patterns
 
 ```
 Swift Code
@@ -637,13 +637,6 @@ Swift Code
 ExpressionKit.swift (Pure Swift Implementation)
     ↓
 Native Swift AST & Parser (Translated from C++)
-```
-
-### Previous Architecture (Legacy)
-The previous version used a C++ bridge architecture (now removed):
-
-```
-Swift Code → ExpressionKitBridge (C Interface) → ExpressionKit.hpp (C++ Core)
 ```
 
 ### Benefits of Pure Swift Architecture

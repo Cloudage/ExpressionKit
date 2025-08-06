@@ -120,7 +120,8 @@ do {
 // Demonstrate parsing with tokens (for pre-compilation scenarios)
 print("\n📋 Parse-once, execute-many with tokens:")
 do {
-    let (_, tokens) = try Expression.parse("(a + b) * c - 1", collectTokens: true)
+    var tokens: [Token]? = []
+    let _ = try Expression.parse("(a + b) * c - 1", tokens: &tokens)
     print("Parsed successfully!")
     if let tokens = tokens {
         printTokens(tokens, for: "(a + b) * c - 1")
