@@ -1,0 +1,38 @@
+{
+  "name": "expressionkit-typescript",
+  "version": "1.0.0",
+  "description": "ExpressionKit TypeScript implementation - 1:1 translation from C++",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "dev": "ts-node src/index.ts",
+    "clean": "rm -rf dist",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "expression",
+    "parser",
+    "evaluator",
+    "mathematical",
+    "typescript"
+  ],
+  "author": "ExpressionKit Contributors",
+  "license": "MIT",
+  "files": [
+    "dist/**/*"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.2.0",
+    "jest": "^30.0.5",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
