@@ -1,6 +1,6 @@
 # ExpressionKit
 
-A lightweight, interface-driven C++ expression parsing and evaluation library with Swift support and token sequence analysis
+A lightweight, interface-driven C++ expression parsing and evaluation library with Swift and Kotlin support and token sequence analysis
 
 ## 🚀 Key Features
 
@@ -11,7 +11,7 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 - **Complete operator support**: Full coverage of arithmetic, comparison, and logical operators
 - **Exception-based error handling**: Clear error messages and robust exception mechanism
 - **Zero dependencies**: Depends only on the C++ standard library
-- **Swift Support**: Clean Swift API with Swift Package Manager integration
+- **Multi-Language Support**: Clean APIs for C++, Swift (with SPM), and Kotlin (with Gradle)
 
 ### 🎯 Quick Start - Try the Demos!
 
@@ -23,6 +23,7 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 | 🧪 **ExprTKTest** | Comprehensive unit test suite | `cd CPP && cmake . && make ExprTKTest && ./ExprTKTest` |
 | 🎨 **TokenDemo** | Token analysis for syntax highlighting | `cd CPP && cmake . && make TokenDemo && ./TokenDemo` |
 | 🍎 **Swift Example** | Swift API demonstration | `cd Swift/Examples/SwiftExample && swift run` |
+| ☕ **Kotlin Example** | Kotlin/JVM demonstration | `cd Kotlin && kotlin examples/KotlinExample.kt -cp build/classes/kotlin/main` |
 
 ➡️ **[See detailed instructions below](#quick-start---try-the-demos)**
 
@@ -36,22 +37,24 @@ This repository uses automated testing with GitHub Actions to ensure code qualit
 
 - **C++ Core Library**: Comprehensive testing using Catch2 framework (28 test cases, 332 assertions)
 - **Swift Wrapper**: Testing via XCTest framework with Swift Package Manager (60 test methods)
+- **Kotlin Implementation**: Testing via JUnit framework with Gradle (39 test methods)
 
-**Testing Parity Principle**: Both C++ and Swift implementations maintain equivalent comprehensive test coverage to ensure behavioral consistency. See [TESTING_PARITY.md](TESTING_PARITY.md) for detailed coverage analysis and parity standards.
+**Testing Parity Principle**: All language implementations maintain equivalent comprehensive test coverage to ensure behavioral consistency across C++, Swift, and Kotlin. See [TESTING_PARITY.md](TESTING_PARITY.md) for detailed coverage analysis and parity standards.
 
 **View Latest Test Results**: Click the badge above or visit the [Actions tab](https://github.com/Cloudage/ExpressionKit/actions/workflows/test-status-check.yml) to see detailed test results, including test counts, assertions, and execution summaries.
 
 ### Running Tests Locally
 
-ExpressionKit includes comprehensive test suites and interactive demos for both C++ and Swift:
+ExpressionKit includes comprehensive test suites and interactive demos for C++, Swift, and Kotlin:
 
 ```bash
-# Run all tests (C++ and Swift)
+# Run all tests (C++, Swift, and Kotlin)
 ./scripts/run_all_tests.sh
 
 # Run individual test suites
 ./scripts/run_cpp_tests.sh      # C++ tests only
 ./scripts/run_swift_tests.sh    # Swift tests only
+./scripts/run_kotlin_tests.sh   # Kotlin tests only
 ```
 
 **💡 Want to try the interactive demos?** See the [Demo & Test Targets section](#-try-it-live---demo--test-targets) below for hands-on examples!
@@ -159,6 +162,37 @@ for _ in 0..<10000 {
 ```
 
 **📖 For complete Swift documentation, see [SWIFT_USAGE.md](SWIFT_USAGE.md)**
+
+### For Kotlin/JVM Projects
+
+For Kotlin projects, add ExpressionKit to your Gradle dependencies:
+
+```kotlin
+// build.gradle.kts
+dependencies {
+    implementation("com.expressionkit:expressionkit:1.0.0")
+}
+```
+
+```kotlin
+import com.expressionkit.*
+
+// Simple evaluation
+val result = Expression.eval("2 + 3 * 4") // Returns Value.number(14.0)
+
+// With variables and custom functions
+val env = SimpleEnvironment()
+env.setVariable("x", 10.0)
+env.setFunction("double") { args -> Value.number(args[0].asNumber() * 2) }
+
+val result = Expression.eval("double(x) + 5", env) // Returns Value.number(25.0)
+
+// Pre-compiled expressions for performance
+val compiled = Expression.parse("health > maxHealth * 0.5")
+val isHealthy = compiled.evaluate(env) // Very fast repeated evaluation!
+```
+
+**📖 For complete Kotlin documentation, see [KOTLIN_USAGE.md](KOTLIN_USAGE.md)**
 
 ### For C++ Projects
 
