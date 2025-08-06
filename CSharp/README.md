@@ -14,15 +14,40 @@ A lightweight, interface-driven expression parser and evaluator for C# and .NET 
 
 ## 📦 Installation
 
-### Option 1: NuGet Package (Coming Soon)
+ExpressionKit can be easily integrated into .NET projects using the standard .NET package management approaches:
+
+### Option 1: NuGet Package Manager (Recommended)
 ```bash
-dotnet add package ExpressionKit
+dotnet add package Cloudage.ExpressionKit
 ```
 
-### Option 2: Local Project Reference
+### Option 2: PackageReference in .csproj
+```xml
+<PackageReference Include="Cloudage.ExpressionKit" Version="1.0.0" />
+```
+
+### Option 3: Package Manager Console (Visual Studio)
+```powershell
+Install-Package Cloudage.ExpressionKit
+```
+
+### Option 4: GitHub Packages (Latest Builds)
+```bash
+# Add GitHub Packages source (one time setup)
+dotnet nuget add source https://nuget.pkg.github.com/Cloudage/index.json \
+  --name github --username YOUR_GITHUB_USERNAME --password YOUR_GITHUB_TOKEN
+
+# Install the package
+dotnet add package Cloudage.ExpressionKit --source github
+```
+
+### Option 5: Local Project Reference
+If you prefer to include the source directly:
 1. Clone this repository
-2. Add project reference to `CSharp/ExpressionKit/ExpressionKit.csproj`
+2. Add project reference: `<ProjectReference Include="path/to/CSharp/ExpressionKit/ExpressionKit.csproj" />`
 3. Build with .NET 8.0 or later
+
+**Requirements**: .NET 8.0 or later, zero external dependencies
 
 ## 🎯 Quick Start
 

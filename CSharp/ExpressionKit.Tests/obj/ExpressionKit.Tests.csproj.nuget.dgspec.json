@@ -14,13 +14,15 @@
         "outputPath": "/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit.Tests/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
+          "/home/runner/work/ExpressionKit/ExpressionKit/CSharp/NuGet.config",
           "/home/runner/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://nuget.pkg.github.com/Cloudage/index.json": {}
         },
         "frameworks": {
           "net8.0": {
@@ -81,19 +83,21 @@
       "version": "1.0.0",
       "restore": {
         "projectUniqueName": "/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/ExpressionKit.csproj",
-        "projectName": "ExpressionKit",
+        "projectName": "Cloudage.ExpressionKit",
         "projectPath": "/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/ExpressionKit.csproj",
         "packagesPath": "/home/runner/.nuget/packages/",
         "outputPath": "/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
+          "/home/runner/work/ExpressionKit/ExpressionKit/CSharp/NuGet.config",
           "/home/runner/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
-          "https://api.nuget.org/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {},
+          "https://nuget.pkg.github.com/Cloudage/index.json": {}
         },
         "frameworks": {
           "net8.0": {
@@ -110,6 +114,13 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.SourceLink.GitHub": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

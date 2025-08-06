@@ -4,17 +4,51 @@
     <TargetFramework>net8.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <PackageId>ExpressionKit</PackageId>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- NuGet Package Configuration -->
+  <PropertyGroup>
+    <PackageId>Cloudage.ExpressionKit</PackageId>
     <Version>1.0.0</Version>
-    <Authors>ExpressionKit Contributors</Authors>
-    <Description>A lightweight, interface-driven expression parser and evaluator for C#. 1:1 translation from C++ reference implementation.</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>Cloudage, ExpressionKit Contributors</Authors>
+    <Company>Cloudage</Company>
+    <Product>ExpressionKit</Product>
+    <Title>ExpressionKit - C# Expression Parser and Evaluator</Title>
+    <Description>A lightweight, interface-driven expression parser and evaluator for C# and .NET. Complete 1:1 translation from the C++ reference implementation with identical algorithms, AST structure, and behavior. Supports mathematical expressions, boolean logic, string operations, variables, and custom functions with zero dependencies.</Description>
+    <Summary>Lightweight C# expression parser with 1:1 C++ algorithm translation, supporting math, boolean, string operations, variables and functions.</Summary>
     <PackageProjectUrl>https://github.com/Cloudage/ExpressionKit</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Cloudage/ExpressionKit</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>expression;parser;evaluator;math;formula;calculator</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <RepositoryBranch>main</RepositoryBranch>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>expression;parser;evaluator;math;formula;calculator;ast;csharp;dotnet;arithmetic;boolean;functions</PackageTags>
+    <PackageReleaseNotes>Initial release: Complete C# port with 1:1 algorithm translation from C++ reference implementation. Includes comprehensive test suite, interactive demo, and full .NET integration.</PackageReleaseNotes>
+    <Copyright>Copyright (c) 2024 ExpressionKit Contributors</Copyright>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <PackageVersion>1.0.0</PackageVersion>
   </PropertyGroup>
+
+  <!-- Package Generation -->
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <!-- Include README in package -->
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <!-- Source Link for GitHub -->
+  <ItemGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+  </ItemGroup>
 
 </Project>

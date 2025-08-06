@@ -1,0 +1,29 @@
+<!-- Directory.Build.props -->
+<!-- This file applies to all projects in this directory tree -->
+<Project>
+  <PropertyGroup>
+    <!-- Common properties for all projects in the solution -->
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+    <WarningsNotAsErrors />
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    
+    <!-- Version properties -->
+    <MajorVersion>1</MajorVersion>
+    <MinorVersion>0</MinorVersion>
+    <PatchVersion>0</PatchVersion>
+    <VersionPrefix>$(MajorVersion).$(MinorVersion).$(PatchVersion)</VersionPrefix>
+    
+    <!-- Common package properties -->
+    <Authors>Cloudage, ExpressionKit Contributors</Authors>
+    <Company>Cloudage</Company>
+    <Copyright>Copyright (c) 2024 ExpressionKit Contributors</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/Cloudage/ExpressionKit</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Cloudage/ExpressionKit</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryBranch>main</RepositoryBranch>
+  </PropertyGroup>
+</Project>

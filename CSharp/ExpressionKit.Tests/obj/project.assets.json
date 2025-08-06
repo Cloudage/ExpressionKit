@@ -1703,14 +1703,14 @@
           "build/netcoreapp3.1/xunit.runner.visualstudio.props": {}
         }
       },
-      "ExpressionKit/1.0.0": {
+      "Cloudage.ExpressionKit/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
         "compile": {
-          "bin/placeholder/ExpressionKit.dll": {}
+          "bin/placeholder/Cloudage.ExpressionKit.dll": {}
         },
         "runtime": {
-          "bin/placeholder/ExpressionKit.dll": {}
+          "bin/placeholder/Cloudage.ExpressionKit.dll": {}
         }
       }
     }
@@ -5452,7 +5452,7 @@
         "xunit.runner.visualstudio.nuspec"
       ]
     },
-    "ExpressionKit/1.0.0": {
+    "Cloudage.ExpressionKit/1.0.0": {
       "type": "project",
       "path": "../ExpressionKit/ExpressionKit.csproj",
       "msbuildProject": "../ExpressionKit/ExpressionKit.csproj"
@@ -5460,7 +5460,7 @@
   },
   "projectFileDependencyGroups": {
     "net8.0": [
-      "ExpressionKit >= 1.0.0",
+      "Cloudage.ExpressionKit >= 1.0.0",
       "Microsoft.NET.Test.Sdk >= 17.8.0",
       "xunit >= 2.4.2",
       "xunit.runner.visualstudio >= 2.4.5"
@@ -5479,13 +5479,15 @@
       "outputPath": "/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit.Tests/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
+        "/home/runner/work/ExpressionKit/ExpressionKit/CSharp/NuGet.config",
         "/home/runner/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "https://api.nuget.org/v3/index.json": {}
+        "https://api.nuget.org/v3/index.json": {},
+        "https://nuget.pkg.github.com/Cloudage/index.json": {}
       },
       "frameworks": {
         "net8.0": {

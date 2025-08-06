@@ -11,3 +11,4 @@
 /home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/refint/ExpressionKit.dll
 /home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/ExpressionKit.pdb
 /home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/ref/ExpressionKit.dll
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/obj/Debug/net8.0/ExpressionKit.xml

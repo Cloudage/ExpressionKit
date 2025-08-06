@@ -10,12 +10,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("ExpressionKit Contributors")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("Cloudage")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
-[assembly: System.Reflection.AssemblyDescriptionAttribute("A lightweight, interface-driven expression parser and evaluator for C#. 1:1 trans" +
-    "lation from C++ reference implementation.")]
+[assembly: System.Reflection.AssemblyCopyrightAttribute("Copyright (c) 2024 ExpressionKit Contributors")]
+[assembly: System.Reflection.AssemblyDescriptionAttribute(@"A lightweight, interface-driven expression parser and evaluator for C# and .NET. Complete 1:1 translation from the C++ reference implementation with identical algorithms, AST structure, and behavior. Supports mathematical expressions, boolean logic, string operations, variables, and custom functions with zero dependencies.")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+73eff93a92ffbea8f068119b3fa6b1708c1b91ee")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c004f8cd4063600ef5ff1ec0bb3f2bb21a86dd77")]
 [assembly: System.Reflection.AssemblyProductAttribute("ExpressionKit")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ExpressionKit")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

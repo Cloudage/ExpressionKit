@@ -100,3 +100,5 @@
 /home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit.Tests/obj/Debug/net8.0/ExpressionKit.Tests.pdb
 /home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit.Tests/obj/Debug/net8.0/ExpressionKit.Tests.genruntimeconfig.cache
 /home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit.Tests/obj/Debug/net8.0/ref/ExpressionKit.Tests.dll
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit.Tests/bin/Debug/net8.0/ExpressionKit.Tests.xml
+/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit.Tests/obj/Debug/net8.0/ExpressionKit.Tests.xml

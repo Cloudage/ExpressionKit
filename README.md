@@ -175,17 +175,67 @@ for _ in 0..<10000 {
 
 ### For C# Projects (.NET 8.0+)
 
-ExpressionKit C# provides a complete 1:1 translation with full .NET integration:
+ExpressionKit C# provides a complete 1:1 translation with **equally simple integration** using official .NET package management:
 
-#### Option 1: NuGet Package (Coming Soon)
+#### Option 1: NuGet Package Manager (Recommended - One Command!)
 ```bash
-dotnet add package ExpressionKit
+dotnet add package Cloudage.ExpressionKit
 ```
 
-#### Option 2: Local Project Reference
-1. **Clone**: Copy the `CSharp/ExpressionKit/` directory to your solution
-2. **Reference**: Add project reference or copy source files
-3. **Build**: Requires .NET 8.0 or later
+#### Option 2: PackageReference in .csproj
+```xml
+<PackageReference Include="Cloudage.ExpressionKit" Version="1.0.0" />
+```
+
+#### Option 3: Package Manager Console (Visual Studio)
+```powershell
+Install-Package Cloudage.ExpressionKit
+```
+
+#### Option 4: GitHub Packages (Development Builds)
+```bash
+# Add GitHub source (one-time setup)  
+dotnet nuget add source https://nuget.pkg.github.com/Cloudage/index.json --name github
+# Install package
+dotnet add package Cloudage.ExpressionKit --source github
+```
+
+Then import and use immediately:
+
+```csharp
+using ExpressionKit;
+
+// Direct evaluation - identical to Swift API
+var result = Expression.Eval("2 + 3 * 4");  // 14.0
+
+// Parse once, execute many times (high performance)
+var expression = Expression.Parse("(a + b) * c - 1");
+for (int i = 0; i < 10000; i++) {
+    var result = expression.Evaluate(env);  // Very fast!
+}
+```
+
+> **🎯 Integration Parity**: C# integration is now **as simple as Swift Package Manager** - just one command using official .NET standards!
+
+#### Option 1: NuGet Package (Recommended)
+```bash
+dotnet add package Cloudage.ExpressionKit
+```
+
+#### Option 2: PackageReference
+Add to your `.csproj` file:
+```xml
+<PackageReference Include="Cloudage.ExpressionKit" Version="1.0.0" />
+```
+
+#### Option 3: GitHub Packages
+```bash
+# Add GitHub source (one-time setup)
+dotnet nuget add source https://nuget.pkg.github.com/Cloudage/index.json --name github
+
+# Install package
+dotnet add package Cloudage.ExpressionKit --source github
+```
 
 ```csharp
 using ExpressionKit;
