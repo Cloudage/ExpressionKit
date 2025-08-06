@@ -19,10 +19,12 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 
 | Target | Description | Command |
 |--------|-------------|---------|
-| 🖥️ **ExpressionDemo** | Interactive CLI with syntax highlighting | `cd CPP && cmake . && make ExpressionDemo && ./ExpressionDemo` |
-| 🧪 **ExprTKTest** | Comprehensive unit test suite | `cd CPP && cmake . && make ExprTKTest && ./ExprTKTest` |
-| 🎨 **TokenDemo** | Token analysis for syntax highlighting | `cd CPP && cmake . && make TokenDemo && ./TokenDemo` |
+| 🖥️ **C++ ExpressionDemo** | Interactive CLI with syntax highlighting | `cd CPP && cmake . && make ExpressionDemo && ./ExpressionDemo` |
+| 🧪 **C++ ExprTKTest** | Comprehensive unit test suite | `cd CPP && cmake . && make ExprTKTest && ./ExprTKTest` |
+| 🎨 **C++ TokenDemo** | Token analysis for syntax highlighting | `cd CPP && cmake . && make TokenDemo && ./TokenDemo` |
 | 🍎 **Swift Example** | Swift API demonstration | `cd Swift/Examples/SwiftExample && swift run` |
+| ☕ **Java Demo** | Interactive CLI with token analysis | `cd Java && ./gradlew demo` |
+| 🎨 **Java TokenDemo** | Advanced token analysis demo | `cd Java && ./gradlew tokenDemo` |
 
 ➡️ **[See detailed instructions below](#quick-start---try-the-demos)**
 
@@ -35,23 +37,25 @@ A lightweight, interface-driven C++ expression parsing and evaluation library wi
 This repository uses automated testing with GitHub Actions to ensure code quality and reliability:
 
 - **C++ Core Library**: Comprehensive testing using Catch2 framework (28 test cases, 332 assertions)
-- **Swift Wrapper**: Testing via XCTest framework with Swift Package Manager (60 test methods)
+- **Swift Implementation**: Testing via XCTest framework with Swift Package Manager (60 test methods)
+- **Java Implementation**: Testing via JUnit framework with Gradle (35 test cases)
 
-**Testing Parity Principle**: Both C++ and Swift implementations maintain equivalent comprehensive test coverage to ensure behavioral consistency. See [TESTING_PARITY.md](TESTING_PARITY.md) for detailed coverage analysis and parity standards.
+**Testing Parity Principle**: All three implementations (C++, Swift, and Java) maintain equivalent comprehensive test coverage to ensure behavioral consistency. See [TESTING_PARITY.md](TESTING_PARITY.md) for detailed coverage analysis and parity standards.
 
 **View Latest Test Results**: Click the badge above or visit the [Actions tab](https://github.com/Cloudage/ExpressionKit/actions/workflows/test-status-check.yml) to see detailed test results, including test counts, assertions, and execution summaries.
 
 ### Running Tests Locally
 
-ExpressionKit includes comprehensive test suites and interactive demos for both C++ and Swift:
+ExpressionKit includes comprehensive test suites and interactive demos for all implementations:
 
 ```bash
-# Run all tests (C++ and Swift)
+# Run all tests (C++, Swift, and Java)
 ./scripts/run_all_tests.sh
 
 # Run individual test suites
 ./scripts/run_cpp_tests.sh      # C++ tests only
 ./scripts/run_swift_tests.sh    # Swift tests only
+./scripts/run_java_tests.sh     # Java tests only
 ```
 
 **💡 Want to try the interactive demos?** See the [Demo & Test Targets section](#-try-it-live---demo--test-targets) below for hands-on examples!
@@ -160,6 +164,49 @@ for _ in 0..<10000 {
 
 **📖 For complete Swift documentation, see [SWIFT_USAGE.md](SWIFT_USAGE.md)**
 
+### For Java Projects
+
+ExpressionKit can be integrated into Java projects using **Gradle** or **Maven**:
+
+#### Option 1: Gradle
+Add to your `build.gradle`:
+
+```gradle
+dependencies {
+    implementation 'com.expressionkit:expressionkit:1.0.0'
+    // Or for local development:
+    // implementation files('path/to/expressionkit.jar')
+}
+```
+
+#### Option 2: Maven
+Add to your `pom.xml`:
+
+```xml
+<dependency>
+    <groupId>com.expressionkit</groupId>
+    <artifactId>expressionkit</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+Then import and use:
+
+```java
+import com.expressionkit.*;
+
+// Direct evaluation
+Value result = Expression.eval("2 + 3 * 4");  // 14.0
+
+// Parse once, execute many times (high performance)
+Expression.CompiledExpression expression = Expression.compile("(a + b) * c - 1");
+for (int i = 0; i < 10000; i++) {
+    Value result = expression.evaluate(environment);  // Very fast!
+}
+```
+
+**📖 For complete Java documentation, see [JAVA_USAGE.md](JAVA_USAGE.md)**
+
 ### For C++ Projects
 
 For C++ projects, simply **copy the single header file** `ExpressionKit.hpp` to your project:
@@ -192,20 +239,21 @@ for (const auto& token : tokens) {
 
 ## 📊 Quick Comparison
 
-| Feature | Swift | C++ |
-|---------|-------|-----|
-| **Setup** | Swift Package Manager | Copy single .hpp file |
-| **Dependencies** | None (handled by SPM) | None (header-only) |
-| **Integration** | `import ExpressionKit` | `#include "ExpressionKit.hpp"` |
-| **API** | `Expression.eval()` | `Expression::Eval()` |
-| **Performance** | ✅ Full performance | ✅ Full performance |
-| **Features** | ✅ All core features | ✅ All features + Environment |
+| Feature | Swift | C++ | Java |
+|---------|-------|-----|------|
+| **Setup** | Swift Package Manager | Copy single .hpp file | Gradle/Maven |
+| **Dependencies** | None (handled by SPM) | None (header-only) | None (self-contained) |
+| **Integration** | `import ExpressionKit` | `#include "ExpressionKit.hpp"` | `import com.expressionkit.*` |
+| **API** | `Expression.eval()` | `Expression::Eval()` | `Expression.eval()` |
+| **Performance** | ✅ Full performance | ✅ Full performance | ✅ Full performance |
+| **Features** | ✅ All core features | ✅ All features + Environment | ✅ All core features |
 
 ### Which Version Should I Use?
 
 - **🎯 Swift Projects**: Use Swift Package Manager integration for clean, type-safe API
 - **🔧 C++ Projects**: Copy `ExpressionKit.hpp` for zero-dependency, header-only solution  
-- **🏗️ Mixed Projects**: Both can coexist - same expression syntax and behavior
+- **☕ Java Projects**: Use Gradle/Maven for enterprise-grade applications with comprehensive testing
+- **🏗️ Mixed Projects**: All can coexist - same expression syntax and behavior
 
 ## 🎨 Token Sequence Analysis
 
