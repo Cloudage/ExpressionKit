@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "i1T08HbTlrBJQjDEmlqJIrlpXU1Uojen0Zp5UpsBI0i7mlF2MuHK5LV/S1yqf0olOweu4R0Nwu3nH/Y+dxoopg==",
+  "success": true,
+  "projectFilePath": "/home/runner/work/ExpressionKit/ExpressionKit/CSharp/ExpressionKit/ExpressionKit.csproj",
+  "expectedPackageFiles": [
+    "/home/runner/.nuget/packages/microsoft.build.tasks.git/8.0.0/microsoft.build.tasks.git.8.0.0.nupkg.sha512",
+    "/home/runner/.nuget/packages/microsoft.sourcelink.common/8.0.0/microsoft.sourcelink.common.8.0.0.nupkg.sha512",
+    "/home/runner/.nuget/packages/microsoft.sourcelink.github/8.0.0/microsoft.sourcelink.github.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

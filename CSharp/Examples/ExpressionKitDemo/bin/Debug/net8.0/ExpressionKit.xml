@@ -1,0 +1,560 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ExpressionKit</name>
+    </assembly>
+    <members>
+        <member name="T:ExpressionKit.OperatorType">
+            <summary>
+            Enumeration of all supported operators.
+            This enum defines all arithmetic, comparison, and logical operators
+            supported by the expression system. Operators are grouped by category
+            for easier understanding and implementation.
+            </summary>
+        </member>
+        <member name="T:ExpressionKit.ASTNode">
+            <summary>
+            Abstract base class for all AST nodes.
+            Each element in an expression (numbers, variables, operators, functions) is represented
+            as an AST node that can be evaluated against an environment.
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.ASTNode.Evaluate(ExpressionKit.IEnvironment)">
+            <summary>
+            Evaluate this node and return its value
+            </summary>
+            <param name="environment">Environment for variable and function resolution (can be null for constants)</param>
+            <returns>The computed value of this node</returns>
+            <exception cref="T:ExpressionKit.ExpressionException">If evaluation fails</exception>
+        </member>
+        <member name="T:ExpressionKit.NumberNode">
+            <summary>
+            AST node representing a numeric literal.
+            This node holds a constant numeric value and returns it during evaluation.
+            Examples: 42, 3.14, -2.5
+            </summary>
+        </member>
+        <member name="T:ExpressionKit.BooleanNode">
+            <summary>
+            AST node representing a boolean literal.
+            This node holds a constant boolean value and returns it during evaluation.
+            Examples: true, false
+            </summary>
+        </member>
+        <member name="T:ExpressionKit.StringNode">
+            <summary>
+            AST node representing a string literal.
+            This node holds a constant string value and returns it during evaluation.
+            Examples: "hello", "world", "Hello, \"World\"!"
+            </summary>
+        </member>
+        <member name="T:ExpressionKit.VariableNode">
+            <summary>
+            AST node representing a variable reference.
+            This node stores a variable name and delegates to the IEnvironment during
+            evaluation to resolve the variable's current value.
+            Examples: x, pos.x, player_health
+            </summary>
+        </member>
+        <member name="T:ExpressionKit.BinaryOpNode">
+            <summary>
+            AST node representing binary operations (operations with two operands).
+            This node handles all binary operators including arithmetic, comparison,
+            and logical operations. It evaluates both operands and applies the
+            specified operator according to type compatibility rules.
+            </summary>
+        </member>
+        <member name="T:ExpressionKit.UnaryOpNode">
+            <summary>
+            AST node representing unary operations (operations with one operand).
+            This node handles unary operators that operate on a single value:
+            - Logical NOT: !condition, not flag
+            - Arithmetic negation: -number, -expression
+            </summary>
+        </member>
+        <member name="T:ExpressionKit.TernaryOpNode">
+            <summary>
+            AST node representing ternary operations (condition ? true_expr : false_expr).
+            This node handles the ternary conditional operator (? :).
+            The condition is evaluated using AsBoolean() to support any value type.
+            </summary>
+        </member>
+        <member name="T:ExpressionKit.FunctionCallNode">
+            <summary>
+            AST node representing function calls.
+            This node stores a function name and a list of argument expressions.
+            During evaluation, it evaluates all arguments and delegates to the
+            IEnvironment to perform the actual function call.
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.FunctionCallNode.CallStandardFunctions(System.String,System.Collections.Generic.IReadOnlyList{ExpressionKit.Value},ExpressionKit.Value@)">
+            <summary>
+            Call standard mathematical functions.
+            This function handles built-in mathematical functions equivalent to C++ implementation.
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:ExpressionKit.Expression" -->
+        <member name="M:ExpressionKit.Expression.Eval(System.String,ExpressionKit.IEnvironment)">
+            <summary>
+            Evaluate an expression string directly
+            </summary>
+            <param name="expression">The expression string to evaluate</param>
+            <param name="environment">Optional environment for variable and function resolution</param>
+            <returns>The evaluation result</returns>
+            <exception cref="T:ExpressionKit.ExpressionException">If parsing fails or evaluation encounters an error</exception>
+            
+            <remarks>
+            This method parses and evaluates the expression in one call. For
+            expressions that will be evaluated multiple times, consider using
+            Parse() and Evaluate() for better performance.
+            
+            Supported syntax:
+            - Numbers: 42, 3.14, -2.5
+            - Booleans: true, false
+            - Arithmetic: +, -, *, /
+            - Comparison: ==, !=, &lt;, &gt;, &lt;=, &gt;=
+            - Logical: &amp;&amp;, ||, !, and, or, not, xor
+            - Parentheses for grouping: (expr)
+            - Variables: x, pos.x, player_health
+            - Functions: max(a, b), sqrt(x)
+            </remarks>
+        </member>
+        <member name="M:ExpressionKit.Expression.Eval(System.String,ExpressionKit.IEnvironment,System.Collections.Generic.List{ExpressionKit.Token})">
+            <summary>
+            Evaluate an expression string directly with token collection
+            </summary>
+            <param name="expression">The expression string to evaluate</param>
+            <param name="environment">Optional environment for variable and function resolution</param>
+            <param name="tokens">List to collect tokens for syntax highlighting</param>
+            <returns>The evaluation result</returns>
+            <exception cref="T:ExpressionKit.ExpressionException">If parsing fails or evaluation encounters an error</exception>
+            
+            <remarks>
+            This method parses and evaluates the expression while collecting
+            tokens that can be used for syntax highlighting or other analysis.
+            </remarks>
+        </member>
+        <member name="M:ExpressionKit.Expression.Parse(System.String)">
+            <summary>
+            Parse an expression string into an Abstract Syntax Tree
+            </summary>
+            <param name="expression">The expression string to parse</param>
+            <returns>The root AST node</returns>
+            <exception cref="T:ExpressionKit.ExpressionException">If the expression syntax is invalid</exception>
+            
+            <remarks>
+            This method is for advanced usage where you want to parse once and evaluate
+            multiple times for better performance. Most users should use Eval() for
+            direct evaluation.
+            </remarks>
+        </member>
+        <member name="M:ExpressionKit.Expression.Parse(System.String,System.Collections.Generic.List{ExpressionKit.Token})">
+            <summary>
+            Parse an expression string into an Abstract Syntax Tree with token collection
+            </summary>
+            <param name="expression">The expression string to parse</param>
+            <param name="tokens">List to collect tokens for syntax highlighting</param>
+            <returns>The root AST node</returns>
+            <exception cref="T:ExpressionKit.ExpressionException">If the expression syntax is invalid</exception>
+            
+            <remarks>
+            This method parses the expression while collecting tokens
+            that can be used for syntax highlighting or other analysis.
+            </remarks>
+        </member>
+        <member name="T:ExpressionKit.CompiledExpression">
+            <summary>
+            Represents a compiled expression that can be evaluated multiple times efficiently
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.CompiledExpression.Evaluate(ExpressionKit.IEnvironment)">
+            <summary>
+            Evaluate this compiled expression
+            </summary>
+            <param name="environment">Optional environment for variable and function resolution</param>
+            <returns>The evaluation result</returns>
+            <exception cref="T:ExpressionKit.ExpressionException">If evaluation encounters an error</exception>
+        </member>
+        <member name="T:ExpressionKit.IEnvironment">
+            <summary>
+            Environment interface for variable and function resolution.
+            This interface provides a clean abstraction for accessing variables and functions
+            during expression evaluation, following the C++ IEnvironment pattern.
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.IEnvironment.Get(System.String)">
+            <summary>
+            Gets the value of a variable
+            </summary>
+            <param name="name">The variable name</param>
+            <returns>The variable value</returns>
+            <exception cref="T:ExpressionKit.ExpressionException">If the variable is not defined</exception>
+        </member>
+        <member name="M:ExpressionKit.IEnvironment.Call(System.String,System.Collections.Generic.IReadOnlyList{ExpressionKit.Value})">
+            <summary>
+            Calls a function with the given arguments
+            </summary>
+            <param name="name">The function name</param>
+            <param name="args">The function arguments</param>
+            <returns>The function result</returns>
+            <exception cref="T:ExpressionKit.ExpressionException">If the function is not defined or arguments are invalid</exception>
+        </member>
+        <member name="T:ExpressionKit.SimpleEnvironment">
+            <summary>
+            Simple implementation of IEnvironment using dictionaries.
+            Provides basic variable and function storage, equivalent to C++ TestEnvironment.
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.SimpleEnvironment.SetVariable(System.String,ExpressionKit.Value)">
+            <summary>
+            Sets a variable value
+            </summary>
+            <param name="name">Variable name</param>
+            <param name="value">Variable value</param>
+        </member>
+        <member name="M:ExpressionKit.SimpleEnvironment.SetFunction(System.String,System.Func{System.Collections.Generic.IReadOnlyList{ExpressionKit.Value},ExpressionKit.Value})">
+            <summary>
+            Sets a function implementation
+            </summary>
+            <param name="name">Function name</param>
+            <param name="function">Function implementation</param>
+        </member>
+        <member name="M:ExpressionKit.SimpleEnvironment.Get(System.String)">
+            <summary>
+            Gets the value of a variable
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.SimpleEnvironment.Call(System.String,System.Collections.Generic.IReadOnlyList{ExpressionKit.Value})">
+            <summary>
+            Calls a function with the given arguments
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:ExpressionKit.Parser" -->
+        <member name="M:ExpressionKit.Parser.AddToken(ExpressionKit.TokenType,System.Int32,System.Int32,System.String)">
+            <summary>
+            Add token to collection if token collection is enabled
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.AddToken(ExpressionKit.TokenType,System.Int32,System.Int32)">
+            <summary>
+            Add token to collection using substring from expression
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.SkipWhitespace">
+            <summary>
+            Skip whitespace and add token if collecting tokens
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.Match(System.String)">
+            <summary>
+            Try to match and consume a string literal
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.Match(System.Char)">
+            <summary>
+            Try to match and consume a single character
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.Peek">
+            <summary>
+            Peek at the current character without consuming it
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.PeekString(System.Int32)">
+            <summary>
+            Peek at a substring without consuming it
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.Consume">
+            <summary>
+            Consume and return the current character
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.Parse">
+            <summary>
+            Parse the expression and return the root AST node
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.ParseTernaryExpression">
+            <summary>
+            Parse ternary expressions (lowest precedence)
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.ParseOrExpression">
+            <summary>
+            Parse logical OR expressions
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.ParseAndExpression">
+            <summary>
+            Parse logical AND expressions
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.ParseXorExpression">
+            <summary>
+            Parse logical XOR expressions
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.ParseEqualityExpression">
+            <summary>
+            Parse equality expressions
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.ParseRelationalExpression">
+            <summary>
+            Parse relational expressions
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.ParseAdditiveExpression">
+            <summary>
+            Parse additive expressions
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.ParseMultiplicativeExpression">
+            <summary>
+            Parse multiplicative expressions
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.ParseUnaryExpression">
+            <summary>
+            Parse unary expressions
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Parser.ParsePrimaryExpression">
+            <summary>
+            Parse primary expressions (literals, variables, function calls, parentheses)
+            </summary>
+        </member>
+        <member name="T:ExpressionKit.TokenType">
+            <summary>
+            Token type for syntax highlighting and analysis.
+            This enumeration defines all possible token types that can be identified
+            during expression parsing, useful for syntax highlighting and other analysis features.
+            </summary>
+        </member>
+        <member name="F:ExpressionKit.TokenType.Number">
+            <summary>Numeric literals: 42, 3.14, -2.5</summary>
+        </member>
+        <member name="F:ExpressionKit.TokenType.Boolean">
+            <summary>Boolean literals: true, false</summary>
+        </member>
+        <member name="F:ExpressionKit.TokenType.String">
+            <summary>String literals: "hello", "world"</summary>
+        </member>
+        <member name="F:ExpressionKit.TokenType.Identifier">
+            <summary>Variables and function names: x, pos.x, sqrt</summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:ExpressionKit.TokenType.Operator" -->
+        <member name="F:ExpressionKit.TokenType.Parenthesis">
+            <summary>Parentheses: (, )</summary>
+        </member>
+        <member name="F:ExpressionKit.TokenType.Comma">
+            <summary>Function argument separator: ,</summary>
+        </member>
+        <member name="F:ExpressionKit.TokenType.Whitespace">
+            <summary>Spaces, tabs (optional for highlighting)</summary>
+        </member>
+        <member name="F:ExpressionKit.TokenType.Unknown">
+            <summary>Unrecognized tokens</summary>
+        </member>
+        <member name="T:ExpressionKit.Token">
+            <summary>
+            Token structure for syntax highlighting and analysis.
+            Contains information about a single token identified during parsing,
+            including its type, position in the source text, and the actual text.
+            </summary>
+        </member>
+        <member name="P:ExpressionKit.Token.Type">
+            <summary>Type of the token</summary>
+        </member>
+        <member name="P:ExpressionKit.Token.Start">
+            <summary>Starting position in source text</summary>
+        </member>
+        <member name="P:ExpressionKit.Token.Length">
+            <summary>Length of the token</summary>
+        </member>
+        <member name="P:ExpressionKit.Token.Text">
+            <summary>The actual token text</summary>
+        </member>
+        <member name="M:ExpressionKit.Token.#ctor(ExpressionKit.TokenType,System.Int32,System.Int32,System.String)">
+            <summary>
+            Creates a new Token
+            </summary>
+            <param name="type">Type of the token</param>
+            <param name="start">Starting position in source text</param>
+            <param name="length">Length of the token</param>
+            <param name="text">The actual token text</param>
+        </member>
+        <member name="M:ExpressionKit.Token.ToString">
+            <summary>
+            Returns a string representation of this token
+            </summary>
+        </member>
+        <member name="T:ExpressionKit.ExpressionException">
+            <summary>
+            Exception type for expression parsing and evaluation errors
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.ExpressionException.#ctor(System.String)">
+            <summary>
+            Creates a new ExpressionException with the specified message
+            </summary>
+            <param name="message">The error message</param>
+        </member>
+        <member name="M:ExpressionKit.ExpressionException.#ctor(System.String,System.Exception)">
+            <summary>
+            Creates a new ExpressionException with the specified message and inner exception
+            </summary>
+            <param name="message">The error message</param>
+            <param name="innerException">The inner exception</param>
+        </member>
+        <member name="T:ExpressionKit.Value">
+            <summary>
+            Type-safe Value type that supports NUMBER, BOOLEAN, and STRING values
+            with automatic conversions. Direct translation from C++ Value struct.
+            </summary>
+        </member>
+        <member name="T:ExpressionKit.Value.ValueType">
+            <summary>
+            Type enumeration for Value
+            </summary>
+        </member>
+        <member name="F:ExpressionKit.Value.ValueType.Number">
+            <summary>Numeric value (double)</summary>
+        </member>
+        <member name="F:ExpressionKit.Value.ValueType.Boolean">
+            <summary>Boolean value</summary>
+        </member>
+        <member name="F:ExpressionKit.Value.ValueType.String">
+            <summary>String value</summary>
+        </member>
+        <member name="P:ExpressionKit.Value.Type">
+            <summary>The type of this value</summary>
+        </member>
+        <member name="M:ExpressionKit.Value.#ctor(System.Double)">
+            <summary>
+            Creates a numeric Value
+            </summary>
+            <param name="value">The numeric value</param>
+        </member>
+        <member name="M:ExpressionKit.Value.#ctor(System.Int32)">
+            <summary>
+            Creates a numeric Value from an integer
+            </summary>
+            <param name="value">The integer value</param>
+        </member>
+        <member name="M:ExpressionKit.Value.#ctor(System.Single)">
+            <summary>
+            Creates a numeric Value from a float
+            </summary>
+            <param name="value">The float value</param>
+        </member>
+        <member name="M:ExpressionKit.Value.#ctor(System.Boolean)">
+            <summary>
+            Creates a boolean Value
+            </summary>
+            <param name="value">The boolean value</param>
+        </member>
+        <member name="M:ExpressionKit.Value.#ctor(System.String)">
+            <summary>
+            Creates a string Value
+            </summary>
+            <param name="value">The string value</param>
+        </member>
+        <member name="P:ExpressionKit.Value.IsNumber">
+            <summary>
+            Checks if this value is a number
+            </summary>
+        </member>
+        <member name="P:ExpressionKit.Value.IsBoolean">
+            <summary>
+            Checks if this value is a boolean
+            </summary>
+        </member>
+        <member name="P:ExpressionKit.Value.IsString">
+            <summary>
+            Checks if this value is a string
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.AsNumber">
+            <summary>
+            Converts this value to a number with type coercion
+            </summary>
+            <returns>The numeric representation of this value</returns>
+            <exception cref="T:ExpressionKit.ExpressionException">If the conversion is not possible</exception>
+        </member>
+        <member name="M:ExpressionKit.Value.AsBoolean">
+            <summary>
+            Converts this value to a boolean with type coercion
+            </summary>
+            <returns>The boolean representation of this value</returns>
+            <exception cref="T:ExpressionKit.ExpressionException">If the conversion is not possible</exception>
+        </member>
+        <member name="M:ExpressionKit.Value.AsString">
+            <summary>
+            Converts this value to a string
+            </summary>
+            <returns>The string representation of this value</returns>
+        </member>
+        <member name="M:ExpressionKit.Value.ConvertStringToNumber(System.String)">
+            <summary>
+            Converts string to number following C++ logic
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.ConvertStringToBoolean(System.String)">
+            <summary>
+            Converts string to boolean following C++ logic
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.op_Implicit(System.Double)~ExpressionKit.Value">
+            <summary>
+            Implicit conversion from double
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.op_Implicit(System.Int32)~ExpressionKit.Value">
+            <summary>
+            Implicit conversion from int
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.op_Implicit(System.Boolean)~ExpressionKit.Value">
+            <summary>
+            Implicit conversion from bool
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.op_Implicit(System.String)~ExpressionKit.Value">
+            <summary>
+            Implicit conversion from string
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.Equals(ExpressionKit.Value)">
+            <summary>
+            Equality comparison
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.op_Equality(ExpressionKit.Value,ExpressionKit.Value)">
+            <summary>
+            Equality operator
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.op_Inequality(ExpressionKit.Value,ExpressionKit.Value)">
+            <summary>
+            Inequality operator
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.Equals(System.Object)">
+            <summary>
+            Override Equals for object comparison
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.GetHashCode">
+            <summary>
+            Override GetHashCode
+            </summary>
+        </member>
+        <member name="M:ExpressionKit.Value.ToString">
+            <summary>
+            String representation of the value
+            </summary>
+        </member>
+    </members>
+</doc>

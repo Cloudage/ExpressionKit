@@ -93,6 +93,26 @@ docs/latex/
 # Testing artifacts
 Testing/
 
+# .NET build artifacts
+bin/
+obj/
+*.nupkg
+*.snupkg
+*.csproj.user
+*.csproj.vspscc
+*.csproj.vsscc
+*.csproj.vssscc
+*.csproj.local
+*.csproj.user
+*.suo
+*.sln.docstates
+project.lock.json
+packages/
+*.nuget.props
+*.nuget.targets
+project.assets.json
+*.cache
+
 # Test script temporary files
 *_test_output.txt
 *_test_status.txt

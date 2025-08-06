@@ -1,0 +1,47 @@
+name: Build and Publish NuGet Package
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore CSharp/ExpressionKit.sln
+    
+    - name: Build
+      run: dotnet build CSharp/ExpressionKit.sln --no-restore --configuration Release
+    
+    - name: Test
+      run: dotnet test CSharp/ExpressionKit.Tests/ExpressionKit.Tests.csproj --no-build --configuration Release --verbosity normal
+    
+    - name: Pack
+      run: dotnet pack CSharp/ExpressionKit/ExpressionKit.csproj --no-build --configuration Release --output ./nuget-packages
+    
+    - name: Publish to GitHub Packages
+      run: |
+        dotnet nuget add source https://nuget.pkg.github.com/Cloudage/index.json --name github --username Cloudage --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
+        dotnet nuget push "./nuget-packages/*.nupkg" --source github --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Upload Package Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-package
+        path: ./nuget-packages/*.nupkg
