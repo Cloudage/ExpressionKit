@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ExpressionKit.Tests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5e0f7c6f53c9290bcc16c9d375f5c82de9529ff4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+73eff93a92ffbea8f068119b3fa6b1708c1b91ee")]
 [assembly: System.Reflection.AssemblyProductAttribute("ExpressionKit.Tests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ExpressionKit.Tests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

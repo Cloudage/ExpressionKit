@@ -9,7 +9,7 @@
     <projectUrl>https://github.com/Cloudage/ExpressionKit</projectUrl>
     <description>A lightweight, interface-driven expression parser and evaluator for C#. 1:1 translation from C++ reference implementation.</description>
     <tags>expression parser evaluator math formula calculator</tags>
-    <repository type="git" url="https://github.com/Cloudage/ExpressionKit" commit="5e0f7c6f53c9290bcc16c9d375f5c82de9529ff4" />
+    <repository type="git" url="https://github.com/Cloudage/ExpressionKit" commit="73eff93a92ffbea8f068119b3fa6b1708c1b91ee" />
     <dependencies>
       <group targetFramework="net8.0" />
     </dependencies>
