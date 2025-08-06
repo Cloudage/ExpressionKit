@@ -165,10 +165,24 @@ for _ in 0..<10000 {
 
 ### For TypeScript/Node.js Projects
 
-ExpressionKit can be easily integrated into TypeScript and Node.js projects:
+ExpressionKit can be easily integrated into TypeScript and Node.js projects with installation as simple as Swift Package Manager:
 
-#### Installation
+#### Installation (Choose one method)
 
+**Option 1: One-line installer (After this PR is merged)**
+```bash
+curl -sSL https://raw.githubusercontent.com/Cloudage/ExpressionKit/main/scripts/install-typescript.sh | bash
+```
+
+**Option 2: Manual GitHub clone**
+```bash
+git clone https://github.com/Cloudage/ExpressionKit.git
+cd ExpressionKit/TypeScript
+npm install && npm run build
+cp -r dist/* your-project/node_modules/expressionkit-typescript/
+```
+
+**Option 3: From npm registry (when published)**
 ```bash
 npm install expressionkit-typescript
 ```
@@ -233,8 +247,8 @@ for (const auto& token : tokens) {
 
 | Feature | Swift | TypeScript | C++ |
 |---------|-------|------------|-----|
-| **Setup** | Swift Package Manager | npm install | Copy single .hpp file |
-| **Dependencies** | None (handled by SPM) | None (handled by npm) | None (header-only) |
+| **Setup** | Swift Package Manager | One-line installer | Copy single .hpp file |
+| **Dependencies** | None (handled by SPM) | None (handled by installer) | None (header-only) |
 | **Integration** | `import ExpressionKit` | `import { Expression }` | `#include "ExpressionKit.hpp"` |
 | **API** | `Expression.eval()` | `Expression.evalSimple()` | `Expression::Eval()` |
 | **Performance** | ✅ Full performance | ✅ Full performance | ✅ Full performance |

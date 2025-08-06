@@ -6,6 +6,20 @@ A lightweight, interface-driven expression parser and evaluator for TypeScript, 
 
 ### Installation
 
+**Option 1: One-line installer (Recommended - Like Swift Package Manager)**
+```bash
+curl -sSL https://raw.githubusercontent.com/Cloudage/ExpressionKit/main/scripts/install-typescript.sh | bash
+```
+
+**Option 2: Manual GitHub clone**
+```bash
+git clone https://github.com/Cloudage/ExpressionKit.git
+cd ExpressionKit/TypeScript
+npm install && npm run build
+# Copy dist files to your project
+```
+
+**Option 3: From npm registry (when published)**
 ```bash
 npm install expressionkit-typescript
 ```

@@ -4,25 +4,41 @@
   "description": "ExpressionKit TypeScript implementation - 1:1 translation from C++",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Cloudage/ExpressionKit.git",
+    "directory": "TypeScript"
+  },
+  "homepage": "https://github.com/Cloudage/ExpressionKit",
+  "bugs": {
+    "url": "https://github.com/Cloudage/ExpressionKit/issues"
+  },
   "scripts": {
     "build": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
     "dev": "ts-node src/index.ts",
     "clean": "rm -rf dist",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run clean && npm run build && npm test"
   },
   "keywords": [
     "expression",
     "parser",
     "evaluator",
     "mathematical",
-    "typescript"
+    "typescript",
+    "expression-evaluator",
+    "math-parser",
+    "formula-parser"
   ],
   "author": "ExpressionKit Contributors",
   "license": "MIT",
   "files": [
-    "dist/**/*"
+    "dist/**/*",
+    "src/**/*",
+    "README.md",
+    "TYPESCRIPT_USAGE.md"
   ],
   "engines": {
     "node": ">=14"
